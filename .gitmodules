@@ -1,0 +1,8 @@
+[submodule "Catch2"]
+	path = test/Catch2
+	url = git@github.com:catchorg/Catch2.git
+	branch = v2.x
+[submodule "imgui"]
+	path = src/extern/imgui
+	url = git@github.com:ocornut/imgui.git
+	branch = docking
