@@ -13,6 +13,8 @@ void Initialize(ToucanSettings settings = {});
 void Destroy();
 bool IsWindowOpen();
 
+void SleepUntilWindowClosed();
+
 // ***** Figure 2D *****
 
 void BeginFigure2D(const std::string& name, const Figure2DSettings& settings = {});

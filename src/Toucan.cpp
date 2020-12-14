@@ -135,6 +135,17 @@ bool Toucan::IsWindowOpen() {
 	return toucan_context_ptr->window_open;
 }
 
+void Toucan::SleepUntilWindowClosed() {
+	assert(toucan_context_ptr != nullptr); // TODO(Matias): Error message
+	
+	if(not toucan_context_ptr->window_open) {
+		return;
+	}
+	
+	std::unique_lock lock(toucan_context_ptr->window_close_mutex);
+	toucan_context_ptr->window_close_cv.wait(lock);
+}
+
 void Toucan::BeginFigure2D(const std::string& name, const Figure2DSettings& settings) {
 	assert(toucan_context_ptr != nullptr); // TODO(Matias): Error message
 	auto& toucan_context = *toucan_context_ptr;
@@ -1034,6 +1045,7 @@ void render_loop(Toucan::ToucanSettings settings) {
 	glfwTerminate();
 	
 	toucan_context_ptr->window_open = false;
+	toucan_context_ptr->window_close_cv.notify_all();
 }
 
 static void glfw_error_callback(int error, const char* description) {

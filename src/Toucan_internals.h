@@ -5,7 +5,7 @@
 #include <list>
 #include <atomic>
 #include <thread>
-#include <unordered_map>
+#include <condition_variable>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -158,6 +158,9 @@ struct ToucanContext {
 	std::atomic_bool should_render = true;
 	std::atomic_bool window_open = true;
 	std::thread render_thread;
+	
+	std::mutex window_close_mutex;
+	std::condition_variable window_close_cv;
 	
 	GLFWwindow* window_ptr = nullptr;
 	RENDERDOC_API_1_4_1* rdoc_api = nullptr;
