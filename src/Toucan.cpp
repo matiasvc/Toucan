@@ -821,6 +821,7 @@ void render_loop(Toucan::ToucanSettings settings) {
 					
 					if (ImGui::Button("Reset view")) {
 						figure_2d.user_changed_view = false;
+						view_changed_this_frame = true;
 						ImGui::CloseCurrentPopup();
 					}
 					
