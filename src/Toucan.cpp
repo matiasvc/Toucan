@@ -47,17 +47,21 @@ void render_loop(Toucan::ToucanSettings);
 static void glfw_error_callback(int error, const char* description);
 static void glfw_window_close_callback(GLFWwindow* window);
 
-void validate_context(Toucan::ToucanContext* context_ptr) {
-	assert(context_ptr != nullptr); // TODO(Matias): Error message
-}
+// Validation macros
+#define validate_initialized(function_name) \
+if (toucan_context_ptr == nullptr) { throw std::runtime_error("Toucan error! 'Toucan::"#function_name"' was called before Toucan was initialized. Did you forget to call 'Toucan::Initialize'?"); }
 
-void validate_current_figure_2d(Toucan::ToucanContext* context_ptr) {
-	assert(context_ptr->current_figure_2d != nullptr); // TODO(Matias): Error message
-}
+#define validate_active_figure2d(function_name) \
+if (toucan_context_ptr->current_figure_2d == nullptr) { throw std::runtime_error("Toucan error! 'Toucan::"#function_name"' was called without an active Figure2D. Did you forget to call 'Toucan::BeginFigure2D'?"); }
 
-void validate_current_figure_3d(Toucan::ToucanContext* context_ptr) {
-	assert(context_ptr->current_figure_3d != nullptr); // TODO(Matias): Error message
-}
+#define validate_inactive_figure2d(function_name) \
+if (toucan_context_ptr->current_figure_2d != nullptr) { throw std::runtime_error("Toucan error! 'Toucan::"#function_name"' was called while another Figure2D was active. Did you forget to call 'Toucan::EndFigure2D'?"); }
+
+#define validate_active_figure3d(function_name) \
+if (toucan_context_ptr->current_figure_3d == nullptr) { throw std::runtime_error("Toucan error! 'Toucan::"#function_name"' was called without an active Figure2D. Did you forget to call 'Toucan::BeginFigure2D'?"); }
+
+#define validate_inactive_figure3d(function_name) \
+if (toucan_context_ptr->current_figure_3d != nullptr) { throw std::runtime_error("Toucan error! 'Toucan::"#function_name"' was called while another Figure2D was active. Did you forget to call 'Toucan::EndFigure2D'?"); }
 
 Toucan::Element2D& get_or_create_element_2d(Toucan::Figure2D& figure, const std::string& name, int draw_layer, Toucan::ElementType2D type) {
 	// Does the Element2D object with that name already exist?
@@ -88,8 +92,6 @@ Toucan::Element2D& get_or_create_element_2d(Toucan::Figure2D& figure, const std:
 		current_element_ptr = &(*insertion_iterator);
 	}
 	
-	assert(current_element_ptr != nullptr);
-	assert(current_element_ptr->type == type); // TODO(Matias): Error message
 	return *current_element_ptr;
 }
 
@@ -115,28 +117,29 @@ Toucan::Element3D& get_or_create_element_3d(Toucan::Figure3D& figure, const std:
 		current_element_ptr = &inserted_element;
 	}
 	
-	assert(current_element_ptr != nullptr);
-	assert(current_element_ptr->type == type); // TODO(Matias): Error message
 	return *current_element_ptr;
 }
 
 void Toucan::Initialize(Toucan::ToucanSettings settings) {
+	if (toucan_context_ptr != nullptr) { throw std::runtime_error("Toucan error! 'Toucan::Initialize' was called when Toucan already was initialized. Did you call 'Toucan::Initialize' multiple times?"); }
 	toucan_context_ptr = new ToucanContext;
 	toucan_context_ptr->render_thread = std::thread(render_loop, settings);
 }
 
 void Toucan::Destroy() {
+	validate_initialized(Destroy)
 	toucan_context_ptr->should_render = false;
 	toucan_context_ptr->render_thread.join();
 	delete toucan_context_ptr;
 }
 
 bool Toucan::IsWindowOpen() {
+	validate_initialized(IsWindowOpen)
 	return toucan_context_ptr->window_open;
 }
 
 void Toucan::SleepUntilWindowClosed() {
-	assert(toucan_context_ptr != nullptr); // TODO(Matias): Error message
+	validate_initialized(SleepUntilWindowClosed)
 	
 	if(not toucan_context_ptr->window_open) {
 		return;
@@ -146,11 +149,11 @@ void Toucan::SleepUntilWindowClosed() {
 	toucan_context_ptr->window_close_cv.wait(lock);
 }
 
+
 void Toucan::BeginFigure2D(const std::string& name, const Figure2DSettings& settings) {
-	assert(toucan_context_ptr != nullptr); // TODO(Matias): Error message
+	validate_initialized(BeginFigure2D)
 	auto& toucan_context = *toucan_context_ptr;
-	
-	assert(toucan_context.current_figure_2d == nullptr); // TODO(Matias): Error message
+	validate_inactive_figure2d(BeginFigure2D)
 	
 	Toucan::Figure2D* figure_2d_ptr = nullptr;
 	for (auto& figure_2d : toucan_context.figures_2d) { // Does the Figure2D already exists?
@@ -168,7 +171,7 @@ void Toucan::BeginFigure2D(const std::string& name, const Figure2DSettings& sett
 	
 	figure_2d_ptr->mutex.lock();
 	
-	assert(figure_2d_ptr->pose_stack.empty()); // TODO(Matias): Error message
+	assert(figure_2d_ptr->pose_stack.empty());
 	figure_2d_ptr->pose_stack.emplace_back();
 	
 	figure_2d_ptr->settings = settings;
@@ -176,10 +179,10 @@ void Toucan::BeginFigure2D(const std::string& name, const Figure2DSettings& sett
 }
 
 void Toucan::EndFigure2D() {
-	assert(toucan_context_ptr != nullptr); // TODO(Matias): Error message
+	validate_initialized(EndFigure2D)
 	auto& toucan_context = *toucan_context_ptr;
+	validate_active_figure2d(EndFigure2D)
 	
-	assert(toucan_context.current_figure_2d != nullptr); // TODO(Matias): Error message
 	auto& figure_2d = *toucan_context.current_figure_2d;
 	figure_2d.pose_stack.clear();
 	
@@ -188,9 +191,9 @@ void Toucan::EndFigure2D() {
 }
 
 void Toucan::PushPose2D(const Toucan::RigidTransform2Df& pose) {
-	validate_context(toucan_context_ptr);
+	validate_initialized(PushPose2D)
 	auto& context = *toucan_context_ptr;
-	validate_current_figure_2d(toucan_context_ptr);
+	validate_active_figure2d(PushPose2D)
 	auto& current_figure = *context.current_figure_2d;
 	
 	const auto& parent_pose = current_figure.pose_stack.back();
@@ -198,18 +201,20 @@ void Toucan::PushPose2D(const Toucan::RigidTransform2Df& pose) {
 }
 
 void Toucan::PopPose2D() {
-	validate_context(toucan_context_ptr);
+	validate_initialized(PopPose2D)
 	auto& context = *toucan_context_ptr;
-	validate_current_figure_2d(toucan_context_ptr);
+	validate_active_figure2d(PopPose2D)
 	auto& current_figure = *context.current_figure_2d;
+	
+	if (current_figure.pose_stack.size() <= 1) { throw std::runtime_error("Toucan error! 'Toucan::PopPose2D' was called without a matching call to `Toucan::PushPose2D`."); }
 	
 	current_figure.pose_stack.pop_back();
 }
 
 void Toucan::ShowLinePlot2D(const std::string& name, const Toucan::Buffer<Toucan::Vector2f>& line_buffer, int draw_layer, const ShowLinePlot2DSettings& settings) {
-	validate_context(toucan_context_ptr);
+	validate_initialized(PopPose2D)
 	auto& context = *toucan_context_ptr;
-	validate_current_figure_2d(toucan_context_ptr);
+	validate_active_figure2d(PopPose2D)
 	auto& current_figure = *context.current_figure_2d;
 	
 	auto& current_element = get_or_create_element_2d(current_figure, name, draw_layer, Toucan::ElementType2D::LinePlot2D);
@@ -232,9 +237,9 @@ void Toucan::ShowLinePlot2D(const std::string& name, const Toucan::Buffer<Toucan
 }
 
 void Toucan::ShowPoints2D(const std::string& name, const Buffer <Point2D>& points_buffer, int draw_layer, const ShowPoints2DSettings& settings) {
-	validate_context(toucan_context_ptr);
+	validate_initialized(ShowPoints2D)
 	auto& context = *toucan_context_ptr;
-	validate_current_figure_2d(toucan_context_ptr);
+	validate_active_figure2d(ShowPoints2D)
 	auto& current_figure = *context.current_figure_2d;
 	
 	auto& current_element = get_or_create_element_2d(current_figure, name, draw_layer, Toucan::ElementType2D::Point2D);
@@ -258,12 +263,12 @@ void Toucan::ShowPoints2D(const std::string& name, const Buffer <Point2D>& point
 
 
 void Toucan::ShowImage2D(const std::string& name, const Image2D& image, int draw_layer, const ShowImage2DSettings& settings) {
-	assert(image.width > 0 and image.height > 0 and image.image_buffer_ptr != nullptr);
-	
-	validate_context(toucan_context_ptr);
+	validate_initialized(ShowImage2D)
 	auto& context = *toucan_context_ptr;
-	validate_current_figure_2d(toucan_context_ptr);
+	validate_active_figure2d(ShowImage2D)
 	auto& current_figure = *context.current_figure_2d;
+	
+	assert(image.width > 0 and image.height > 0 and image.image_buffer_ptr != nullptr);
 	
 	auto& current_element = get_or_create_element_2d(current_figure, name, draw_layer, Toucan::ElementType2D::Image2D);
 	
@@ -290,10 +295,9 @@ void Toucan::ShowImage2D(const std::string& name, const Image2D& image, int draw
 }
 
 void Toucan::BeginFigure3D(const std::string& name, const Toucan::Figure3DSettings& settings) {
-	assert(toucan_context_ptr != nullptr); // TODO(Matias): Error message
+	validate_initialized(BeginFigure3D)
 	auto& toucan_context = * toucan_context_ptr;
-	
-	assert(toucan_context.current_figure_3d == nullptr); // TODO(Matias): Error message
+	validate_inactive_figure3d(BeginFigure3D)
 	
 	Toucan::Figure3D* figure_3d_ptr = nullptr;
 	for (auto& figure_3d : toucan_context.figures_3d) { // Does the Figure2D already exists?
@@ -330,13 +334,11 @@ void Toucan::BeginFigure3D(const std::string& name, const Toucan::Figure3DSettin
 }
 
 void Toucan::EndFigure3D() {
-	assert(toucan_context_ptr != nullptr); // TODO(Matias): Error message
+	validate_initialized(EndFigure3D)
 	auto& toucan_context = *toucan_context_ptr;
-	
-	assert(toucan_context.current_figure_3d != nullptr); // TODO(Matias): Error message
+	validate_active_figure3d(EndFigure3D)
 	auto& figure_3d = *toucan_context.current_figure_3d;
 	
-	assert(not figure_3d.pose_stack.empty());
 	figure_3d.pose_stack.clear();
 	
 	toucan_context.current_figure_3d->mutex.unlock();
@@ -344,9 +346,9 @@ void Toucan::EndFigure3D() {
 }
 
 void Toucan::PushPose3D(const Toucan::RigidTransform3Df& pose) {
-	validate_context(toucan_context_ptr);
+	validate_initialized(PushPose3D)
 	auto& context = *toucan_context_ptr;
-	validate_current_figure_3d(toucan_context_ptr);
+	validate_active_figure3d(PushPose3D)
 	auto& current_figure = *context.current_figure_3d;
 	
 	const auto& parent_pose = current_figure.pose_stack.back();
@@ -354,18 +356,20 @@ void Toucan::PushPose3D(const Toucan::RigidTransform3Df& pose) {
 }
 
 void Toucan::PopPose3D() {
-	validate_context(toucan_context_ptr);
+	validate_initialized(PopPose3D)
 	auto& context = *toucan_context_ptr;
-	validate_current_figure_3d(toucan_context_ptr);
+	validate_active_figure3d(PopPose3D)
 	auto& current_figure = *context.current_figure_3d;
+	
+	if (current_figure.pose_stack.size() <= 1) { throw std::runtime_error("Toucan error! 'Toucan::PopPose3D' was called without a matching call to `Toucan::PushPose3D`."); }
 	
 	current_figure.pose_stack.pop_back();
 }
 
 void Toucan::ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::Point3D>& points_buffer, const ShowPoints3DSettings& settings) {
-	validate_context(toucan_context_ptr);
+	validate_initialized(ShowPoints3D)
 	auto& context = *toucan_context_ptr;
-	validate_current_figure_3d(toucan_context_ptr);
+	validate_active_figure3d(ShowPoints3D)
 	auto& current_figure = *context.current_figure_3d;
 	
 	auto& current_element = get_or_create_element_3d(current_figure, name, Toucan::ElementType3D::Point3D);
@@ -389,9 +393,9 @@ void Toucan::ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::
 
 
 void Toucan::ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::LineVertex3D>& lines_buffer, const ShowLines3DSettings& settings) {
-	validate_context(toucan_context_ptr);
+	validate_initialized(ShowLines3D)
 	auto& context = *toucan_context_ptr;
-	validate_current_figure_3d(toucan_context_ptr);
+	validate_active_figure3d(ShowLines3D)
 	auto& current_figure = *context.current_figure_3d;
 	
 	auto& current_element = get_or_create_element_3d(current_figure, name, Toucan::ElementType3D::Line3D);
@@ -414,9 +418,9 @@ void Toucan::ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::L
 }
 
 void Toucan::ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Toucan::Primitive3D>& primitives_buffer, const ShowPrimitives3DSettings& settings) {
-	validate_context(toucan_context_ptr);
+	validate_initialized(ShowPrimitives3D)
 	auto& context = *toucan_context_ptr;
-	validate_current_figure_3d(toucan_context_ptr);
+	validate_active_figure3d(ShowPrimitives3D)
 	auto& current_figure = *context.current_figure_3d;
 	
 	auto& current_element = get_or_create_element_3d(current_figure, name, Toucan::ElementType3D::Primitive3D);
@@ -595,7 +599,7 @@ void render_loop(Toucan::ToucanSettings settings) {
 	
 	if (glfwInit() != GLFW_TRUE) {
 		glfwTerminate();
-		throw std::runtime_error("ERROR! Unable to initialize GLFW.\n");
+		throw std::runtime_error("Toucan error! Unable to initialize GLFW.\n");
 	}
 	
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -608,7 +612,7 @@ void render_loop(Toucan::ToucanSettings settings) {
 	
 	if (toucan_context_ptr->window_ptr == nullptr) {
 		glfwTerminate();
-		throw std::runtime_error("ERROR! Unable to create GLFW Window.\n");
+		throw std::runtime_error("Toucan error! Unable to create GLFW Window.\n");
 	}
 	
 	glfwSetWindowCloseCallback(toucan_context_ptr->window_ptr, glfw_window_close_callback);
@@ -618,7 +622,7 @@ void render_loop(Toucan::ToucanSettings settings) {
 	
 	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
 		glfwTerminate();
-		throw std::runtime_error("ERROR! Unable to load OpenGL.\n");
+		throw std::runtime_error("Toucan error! Unable to load OpenGL.\n");
 	}
 	
 	// Initialize shaders
@@ -1051,7 +1055,7 @@ void render_loop(Toucan::ToucanSettings settings) {
 
 static void glfw_error_callback(int error, const char* description) {
 	std::ostringstream ss;
-	ss << "GLFW ERROR! (" << error << "): " << description << '\n';
+	ss << "GLFW error! (" << error << "): " << description << '\n';
 	throw std::runtime_error(ss.str());
 }
 
