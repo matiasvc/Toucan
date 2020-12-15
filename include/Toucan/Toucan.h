@@ -119,14 +119,14 @@ void ShowLines3D(const std::string& name, const std::vector<Toucan::LineVertex3D
 }
 
 template <size_t N>
-void ShowPrimitives3D(const std::string& name, const std::array<Toucan::Primitive3D, N>& points, const ShowPrimitives3DSettings& settings = {}) {
-	Toucan::Buffer<Toucan::Primitive3D> buffer = {points.data(), points.size()};
+void ShowPrimitives3D(const std::string& name, const std::array<Toucan::Primitive3D, N>& primitives, const ShowPrimitives3DSettings& settings = {}) {
+	Toucan::Buffer<Toucan::Primitive3D> buffer = {primitives.data(), primitives.size()};
 	ShowPrimitives3D(name, buffer, settings);
 }
 
 template <typename Allocator>
-void ShowPrimitives3D(const std::string& name, const std::vector<Toucan::Primitive3D, Allocator>& points, const ShowPrimitives3DSettings& settings = {}) {
-	Toucan::Buffer<Toucan::Primitive3D> buffer = {points.data(), points.size()};
+void ShowPrimitives3D(const std::string& name, const std::vector<Toucan::Primitive3D, Allocator>& primitives, const ShowPrimitives3DSettings& settings = {}) {
+	Toucan::Buffer<Toucan::Primitive3D> buffer = {primitives.data(), primitives.size()};
 	ShowPrimitives3D(name, buffer, settings);
 }
 } // namespace Toucan
