@@ -118,6 +118,11 @@ void ShowLines3D(const std::string& name, const std::vector<Toucan::LineVertex3D
 	ShowLines3D(name, buffer, settings);
 }
 
+void ShowPrimitives3D(const std::string& name, const Toucan::Primitive3D& primitive, const ShowPrimitives3DSettings& settings = {}) {
+	Toucan::Buffer<Toucan::Primitive3D> buffer = {&primitive, 1};
+	ShowPrimitives3D(name, buffer, settings);
+}
+
 template <size_t N>
 void ShowPrimitives3D(const std::string& name, const std::array<Toucan::Primitive3D, N>& primitives, const ShowPrimitives3DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::Primitive3D> buffer = {primitives.data(), primitives.size()};
