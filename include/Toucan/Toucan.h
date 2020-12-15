@@ -31,13 +31,13 @@ void ShowImage2D(const std::string& name, const Image2D& image, int draw_layer, 
 
 // Helper functions
 template <size_t N>
-void ShowPoints2D(const std::string& name, const std::array<Toucan::Point2D, N>& points, int draw_layer = 0, const ShowPoints2DSettings& settings = {}) {
+inline void ShowPoints2D(const std::string& name, const std::array<Toucan::Point2D, N>& points, int draw_layer = 0, const ShowPoints2DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::Point2D> buffer = {points.data(), points.size()};
 	ShowPoints2D(name, buffer, draw_layer, settings);
 }
 
 template <typename Allocator>
-void ShowPoints2D(const std::string& name, const std::vector<Toucan::Point2D, Allocator>& points, int draw_layer = 0, const ShowPoints2DSettings& settings = {}) {
+inline void ShowPoints2D(const std::string& name, const std::vector<Toucan::Point2D, Allocator>& points, int draw_layer = 0, const ShowPoints2DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::Point2D> buffer = {points.data(), points.size()};
 	ShowPoints2D(name, buffer, draw_layer, settings);
 }
@@ -57,19 +57,19 @@ void ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Toucan::Prim
 
 // Helper functions
 template <size_t N>
-void ShowLinePlot2D(const std::string& name, const std::array<Toucan::Vector2f, N>& points, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
+inline void ShowLinePlot2D(const std::string& name, const std::array<Toucan::Vector2f, N>& points, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::Vector2f> buffer = {points.data(), points.size()};
 	ShowLinePlot2D(name, buffer, draw_layer, settings);
 }
 
 template <typename Allocator>
-void ShowLinePlot2D(const std::string& name, const std::vector<Toucan::Vector2f, Allocator>& points, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
+inline void ShowLinePlot2D(const std::string& name, const std::vector<Toucan::Vector2f, Allocator>& points, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::Vector2f> buffer = {points.data(), points.size()};
 	ShowLinePlot2D(name, buffer, draw_layer, settings);
 }
 
 template <size_t N>
-void ShowLinePlot2D(const std::string& name, const std::array<float, N>& values, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
+inline void ShowLinePlot2D(const std::string& name, const std::array<float, N>& values, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
 	std::array<Toucan::Vector2f, N> points;
 	
 	for (int point_index = 0; point_index < N; ++point_index) {
@@ -81,7 +81,7 @@ void ShowLinePlot2D(const std::string& name, const std::array<float, N>& values,
 }
 
 template <typename Allocator>
-void ShowLinePlot2D(const std::string& name, const std::vector<float, Allocator>& values, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
+inline void ShowLinePlot2D(const std::string& name, const std::vector<float, Allocator>& values, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
 	const auto number_of_points = values.size();
 	std::vector<Toucan::Vector2f> points;
 	points.reserve(number_of_points);
@@ -95,42 +95,42 @@ void ShowLinePlot2D(const std::string& name, const std::vector<float, Allocator>
 }
 
 template <size_t N>
-void ShowPoints3D(const std::string& name, const std::array<Toucan::Point3D, N>& points, const ShowPoints3DSettings& settings = {}) {
+inline void ShowPoints3D(const std::string& name, const std::array<Toucan::Point3D, N>& points, const ShowPoints3DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::Point3D> buffer = {points.data(), points.size()};
 	ShowPoints3D(name, buffer, settings);
 }
 
 template <typename Allocator>
-void ShowPoints3D(const std::string& name, const std::vector<Toucan::Point3D, Allocator>& points, const ShowPoints3DSettings& settings = {}) {
+inline void ShowPoints3D(const std::string& name, const std::vector<Toucan::Point3D, Allocator>& points, const ShowPoints3DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::Point3D> buffer = {points.data(), points.size()};
 	ShowPoints3D(name, buffer, settings);
 }
 
 template <size_t N>
-void ShowLines3D(const std::string& name, const std::array<Toucan::LineVertex3D, N>& points, const ShowLines3DSettings& settings = {}) {
+inline void ShowLines3D(const std::string& name, const std::array<Toucan::LineVertex3D, N>& points, const ShowLines3DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::LineVertex3D> buffer = {points.data(), points.size()};
 	ShowLines3D(name, buffer, settings);
 }
 
 template <typename Allocator>
-void ShowLines3D(const std::string& name, const std::vector<Toucan::LineVertex3D, Allocator>& points, const ShowLines3DSettings& settings = {}) {
+inline void ShowLines3D(const std::string& name, const std::vector<Toucan::LineVertex3D, Allocator>& points, const ShowLines3DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::LineVertex3D> buffer = {points.data(), points.size()};
 	ShowLines3D(name, buffer, settings);
 }
 
-void ShowPrimitives3D(const std::string& name, const Toucan::Primitive3D& primitive, const ShowPrimitives3DSettings& settings = {}) {
+inline void ShowPrimitives3D(const std::string& name, const Toucan::Primitive3D& primitive, const ShowPrimitives3DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::Primitive3D> buffer = {&primitive, 1};
 	ShowPrimitives3D(name, buffer, settings);
 }
 
 template <size_t N>
-void ShowPrimitives3D(const std::string& name, const std::array<Toucan::Primitive3D, N>& primitives, const ShowPrimitives3DSettings& settings = {}) {
+inline void ShowPrimitives3D(const std::string& name, const std::array<Toucan::Primitive3D, N>& primitives, const ShowPrimitives3DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::Primitive3D> buffer = {primitives.data(), primitives.size()};
 	ShowPrimitives3D(name, buffer, settings);
 }
 
 template <typename Allocator>
-void ShowPrimitives3D(const std::string& name, const std::vector<Toucan::Primitive3D, Allocator>& primitives, const ShowPrimitives3DSettings& settings = {}) {
+inline void ShowPrimitives3D(const std::string& name, const std::vector<Toucan::Primitive3D, Allocator>& primitives, const ShowPrimitives3DSettings& settings = {}) {
 	Toucan::Buffer<Toucan::Primitive3D> buffer = {primitives.data(), primitives.size()};
 	ShowPrimitives3D(name, buffer, settings);
 }
