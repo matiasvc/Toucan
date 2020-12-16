@@ -116,7 +116,7 @@ constexpr inline Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>
 }
 
 template<typename scalar_t, int rows, int columns>
-constexpr Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitX() {
+constexpr inline Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitX() {
 	static_assert((rows >= 1 and rows <= 3 and columns == 1) or (rows == 1 and columns >= 1 and columns <= 3), "UnitX constructor may only be used on vector types of appropriate size.");
 	Matrix<scalar_t, rows, columns> v = Matrix<scalar_t, rows, columns>::Zero();
 	v.x() = scalar_t(1);
@@ -124,7 +124,7 @@ constexpr Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitX
 }
 
 template<typename scalar_t, int rows, int columns>
-constexpr Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitY() {
+constexpr inline Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitY() {
 	static_assert((rows >= 2  and rows <= 3 and columns == 1) or (rows == 1 and columns >= 2 and columns <= 3), "UnitY constructor may only be used on vector types of appropriate size.");
 	Matrix<scalar_t, rows, columns> v = Matrix<scalar_t, rows, columns>::Zero();
 	v.y() = scalar_t(1);
@@ -132,7 +132,7 @@ constexpr Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitY
 }
 
 template<typename scalar_t, int rows, int columns>
-constexpr Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitZ() {
+constexpr inline Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitZ() {
 	static_assert((rows >= 3  and rows <= 3 and columns == 1) or (rows == 1 and columns >= 3 and columns <= 3), "UnitZ constructor may only be used on vector types of appropriate size.");
 	Matrix<scalar_t, rows, columns> v = Matrix<scalar_t, rows, columns>::Zero();
 	v.z() = scalar_t(1);
@@ -140,7 +140,7 @@ constexpr Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitZ
 }
 
 template<typename scalar_t, int rows, int columns>
-constexpr Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitN(int n) { // TODO(Matias): Maybe let n be a template parameter instead?
+constexpr inline Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitN(int n) { // TODO(Matias): Maybe let n be a template parameter instead?
 	static_assert(rows == 1 or columns == 1, "UnitN constructor may only be used on vector types of appropriate size.");
 	Matrix<scalar_t, rows, columns> v = Matrix<scalar_t, rows, columns>::Zero();
 	v(n) = scalar_t(1);
@@ -149,7 +149,7 @@ constexpr Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::UnitN
 
 /*** Constructors implementation ***/
 template<typename scalar_t, int rows, int columns>
-constexpr Matrix<scalar_t, rows, columns>::Matrix() {
+constexpr inline Matrix<scalar_t, rows, columns>::Matrix() {
 	for (int row_index = 0; row_index < rows; ++row_index) {
 		for (int column_index = 0; column_index < columns; ++column_index) {
 			// TODO(Matias): Investigate if memset is faster.
@@ -160,15 +160,15 @@ constexpr Matrix<scalar_t, rows, columns>::Matrix() {
 
 template<typename scalar_t, int rows, int columns>
 template<typename... scalar_t_var>
-constexpr Matrix<scalar_t, rows, columns>::Matrix(const scalar_t_var& ... v)
-: m_data{v...} {
+constexpr inline Matrix<scalar_t, rows, columns>::Matrix(const scalar_t_var& ... v) :
+m_data{v...} {
 	static_assert(sizeof...(v) == rows*columns, "Number of constructor parameters does not match the size of the matrix");
 }
 
 /*** Matrix shape implementation ***/
-template<typename scalar_t, int rows, int columns> constexpr int Matrix<scalar_t, rows, columns>::number_of_rows() const { return rows; }
-template<typename scalar_t, int rows, int columns> constexpr int Matrix<scalar_t, rows, columns>::number_of_columns() const { return columns; }
-template<typename scalar_t, int rows, int columns> constexpr int Matrix<scalar_t, rows, columns>::number_of_elements() const { return rows*columns; }
+template<typename scalar_t, int rows, int columns> constexpr inline int Matrix<scalar_t, rows, columns>::number_of_rows() const { return rows; }
+template<typename scalar_t, int rows, int columns> constexpr inline int Matrix<scalar_t, rows, columns>::number_of_columns() const { return columns; }
+template<typename scalar_t, int rows, int columns> constexpr inline int Matrix<scalar_t, rows, columns>::number_of_elements() const { return rows*columns; }
 
 /*** Norms implementation ***/
 template<typename scalar_t, int rows, int columns>
@@ -195,7 +195,7 @@ constexpr inline bool Matrix<scalar_t, rows, columns>::is_normalized() const {
 
 
 template<typename scalar_t, int rows, int columns>
-constexpr void Matrix<scalar_t, rows, columns>::normalize() {
+constexpr inline void Matrix<scalar_t, rows, columns>::normalize() {
 	scalar_t multiplier = scalar_t(1.0)/this->norm();
 	for (int row_index = 0; row_index < rows; ++row_index) {
 		for (int column_index = 0; column_index < columns; ++column_index) {
@@ -212,7 +212,8 @@ constexpr inline Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>
 }
 
 /*** Mathematical functions implementation ***/
-template<typename scalar_t, int rows, int columns> constexpr scalar_t Matrix<scalar_t, rows, columns>::trace() const {
+template<typename scalar_t, int rows, int columns>
+constexpr inline scalar_t Matrix<scalar_t, rows, columns>::trace() const {
 	static_assert(rows == columns, "Trace can only be called on square matrices");
 	scalar_t sum = scalar_t(0);
 	for (int index = 0; index < rows; ++index) {
@@ -221,7 +222,8 @@ template<typename scalar_t, int rows, int columns> constexpr scalar_t Matrix<sca
 	return sum;
 }
 
-template<typename scalar_t, int rows, int columns> constexpr scalar_t Matrix<scalar_t, rows, columns>::dot_product(const Matrix<scalar_t, rows, columns>& rhs) {
+template<typename scalar_t, int rows, int columns>
+constexpr inline scalar_t Matrix<scalar_t, rows, columns>::dot_product(const Matrix<scalar_t, rows, columns>& rhs) {
 	scalar_t sum = scalar_t(0);
 	for (int row_index = 0; row_index < rows; ++row_index) {
 		for (int column_index = 0; column_index < columns; ++column_index) {
@@ -230,7 +232,8 @@ template<typename scalar_t, int rows, int columns> constexpr scalar_t Matrix<sca
 	}
 	return sum;
 }
-template<typename scalar_t, int rows, int columns> constexpr Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::cross_product(const Matrix<scalar_t, rows, columns>& rhs) {
+template<typename scalar_t, int rows, int columns>
+constexpr inline Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::cross_product(const Matrix<scalar_t, rows, columns>& rhs) {
 	static_assert((rows == 3 and columns == 1) or (rows == 1 and columns == 3), "Cross product is only defined for Vector3 or RowVector3");
 	Matrix<scalar_t, rows, columns> product;
 	product.x() = this->y()*rhs.z() - this->z()*rhs.y();
@@ -240,12 +243,14 @@ template<typename scalar_t, int rows, int columns> constexpr Matrix<scalar_t, ro
 }
 
 /*** Accessors implementation ***/
-template<typename scalar_t, int rows, int columns> constexpr scalar_t& Matrix<scalar_t, rows, columns>::x() {
+template<typename scalar_t, int rows, int columns>
+constexpr inline scalar_t& Matrix<scalar_t, rows, columns>::x() {
 	static_assert((rows >= 1 and columns == 1) or (rows == 1 and columns >= 1), "Named accessors should only be used on vector types of appropriate size.");
 	return this->operator()(0, 0);
 }
 
-template<typename scalar_t, int rows, int columns> constexpr scalar_t& Matrix<scalar_t, rows, columns>::y() {
+template<typename scalar_t, int rows, int columns>
+constexpr inline scalar_t& Matrix<scalar_t, rows, columns>::y() {
 	static_assert((rows >= 2 and columns == 1) or (rows == 1 and columns >= 2), "Named accessors should only be used on vector types of appropriate size.");
 	if constexpr (rows == 1) { // Row vector
 		return this->operator()(0, 1);
@@ -254,7 +259,8 @@ template<typename scalar_t, int rows, int columns> constexpr scalar_t& Matrix<sc
 	}
 }
 
-template<typename scalar_t, int rows, int columns> constexpr scalar_t& Matrix<scalar_t, rows, columns>::z() {
+template<typename scalar_t, int rows, int columns>
+constexpr inline scalar_t& Matrix<scalar_t, rows, columns>::z() {
 	static_assert((rows >= 3 and columns == 1) or (rows == 1 and columns >= 3), "Named accessors should only be used on vector types of appropriate size.");
 	if constexpr (rows == 1) { // Row vector
 		return this->operator()(0, 2);
@@ -263,12 +269,14 @@ template<typename scalar_t, int rows, int columns> constexpr scalar_t& Matrix<sc
 	}
 }
 
-template<typename scalar_t, int rows, int columns> constexpr const scalar_t& Matrix<scalar_t, rows, columns>::x() const {
+template<typename scalar_t, int rows, int columns>
+constexpr inline const scalar_t& Matrix<scalar_t, rows, columns>::x() const {
 	static_assert((rows >= 1 and columns == 1) or (rows == 1 and columns >= 1), "Named accessors should only be used on vector types of appropriate size.");
 	return this->operator()(0, 0);
 }
 
-template<typename scalar_t, int rows, int columns> constexpr const scalar_t& Matrix<scalar_t, rows, columns>::y() const {
+template<typename scalar_t, int rows, int columns>
+constexpr inline const scalar_t& Matrix<scalar_t, rows, columns>::y() const {
 	static_assert((rows >= 2 and columns == 1) or (rows == 1 and columns >= 2), "Named accessors should only be used on vector types of appropriate size.");
 	if constexpr (rows == 1) { // Row vector
 		return this->operator()(0, 1);
@@ -277,7 +285,8 @@ template<typename scalar_t, int rows, int columns> constexpr const scalar_t& Mat
 	}
 }
 
-template<typename scalar_t, int rows, int columns> constexpr const scalar_t& Matrix<scalar_t, rows, columns>::z() const {
+template<typename scalar_t, int rows, int columns>
+constexpr inline const scalar_t& Matrix<scalar_t, rows, columns>::z() const {
 	static_assert((rows >= 3 and columns == 1) or (rows == 1 and columns >= 3), "Named accessors should only be used on vector types of appropriate size.");
 	if constexpr (rows == 1) { // Row vector
 		return this->operator()(0, 2);
@@ -323,12 +332,12 @@ constexpr inline const scalar_t& Matrix<scalar_t, rows, columns>::operator()(int
 }
 
 template<typename scalar_t, int rows, int columns>
-scalar_t* Matrix<scalar_t, rows, columns>::data() {
+inline scalar_t* Matrix<scalar_t, rows, columns>::data() {
 	return &m_data[0];
 }
 
 template<typename scalar_t, int rows, int columns>
-const scalar_t* Matrix<scalar_t, rows, columns>::data() const {
+const inline scalar_t* Matrix<scalar_t, rows, columns>::data() const {
 	return &m_data[0];
 }
 
@@ -517,7 +526,7 @@ using Matrix4i = Matrix4<int>;
 
 /*** Rotation matrices ***/
 template<typename scalar_t>
-constexpr Matrix2<scalar_t> create_2d_rotation_matrix(scalar_t angle) {
+constexpr inline Matrix2<scalar_t> create_2d_rotation_matrix(scalar_t angle) {
 	const scalar_t c = std::cos(angle);
 	const scalar_t s = std::sin(angle);
 	
@@ -528,7 +537,7 @@ constexpr Matrix2<scalar_t> create_2d_rotation_matrix(scalar_t angle) {
 }
 
 template<typename scalar_t>
-constexpr Matrix3<scalar_t> create_3d_rotation_matrix_x(scalar_t angle) {
+constexpr inline Matrix3<scalar_t> create_3d_rotation_matrix_x(scalar_t angle) {
 	const scalar_t c = std::cos(angle);
 	const scalar_t s = std::sin(angle);
 	
@@ -540,7 +549,7 @@ constexpr Matrix3<scalar_t> create_3d_rotation_matrix_x(scalar_t angle) {
 }
 
 template<typename scalar_t>
-constexpr Matrix3<scalar_t> create_3d_rotation_matrix_y(scalar_t angle) {
+constexpr inline Matrix3<scalar_t> create_3d_rotation_matrix_y(scalar_t angle) {
 	const scalar_t c = std::cos(angle);
 	const scalar_t s = std::sin(angle);
 	
@@ -552,7 +561,7 @@ constexpr Matrix3<scalar_t> create_3d_rotation_matrix_y(scalar_t angle) {
 }
 
 template<typename scalar_t>
-constexpr Matrix3<scalar_t> create_3d_rotation_matrix_z(scalar_t angle) {
+constexpr inline Matrix3<scalar_t> create_3d_rotation_matrix_z(scalar_t angle) {
 	const scalar_t c = std::cos(angle);
 	const scalar_t s = std::sin(angle);
 	
@@ -568,6 +577,10 @@ constexpr Matrix3<scalar_t> create_3d_rotation_matrix_z(scalar_t angle) {
 template<typename scalar_t, int diagonal_size>
 class DiagonalMatrix {
 public:
+	// Static constructors
+	static constexpr DiagonalMatrix<scalar_t, diagonal_size> Zero();
+	static constexpr DiagonalMatrix<scalar_t, diagonal_size> Identity();
+	
 	// Constructors
 	constexpr DiagonalMatrix<scalar_t, diagonal_size>();
 	explicit constexpr DiagonalMatrix<scalar_t, diagonal_size>(const Vector<scalar_t, diagonal_size>& diagonal);
@@ -596,34 +609,50 @@ private:
 	Vector<scalar_t, diagonal_size> m_diagonal;
 };
 
+/*** Static constructors implementation ***/
+
 template<typename scalar_t, int diagonal_size>
-constexpr DiagonalMatrix<scalar_t, diagonal_size>::DiagonalMatrix() {
+constexpr inline DiagonalMatrix<scalar_t, diagonal_size> DiagonalMatrix<scalar_t, diagonal_size>::Zero() {
+	return DiagonalMatrix<scalar_t, diagonal_size>(Vector<scalar_t, diagonal_size>::Zero());
+}
+
+template<typename scalar_t, int diagonal_size>
+constexpr inline DiagonalMatrix<scalar_t, diagonal_size> DiagonalMatrix<scalar_t, diagonal_size>::Identity() {
+	return DiagonalMatrix<scalar_t, diagonal_size>(Vector<scalar_t, diagonal_size>::Ones());
+}
+
+/*** Constructor implementation ***/
+
+template<typename scalar_t, int diagonal_size>
+constexpr inline DiagonalMatrix<scalar_t, diagonal_size>::DiagonalMatrix() {
 	for (int diagonal_index = 0; diagonal_index < diagonal_size; ++diagonal_index) {
 		m_diagonal(diagonal_index) = 0;
 	}
 }
 
 template<typename scalar_t, int diagonal_size>
-constexpr DiagonalMatrix<scalar_t, diagonal_size>::DiagonalMatrix(const Vector<scalar_t, diagonal_size>& diagonal)
-: m_diagonal{diagonal} { }
+constexpr inline DiagonalMatrix<scalar_t, diagonal_size>::DiagonalMatrix(const Vector<scalar_t, diagonal_size>& diagonal) :
+m_diagonal{diagonal} { }
 
 template<typename scalar_t, int diagonal_size>
 template<typename... scalar_t_var>
-constexpr DiagonalMatrix<scalar_t, diagonal_size>::DiagonalMatrix(const scalar_t_var& ... v)
-		: m_diagonal(v...) {
+constexpr inline DiagonalMatrix<scalar_t, diagonal_size>::DiagonalMatrix(const scalar_t_var& ... v) :
+m_diagonal(v...) {
 	static_assert(sizeof...(v) == diagonal_size, "Number of constructor parameters does not match the size of the matrix");
 }
 
 /*** Matrix shape implementation ***/
-template<typename scalar_t, int diagonal_size> constexpr int DiagonalMatrix<scalar_t, diagonal_size>::number_of_rows() const { return diagonal_size; }
-template<typename scalar_t, int diagonal_size> constexpr int DiagonalMatrix<scalar_t, diagonal_size>::number_of_columns() const { return diagonal_size; }
-template<typename scalar_t, int diagonal_size> constexpr int DiagonalMatrix<scalar_t, diagonal_size>::number_of_elements() const { return diagonal_size*diagonal_size; }
+template<typename scalar_t, int diagonal_size> constexpr inline int DiagonalMatrix<scalar_t, diagonal_size>::number_of_rows() const { return diagonal_size; }
+template<typename scalar_t, int diagonal_size> constexpr inline int DiagonalMatrix<scalar_t, diagonal_size>::number_of_columns() const { return diagonal_size; }
+template<typename scalar_t, int diagonal_size> constexpr inline int DiagonalMatrix<scalar_t, diagonal_size>::number_of_elements() const { return diagonal_size*diagonal_size; }
 
-template<typename scalar_t, int diagonal_size> Vector<scalar_t, diagonal_size> DiagonalMatrix<scalar_t, diagonal_size>::get_diagonal() { return m_diagonal; }
-template<typename scalar_t, int diagonal_size> const Vector<scalar_t, diagonal_size>& DiagonalMatrix<scalar_t, diagonal_size>::get_diagonal() const { return m_diagonal; }
+/*** Accessors implementation ***/
+
+template<typename scalar_t, int diagonal_size> inline Vector<scalar_t, diagonal_size> DiagonalMatrix<scalar_t, diagonal_size>::get_diagonal() { return m_diagonal; }
+template<typename scalar_t, int diagonal_size> const inline Vector<scalar_t, diagonal_size>& DiagonalMatrix<scalar_t, diagonal_size>::get_diagonal() const { return m_diagonal; }
 
 template<typename scalar_t, int diagonal_size>
-constexpr Matrix<scalar_t, diagonal_size, diagonal_size> DiagonalMatrix<scalar_t, diagonal_size>::create_dense_matrix() const {
+constexpr inline Matrix<scalar_t, diagonal_size, diagonal_size> DiagonalMatrix<scalar_t, diagonal_size>::create_dense_matrix() const {
 	Matrix<scalar_t, diagonal_size, diagonal_size> dense_matrix = Matrix<scalar_t, diagonal_size, diagonal_size>::Zero();
 	for (int diagonal_index = 0; diagonal_index < diagonal_size; ++diagonal_index) {
 		dense_matrix(diagonal_index, diagonal_index) = m_diagonal(diagonal_index);
@@ -642,10 +671,10 @@ constexpr inline const scalar_t& DiagonalMatrix<scalar_t, diagonal_size>::operat
 }
 
 template<typename scalar_t, int diagonal_size>
-scalar_t* DiagonalMatrix<scalar_t, diagonal_size>::data() { return m_diagonal.data(); }
+inline scalar_t* DiagonalMatrix<scalar_t, diagonal_size>::data() { return m_diagonal.data(); }
 
 template<typename scalar_t, int diagonal_size>
-const scalar_t* DiagonalMatrix<scalar_t, diagonal_size>::data() const { return m_diagonal.data(); }
+const inline scalar_t* DiagonalMatrix<scalar_t, diagonal_size>::data() const { return m_diagonal.data(); }
 
 /*** operator implementations ***/
 
@@ -782,9 +811,9 @@ struct Quaternion {
 	static constexpr Quaternion<scalar_t> Identity();
 	
 	// Constructors
-	constexpr Quaternion() = default;
+	constexpr Quaternion();
 	constexpr Quaternion(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z);
-	constexpr Quaternion(const Vector4<scalar_t>& parameter_vector);
+	constexpr explicit Quaternion(const Vector4<scalar_t>& parameter_vector);
 	constexpr Quaternion(const Vector3<scalar_t>& axis, const scalar_t& angle);
 	explicit constexpr Quaternion(const Matrix3<scalar_t>& rotation_matrix);
 	
@@ -802,35 +831,41 @@ struct Quaternion {
 	[[nodiscard]] constexpr Matrix4<scalar_t> transformation_matrix() const;
 	
 	// Member variables
-	scalar_t w = scalar_t(1);
-	scalar_t x = scalar_t(0);
-	scalar_t y = scalar_t(0);
-	scalar_t z = scalar_t(0);
+	scalar_t w;
+	scalar_t x;
+	scalar_t y;
+	scalar_t z;
 };
 
 /*** Static constructors implementation ***/
 template<typename scalar_t>
-constexpr Quaternion<scalar_t> Quaternion<scalar_t>::Identity() {
+constexpr inline Quaternion<scalar_t> Quaternion<scalar_t>::Identity() {
 	Quaternion<scalar_t> q(scalar_t(1), scalar_t(0), scalar_t(0), scalar_t(0));
 	return q;
 }
 
 /*** Constructors implementation ***/
 template<typename scalar_t>
-constexpr Quaternion<scalar_t>::Quaternion(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z)
-: w{w}, x{x}, y{y}, z{z}{
+constexpr inline Quaternion<scalar_t>::Quaternion() :
+w{1}, x{0}, y{0}, z{0}{
 	static_assert(std::is_floating_point_v<scalar_t>, "Quaternions are only defined for floating point types.");
 }
 
 template<typename scalar_t>
-constexpr Quaternion<scalar_t>::Quaternion(const Vector4<scalar_t>& parameter_vector)
-: w{parameter_vector(0)}, x{parameter_vector(1)}, y{parameter_vector(2)}, z{parameter_vector(3)}
+constexpr inline Quaternion<scalar_t>::Quaternion(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z) :
+w{w}, x{x}, y{y}, z{z}{
+	static_assert(std::is_floating_point_v<scalar_t>, "Quaternions are only defined for floating point types.");
+}
+
+template<typename scalar_t>
+constexpr inline Quaternion<scalar_t>::Quaternion(const Vector4<scalar_t>& parameter_vector) :
+w{parameter_vector(0)}, x{parameter_vector(1)}, y{parameter_vector(2)}, z{parameter_vector(3)}
 {
 	static_assert(std::is_floating_point_v<scalar_t>, "Quaternions are only defined for floating point types.");
 }
 
 template<typename scalar_t>
-constexpr Quaternion<scalar_t>::Quaternion(const Vector3<scalar_t>& axis, const scalar_t& angle) {
+constexpr inline Quaternion<scalar_t>::Quaternion(const Vector3<scalar_t>& axis, const scalar_t& angle) {
 	static_assert(std::is_floating_point_v<scalar_t>, "Quaternions are only defined for floating point types.");
 	const Vector3<scalar_t> axis_normalized = axis.normalized();
 	const float s = std::sin(scalar_t(0.5) * angle);
@@ -841,7 +876,7 @@ constexpr Quaternion<scalar_t>::Quaternion(const Vector3<scalar_t>& axis, const 
 }
 
 template<typename scalar_t>
-constexpr Quaternion<scalar_t>::Quaternion(const Matrix3<scalar_t>& rotation_matrix) {
+constexpr inline Quaternion<scalar_t>::Quaternion(const Matrix3<scalar_t>& rotation_matrix) {
 	static_assert(std::is_floating_point_v<scalar_t>, "Quaternions are only defined for floating point types.");
 	const auto& r = rotation_matrix;
 	
@@ -873,22 +908,22 @@ constexpr Quaternion<scalar_t>::Quaternion(const Matrix3<scalar_t>& rotation_mat
 }
 /*** Norms implementation ***/
 template<typename scalar_t>
-constexpr scalar_t Quaternion<scalar_t>::squared_norm() const {
+constexpr inline scalar_t Quaternion<scalar_t>::squared_norm() const {
 	return w*w + x*x + y*y + z*z;
 }
 
 template<typename scalar_t>
-constexpr scalar_t Quaternion<scalar_t>::norm() const {
+constexpr inline scalar_t Quaternion<scalar_t>::norm() const {
 	return std::sqrt(squared_norm());
 }
 
 template<typename scalar_t>
-constexpr bool Quaternion<scalar_t>::is_normalized() const {
+constexpr inline bool Quaternion<scalar_t>::is_normalized() const {
 	return (scalar_t(1) - std::sqrt(w*w + x*x + y*y + z*z)) <= normalized_sensitivity<scalar_t>;
 }
 
 template<typename scalar_t>
-constexpr void Quaternion<scalar_t>::normalize() {
+constexpr inline void Quaternion<scalar_t>::normalize() {
 	const scalar_t multiplier = scalar_t(1)/std::sqrt(w*w + x*x + y*y + z*z);
 	w *= multiplier;
 	x *= multiplier;
@@ -905,12 +940,12 @@ constexpr inline Quaternion<scalar_t> Quaternion<scalar_t>::normalized() const {
 /*** Conversions implementations ***/
 
 template<typename scalar_t>
-constexpr Quaternion<scalar_t> Quaternion<scalar_t>::conjugate() const {
+constexpr inline Quaternion<scalar_t> Quaternion<scalar_t>::conjugate() const {
 	return Quaternion<scalar_t>(w, -x, -y, -z);
 }
 
 template<typename scalar_t>
-constexpr Matrix3<scalar_t> Quaternion<scalar_t>::rotation_matrix() const {
+constexpr inline Matrix3<scalar_t> Quaternion<scalar_t>::rotation_matrix() const {
 	return Matrix3<scalar_t>(
 		scalar_t(1) - scalar_t(2)*(y*y + z*z),               scalar_t(2)*(x*y - z*w),               scalar_t(2)*(x*z + y*w),
 		              scalar_t(2)*(x*y + z*w), scalar_t(1) - scalar_t(2)*(x*x + z*z),               scalar_t(2)*(y*z - x*w),
@@ -919,7 +954,7 @@ constexpr Matrix3<scalar_t> Quaternion<scalar_t>::rotation_matrix() const {
 }
 
 template<typename scalar_t>
-constexpr Matrix4<scalar_t> Quaternion<scalar_t>::transformation_matrix() const {
+constexpr inline Matrix4<scalar_t> Quaternion<scalar_t>::transformation_matrix() const {
 	return Matrix4<scalar_t>(
 			scalar_t(1) - scalar_t(2)*(y*y + z*z),               scalar_t(2)*(x*y - z*w),               scalar_t(2)*(x*z + y*w), scalar_t(0),
 			              scalar_t(2)*(x*y + z*w), scalar_t(1) - scalar_t(2)*(x*x + z*z),               scalar_t(2)*(y*z - x*w), scalar_t(0),
@@ -966,31 +1001,46 @@ using Quaterniond = Quaternion<double>;
 
 template<typename scalar_t>
 struct RigidTransform2D {
-	constexpr RigidTransform2D() = default;
-	constexpr explicit RigidTransform2D(
-			const scalar_t& rotation,
-			const Vector2<scalar_t>& translation = Vector2<scalar_t>::Zero()
-	);
+	// Static constructors
+	static constexpr RigidTransform2D<scalar_t> Identity();
 	
+	// Constructors
+	constexpr RigidTransform2D();
+	constexpr explicit RigidTransform2D(const scalar_t& rotation, const Vector2<scalar_t>& translation = Vector2<scalar_t>::Zero());
+	
+	// Accessors
 	[[nodiscard]] constexpr RigidTransform2D<scalar_t> inverse() const;
 	[[nodiscard]] constexpr Matrix3<scalar_t> transformation_matrix() const;
 	[[nodiscard]] constexpr Matrix4<scalar_t> transformation_matrix_3d() const;
 	
-	scalar_t rotation = scalar_t(0);
-	Vector2<scalar_t> translation = Vector2<scalar_t>::Zero();
+	scalar_t rotation;
+	Vector2<scalar_t> translation;
 };
 
-template<typename scalar_t>
-constexpr RigidTransform2D<scalar_t>::RigidTransform2D(const scalar_t& rotation, const Vector2<scalar_t>& translation)
-: rotation{rotation}, translation{translation} { }
+/*** Static constructor implementation ***/
 
 template<typename scalar_t>
-constexpr RigidTransform2D<scalar_t> RigidTransform2D<scalar_t>::inverse() const {
+constexpr inline RigidTransform2D<scalar_t> RigidTransform2D<scalar_t>::Identity() {
+	return RigidTransform2D<scalar_t>();
+}
+
+/*** Constructors implementation ***/
+
+template<typename scalar_t>
+constexpr inline RigidTransform2D<scalar_t>::RigidTransform2D() :
+rotation{0}, translation{Vector2<scalar_t>::Zero()} { }
+
+template<typename scalar_t>
+constexpr inline RigidTransform2D<scalar_t>::RigidTransform2D(const scalar_t& rotation, const Vector2<scalar_t>& translation) :
+rotation{rotation}, translation{translation} { }
+
+template<typename scalar_t>
+constexpr inline RigidTransform2D<scalar_t> RigidTransform2D<scalar_t>::inverse() const {
 	return RigidTransform2D<scalar_t>(-rotation, -create_2d_rotation_matrix(-rotation) * translation);
 }
 
 template<typename scalar_t>
-constexpr Matrix3<scalar_t> RigidTransform2D<scalar_t>::transformation_matrix() const {
+constexpr inline Matrix3<scalar_t> RigidTransform2D<scalar_t>::transformation_matrix() const {
 	const scalar_t c = std::cos(rotation);
 	const scalar_t s = std::sin(rotation);
 	
@@ -1002,7 +1052,7 @@ constexpr Matrix3<scalar_t> RigidTransform2D<scalar_t>::transformation_matrix() 
 }
 
 template<typename scalar_t>
-constexpr Matrix4<scalar_t> RigidTransform2D<scalar_t>::transformation_matrix_3d() const {
+constexpr inline Matrix4<scalar_t> RigidTransform2D<scalar_t>::transformation_matrix_3d() const {
 	const scalar_t c = std::cos(rotation);
 	const scalar_t s = std::sin(rotation);
 	
@@ -1033,29 +1083,49 @@ using RigidTransform2Dd = RigidTransform2D<double>;
 
 template<typename scalar_t>
 struct ScaledTransform2D {
-	constexpr ScaledTransform2D() = default;
+	// Static constructors
+	static constexpr ScaledTransform2D<scalar_t> Identity();
+	
+	// Constructor
+	constexpr ScaledTransform2D();
 	constexpr explicit ScaledTransform2D(
 			const scalar_t& rotation,
 			const Vector2<scalar_t>& translation = Vector2<scalar_t>::Zero(),
 			const Vector2<scalar_t>& scale = Vector2<scalar_t>::Ones()
 	);
 	
+	// Accessors
 	[[nodiscard]] constexpr Matrix3<scalar_t> transformation_matrix() const;
 	[[nodiscard]] constexpr Matrix3<scalar_t> transformation_matrix_inverse() const;
 	[[nodiscard]] constexpr Matrix4<scalar_t> transformation_matrix_3d() const;
 	[[nodiscard]] constexpr Matrix4<scalar_t> transformation_matrix_inverse_3d() const;
 	
-	scalar_t rotation = scalar_t(0);
-	Vector2<scalar_t> translation = Vector2<scalar_t>::Zero();
-	Vector2<scalar_t> scale = Vector2<scalar_t>::Ones();
+	scalar_t rotation;
+	Vector2<scalar_t> translation;
+	Vector2<scalar_t> scale;
 };
 
-template<typename scalar_t>
-constexpr ScaledTransform2D<scalar_t>::ScaledTransform2D(const scalar_t& rotation, const Vector2<scalar_t>& translation, const Vector2<scalar_t>& scale)
-: rotation{rotation}, translation{translation}, scale{scale} { }
+/*** Static constructor implementation ***/
 
 template<typename scalar_t>
-constexpr Matrix3<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix() const {
+constexpr inline ScaledTransform2D<scalar_t> ScaledTransform2D<scalar_t>::Identity() {
+	return ScaledTransform2D<scalar_t>();
+}
+
+/*** Constructor implementation ***/
+
+template<typename scalar_t>
+constexpr inline ScaledTransform2D<scalar_t>::ScaledTransform2D() :
+rotation{0}, translation{Vector2<scalar_t>::Zero()}, scale{Vector2<scalar_t>::Ones()} { }
+
+template<typename scalar_t>
+constexpr inline ScaledTransform2D<scalar_t>::ScaledTransform2D(const scalar_t& rotation, const Vector2<scalar_t>& translation, const Vector2<scalar_t>& scale) :
+rotation{rotation}, translation{translation}, scale{scale} { }
+
+/*** Accessors implementation ***/
+
+template<typename scalar_t>
+constexpr inline Matrix3<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix() const {
 	const Matrix2<scalar_t> r = create_2d_rotation_matrix(rotation);
 	const auto& x = translation.x();
 	const auto& y = translation.y();
@@ -1070,7 +1140,7 @@ constexpr Matrix3<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix()
 }
 
 template<typename scalar_t>
-constexpr Matrix3<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix_inverse() const {
+constexpr inline Matrix3<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix_inverse() const {
 	const Matrix2<scalar_t> r = create_2d_rotation_matrix(rotation);
 	const auto& x = translation.x();
 	const auto& y = translation.y();
@@ -1085,7 +1155,7 @@ constexpr Matrix3<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix_i
 }
 
 template<typename scalar_t>
-constexpr Matrix4<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix_3d() const {
+constexpr inline Matrix4<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix_3d() const {
 	const Matrix2<scalar_t> r = create_2d_rotation_matrix(rotation);
 	const auto& x = translation.x();
 	const auto& y = translation.y();
@@ -1101,7 +1171,7 @@ constexpr Matrix4<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix_3
 }
 
 template<typename scalar_t>
-constexpr Matrix4<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix_inverse_3d() const {
+constexpr inline Matrix4<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix_inverse_3d() const {
 	const Matrix2<scalar_t> r = create_2d_rotation_matrix(rotation);
 	const auto& x = translation.x();
 	const auto& y = translation.y();
@@ -1117,7 +1187,7 @@ constexpr Matrix4<scalar_t> ScaledTransform2D<scalar_t>::transformation_matrix_i
 }
 
 template<typename scalar_t>
-constexpr Vector2<scalar_t> operator*(const ScaledTransform2D<scalar_t>& scaled_transform_2d, const Vector2<scalar_t>& point) {
+constexpr inline Vector2<scalar_t> operator*(const ScaledTransform2D<scalar_t>& scaled_transform_2d, const Vector2<scalar_t>& point) {
 	const auto& px = point.x();
 	const auto& py = point.y();
 	const auto& sx = scaled_transform_2d.scale.x();
@@ -1132,18 +1202,37 @@ using ScaledTransform2Dd = ScaledTransform2D<double>;
 
 template<typename scalar_t>
 struct RigidTransform3D {
-	RigidTransform3D() = default;
-	constexpr RigidTransform3D(
-			const Quaternion<scalar_t>& orientation,
-			const Vector3<scalar_t>& translation
-	) : orientation{orientation}, translation{translation} { };
+	// Static constructors
+	static constexpr RigidTransform3D<scalar_t> Identity();
 	
+	// Constructors
+	constexpr RigidTransform3D();
+	constexpr RigidTransform3D(const Quaternion<scalar_t>& orientation, const Vector3<scalar_t>& translation);
+	
+	// Accessors
 	[[nodiscard]] constexpr inline RigidTransform3D<scalar_t> inverse() const;
 	[[nodiscard]] constexpr inline Matrix4<scalar_t> transformation_matrix() const;
 	
 	Quaternion<scalar_t> orientation = Quaternion<scalar_t>::Identity();
 	Vector3<scalar_t> translation = Vector3<scalar_t>::Zero();
 };
+
+/*** Static constructors implementation ***/
+
+template<typename scalar_t>
+constexpr inline RigidTransform3D<scalar_t> RigidTransform3D<scalar_t>::Identity() {
+	return RigidTransform3D<scalar_t>();
+}
+
+/*** Constructors implementation ***/
+
+template<typename scalar_t>
+constexpr inline RigidTransform3D<scalar_t>::RigidTransform3D() :
+orientation{Quaternion<scalar_t>::Identity()}, translation{Vector3<scalar_t>::Zero()} { }
+
+template<typename scalar_t>
+constexpr inline RigidTransform3D<scalar_t>::RigidTransform3D(const Quaternion<scalar_t>& orientation, const Vector3<scalar_t>& translation) :
+orientation{orientation}, translation{translation} { }
 
 template<typename scalar_t>
 constexpr inline RigidTransform3D<scalar_t> RigidTransform3D<scalar_t>::inverse() const {
@@ -1185,27 +1274,47 @@ using RigidTransform3Dd = RigidTransform3D<double>;
 
 template<typename scalar_t>
 struct ScaledTransform3D {
-	constexpr ScaledTransform3D() = default;
+	// Static constructors
+	static constexpr ScaledTransform3D<scalar_t> Identity();
+	
+	// Constructor
+	constexpr ScaledTransform3D();
 	constexpr explicit ScaledTransform3D(
 			const Quaternion<scalar_t>& orientation,
 			const Vector3<scalar_t>& translation = Vector3<scalar_t>::Zero(),
 			const Vector3<scalar_t>& scale = Vector3<scalar_t>::Ones()
 	);
 	
+	// Accessors
 	[[nodiscard]] constexpr Matrix4<scalar_t> transformation_matrix() const;
 	[[nodiscard]] constexpr Matrix4<scalar_t> transformation_matrix_inverse() const;
 	
-	Quaternion<scalar_t> orientation = Quaternion<scalar_t>::Identity();
-	Vector3<scalar_t> translation = Vector3<scalar_t>::Zero();
-	Vector3<scalar_t> scale = Vector3<scalar_t>::Ones();
+	Quaternion<scalar_t> orientation;
+	Vector3<scalar_t> translation;
+	Vector3<scalar_t> scale;
 };
 
-template<typename scalar_t>
-constexpr ScaledTransform3D<scalar_t>::ScaledTransform3D(const Quaternion<scalar_t>& orientation, const Vector3<scalar_t>& translation, const Vector3<scalar_t>& scale)
-		: orientation{orientation}, translation{translation}, scale{scale} { }
+/*** Static constructors implementation ***/
 
 template<typename scalar_t>
-constexpr Matrix4<scalar_t> ScaledTransform3D<scalar_t>::transformation_matrix() const {
+constexpr inline ScaledTransform3D<scalar_t> ScaledTransform3D<scalar_t>::Identity() {
+	return ScaledTransform3D<scalar_t>();
+}
+
+/*** Constructors implementation ***/
+
+template<typename scalar_t>
+constexpr inline ScaledTransform3D<scalar_t>::ScaledTransform3D() :
+orientation{Quaternion<scalar_t>::Identity()}, translation{Vector3<scalar_t>::Zero()}, scale{Vector3<scalar_t>::Ones()} { }
+
+template<typename scalar_t>
+constexpr inline ScaledTransform3D<scalar_t>::ScaledTransform3D(const Quaternion<scalar_t>& orientation, const Vector3<scalar_t>& translation, const Vector3<scalar_t>& scale) :
+orientation{orientation}, translation{translation}, scale{scale} { }
+
+/*** Accessors implementation ***/
+
+template<typename scalar_t>
+constexpr inline Matrix4<scalar_t> ScaledTransform3D<scalar_t>::transformation_matrix() const {
 	const Matrix3<scalar_t> r = orientation.rotation_matrix();
 	const auto& x = translation.x();
 	const auto& y = translation.y();
@@ -1223,7 +1332,7 @@ constexpr Matrix4<scalar_t> ScaledTransform3D<scalar_t>::transformation_matrix()
 }
 
 template<typename scalar_t>
-constexpr Matrix4<scalar_t> ScaledTransform3D<scalar_t>::transformation_matrix_inverse() const {
+constexpr inline Matrix4<scalar_t> ScaledTransform3D<scalar_t>::transformation_matrix_inverse() const {
 	const Matrix3<scalar_t> r = orientation.rotation_matrix();
 	const auto& x = translation.x();
 	const auto& y = translation.y();
@@ -1241,7 +1350,7 @@ constexpr Matrix4<scalar_t> ScaledTransform3D<scalar_t>::transformation_matrix_i
 }
 
 template<typename scalar_t>
-constexpr Vector3<scalar_t> operator*(const ScaledTransform3D<scalar_t>& scaled_transform_3d, const Vector3<scalar_t>& point) {
+constexpr inline Vector3<scalar_t> operator*(const ScaledTransform3D<scalar_t>& scaled_transform_3d, const Vector3<scalar_t>& point) {
 	const auto& px = point.x();
 	const auto& py = point.y();
 	const auto& pz = point.z();
