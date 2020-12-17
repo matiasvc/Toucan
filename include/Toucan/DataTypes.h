@@ -13,14 +13,23 @@ namespace Toucan {
 
 template <typename T>
 struct Buffer {
+	constexpr Buffer() :
+	data_ptr{nullptr}, number_of_elements{0} { }
+	
+	constexpr Buffer(const T* data_ptr, size_t number_of_elements) :
+	data_ptr{data_ptr}, number_of_elements{number_of_elements} { }
+	
 	const T* data_ptr;
 	size_t number_of_elements;
 	//size_t pitch; // TODO: Support pitch between elements
 };
 
 struct Color {
-	constexpr Color() = default;
-	constexpr Color(float r, float g, float b) : r{r}, g{g}, b{b} { };
+	constexpr Color() :
+	r{1.0f}, g{1.0f}, b{1.0f} { }
+	
+	constexpr Color(float r, float g, float b) :
+	r{r}, g{g}, b{b} { }
 	
 	constexpr static Color Red()   { return Color(1.0f, 0.0f, 0.0); }
 	constexpr static Color Green() { return Color(0.0f, 1.0f, 0.0); }
@@ -28,21 +37,24 @@ struct Color {
 	constexpr static Color Black() { return Color(0.0f, 0.0f, 0.0); }
 	constexpr static Color White() { return Color(1.0f, 1.0f, 1.0); }
 	
-	float r = 1.0;
-	float g = 1.0;
-	float b = 1.0;
+	float r;
+	float g;
+	float b;
 };
 
 struct Rectangle {
-	Rectangle() = default;
-	Rectangle(const Vector2f& min, const Vector2f& max) : min{min}, max{max} { }
+	Rectangle() :
+	min{Vector2f::Zero()}, max{Vector2f::Ones()} { }
 	
-	Vector2f min = Vector2f::Zero();
-	Vector2f max = Vector2f::Ones();
+	Rectangle(const Vector2f& min, const Vector2f& max) :
+	min{min}, max{max} { }
 	
 	[[nodiscard]] float width() const { return max.x() - min.x(); }
 	[[nodiscard]] float height() const { return max.y() - min.y(); }
 	[[nodiscard]] Vector2f size() const { return Vector2f(width(), height()); }
+	
+	Vector2f min;
+	Vector2f max;
 };
 
 inline Rectangle get_resized_rectangle(const Rectangle& rect, Vector2f change) {
@@ -121,38 +133,65 @@ inline constexpr size_t get_bytes_per_pixel(ImageFormat format) {
 }
 
 struct Image2D {
-	void* image_buffer_ptr = nullptr;
-	int width = 0;
-	int height = 0;
-	ImageFormat format = ImageFormat::GRAY_U8;
+	constexpr Image2D() :
+	image_buffer_ptr{nullptr}, width{0}, height{0}, format{ImageFormat::GRAY_U8} { }
+	
+	constexpr Image2D(void* image_buffer_ptr, int width, int height, ImageFormat format) :
+	image_buffer_ptr{image_buffer_ptr}, width{width}, height{height}, format{format} { }
+	
+	void* image_buffer_ptr;
+	int width;
+	int height;
+	ImageFormat format;
 };
 
 enum class PointShape : uint8_t {Square = 0, Circle = 1, Diamond = 2, Cross = 3, Ring = 4};
 
 
 struct Point2D {
+	constexpr Point2D() :
+	position{Vector2f::Zero()}, color{Color::White()}, size{8.0f}, shape{PointShape::Circle} { }
+	
+	constexpr Point2D(const Vector2f& position, const Color& color, float size, PointShape shape) :
+	position{position}, color{color}, size{size}, shape{shape} { }
+	
 	Vector2f position;
 	Color color;
-	float size = 8.0;
-	PointShape shape = PointShape::Circle;
+	float size;
+	PointShape shape;
 };
 
 struct Vertex {
+	constexpr Vertex() :
+	position{Vector3f::Zero()}, normal{Vector3f::Zero()}, uv{Vector2f::Zero()} { }
+	
+	constexpr Vertex(const Vector3f& position, const Vector3f& normal, const Vector2f& uv) :
+	position{position}, normal{normal}, uv{uv} { }
+	
 	Vector3f position;
 	Vector3f normal;
 	Vector2f uv;
 };
 
 struct Point3D {
+	constexpr Point3D() :
+	position{Vector3f::Zero()}, color{Color::White()}, size{8.0f}, shape{PointShape::Circle} { }
+	
+	constexpr Point3D(const Vector3f& position, const Color& color, float size, PointShape shape) :
+	position{position}, color{color}, size{size}, shape{shape} { }
+	
 	Vector3f position;
 	Color color;
-	float size = 8.0f;
-	PointShape shape = PointShape::Circle;
+	float size;
+	PointShape shape;
 };
 
 struct LineVertex3D {
-	LineVertex3D() = default;
-	LineVertex3D(const Vector3f& position, const Color& color) : position{position}, color{color} { }
+	LineVertex3D() :
+	position{Vector3f::Zero()}, color{Color::White()} { };
+	
+	LineVertex3D(const Vector3f& position, const Color& color) :
+	position{position}, color{color} { }
 	
 	Vector3f position;
 	Color color;
@@ -161,17 +200,22 @@ struct LineVertex3D {
 enum class PrimitiveType {Sphere = 0, Cube = 1, Cylinder = 2};
 
 struct Primitive3D {
+	Primitive3D() :
+	type{PrimitiveType::Sphere}, scaled_transform{}, color{Color::Red()} { }
+	
+	Primitive3D(PrimitiveType type, const ScaledTransform3Df& scaled_transform, const Color& color) :
+	type{type}, scaled_transform{scaled_transform}, color{color} { }
+	
+	
 	PrimitiveType type = PrimitiveType::Sphere;
 	ScaledTransform3Df scaled_transform;
 	Color color = Color::Red();
 };
 
 struct OrbitCamera {
-	float pitch = -M_PI/5;
-	float yaw = M_PI/6;
-	float distance = 3.5;
+	OrbitCamera() :
+	pitch{-M_PI/5}, yaw{M_PI/6}, distance{3.5}, orbit_center{Vector3f::Zero()} { }
 	
-	Vector3f orbit_center = Vector3f(0.0f, 0.0f, 0.0f);
 	
 	void orbit(const Vector2f& delta) { yaw -= delta.x(); pitch += delta.y(); }
 	void move(const Vector2f& delta) {
@@ -190,6 +234,11 @@ struct OrbitCamera {
 		const Vector3f translation = orientation * Vector3f(0.0f, 0.0f, -distance) + orbit_center;
 		return RigidTransform3Df(orientation, translation);
 	}
+	
+	float pitch;
+	float yaw;
+	float distance;
+	Vector3f orbit_center;
 };
 
 // Settings
