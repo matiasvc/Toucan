@@ -19,6 +19,7 @@ set(
 		extern/imgui/backends/imgui_impl_glfw.cpp
 		extern/imgui/imgui_demo.cpp
 		
+		gl/geometry.cpp
 		gl/shader.cpp
 )
 
@@ -45,7 +46,7 @@ target_include_directories(
 				$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
 				$<INSTALL_INTERFACE:include>
 			PRIVATE
-				${CMAKE_CURRENT_SOURCE_DIR}/src
+				${CMAKE_CURRENT_SOURCE_DIR}
 				${CMAKE_CURRENT_SOURCE_DIR}/extern/glad/include
 				${CMAKE_CURRENT_SOURCE_DIR}/extern/renderdoc/include
 				${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui
