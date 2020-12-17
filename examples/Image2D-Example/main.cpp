@@ -1,7 +1,5 @@
 #include <Toucan/Toucan.h>
 
-#include <chrono>
-#include <thread>
 #include <limits>
 
 #include <cstdlib>
@@ -202,11 +200,7 @@ int main() {
 		std::free(rgb_f32.image_buffer_ptr);
 	}
 	
-	
-	while (Toucan::IsWindowOpen()) {
-		using namespace std::chrono_literals;
-		std::this_thread::sleep_for(250ms);
-	}
+	Toucan::SleepUntilWindowClosed();
 	
 	Toucan::Destroy();
 	

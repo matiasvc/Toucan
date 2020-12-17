@@ -8,11 +8,9 @@
 
 #include <sophus/se3.hpp>
 
-struct dl_image
-{
-	~dl_image()
-	{
-		free(m_data);
+struct Image {
+	~Image() {
+		std::free(m_data);
 	}
 	
 	void* m_data = nullptr;
@@ -29,8 +27,8 @@ public:
 	
 	void next();
 	[[nodiscard]] bool has_next() const;
-	[[nodiscard]] dl_image get_rgb() const;
-	[[nodiscard]] dl_image get_depth() const;
+	[[nodiscard]] Image get_rgb() const;
+	[[nodiscard]] Image get_depth() const;
 	[[nodiscard]] Sophus::SE3f get_groundtruth() const;
 	[[nodiscard]] uint64_t get_timestamp() const;
 	

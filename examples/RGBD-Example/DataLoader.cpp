@@ -7,8 +7,8 @@
 
 #include <unistd.h>
 
-DataLoader::DataLoader(const std::experimental::filesystem::path& dataset_path, const Sophus::SE3f& transformation)
-		: m_dataset_path{dataset_path}, m_transformation{transformation}, m_rgb_index{0}, m_depth_index{0}, m_groundtruth_index{0} {
+DataLoader::DataLoader(const std::experimental::filesystem::path& dataset_path, const Sophus::SE3f& transformation) :
+m_dataset_path{dataset_path}, m_transformation{transformation}, m_rgb_index{0}, m_depth_index{0}, m_groundtruth_index{0} {
 	
 	const std::experimental::filesystem::path rgb_file_path = dataset_path / "rgb.txt";
 	
@@ -126,10 +126,10 @@ int DataLoader::get_current_index() const {
 	return m_rgb_index;
 }
 
-dl_image DataLoader::get_depth() const {
+Image DataLoader::get_depth() const {
 	const std::experimental::filesystem::path& depth_image_path = m_dataset_path / m_depth_files[m_depth_index].second;
 	
-	dl_image image;
+	Image image;
 	
 	const int depthChannels = 1;
 	
@@ -140,10 +140,10 @@ dl_image DataLoader::get_depth() const {
 	return image;
 }
 
-dl_image DataLoader::get_rgb() const {
+Image DataLoader::get_rgb() const {
 	const std::experimental::filesystem::path& rgb_image_path = m_dataset_path / m_rgb_files[m_rgb_index].second;
 	
-	dl_image image;
+	Image image;
 	
 	const int rgbChannels = 3;
 	
