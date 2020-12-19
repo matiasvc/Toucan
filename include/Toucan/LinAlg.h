@@ -161,7 +161,7 @@ constexpr inline Matrix<scalar_t, rows, columns>::Matrix() {
 template<typename scalar_t, int rows, int columns>
 template<typename... scalar_t_var>
 constexpr inline Matrix<scalar_t, rows, columns>::Matrix(const scalar_t_var& ... v) :
-m_data{v...} {
+m_data{static_cast<scalar_t>(v)...} {
 	static_assert(sizeof...(v) == rows*columns, "Number of constructor parameters does not match the size of the matrix");
 }
 
