@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Toucan_internals.h"
+#include "internal.h"
 
 namespace Toucan {
 

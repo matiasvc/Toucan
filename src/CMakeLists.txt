@@ -3,8 +3,7 @@
 set(
 		Toucan_source
 		Toucan.cpp
-		Toucan_internals.cpp
-		Toucan_render.cpp
+		render.cpp
 		util/tick_number.cpp
 		
 		extern/glad/src/glad.c

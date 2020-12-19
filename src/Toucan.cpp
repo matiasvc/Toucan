@@ -17,8 +17,8 @@
 #include <Toucan/DataTypes.h>
 
 #include "util/GLDebug.h"
-#include "Toucan_internals.h"
-#include "Toucan_render.h"
+#include "internal.h"
+#include "render.h"
 #include "Utils.h"
 #include "util/tick_number.h"
 
