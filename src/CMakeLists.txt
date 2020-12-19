@@ -4,6 +4,7 @@ set(
 		Toucan_source
 		Toucan.cpp
 		render.cpp
+		asset.cpp
 		util/tick_number.cpp
 		
 		extern/glad/src/glad.c

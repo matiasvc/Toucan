@@ -30,16 +30,6 @@
 #include <renderdoc/renderdoc.h>
 #include <dlfcn.h>
 
-#include "gl/shader.h"
-
-#include "shaders/shader_lineplot2d.h"
-#include "shaders/shader_point2d.h"
-#include "shaders/shader_image2d.h"
-
-#include "shaders/shader_line3d.h"
-#include "shaders/shader_point3d.h"
-#include "shaders/shader_mesh3d.h"
-
 Toucan::ToucanContext* toucan_context_ptr = nullptr;
 
 // Forward declerations
@@ -625,16 +615,6 @@ void render_loop(Toucan::ToucanSettings settings) {
 		throw std::runtime_error("Toucan error! Unable to load OpenGL.\n");
 	}
 	
-	// Initialize shaders
-	toucan_context_ptr->lineplot_2d_shader = create_shader_program(lineplot_2d_vs, lineplot_2d_fs);
-	toucan_context_ptr->point_2d_shader = create_shader_program(point_2d_vs, point_2d_fs);
-	toucan_context_ptr->image_2d_shader = create_shader_program(image_2d_vs, image_2d_rgb_fs);
-	
-	toucan_context_ptr->line_3d_shader = create_shader_program(line_3d_vs, line_3d_fs);
-	toucan_context_ptr->point_3d_shader = create_shader_program(point_3d_vs, point_3d_fs);
-	toucan_context_ptr->line_3d_shader = create_shader_program(line_3d_vs, line_3d_fs);
-	toucan_context_ptr->mesh_3d_shader = create_shader_program(mesh_3d_vs, mesh_3d_fs);
-	
 	
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -646,7 +626,6 @@ void render_loop(Toucan::ToucanSettings settings) {
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	
 	// Load renderdoc
-	
 	if (void* mod = dlopen("librenderdoc.so", RTLD_NOW | RTLD_NOLOAD )) {
 		pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)dlsym(mod, "RENDERDOC_GetAPI");
 		int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_4_1, (void**)&toucan_context_ptr->rdoc_api);

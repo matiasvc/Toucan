@@ -9,6 +9,7 @@
 #include "util/GLDebug.h"
 #include "Utils.h"
 
+#include "asset.h"
 #include "gl/shader.h"
 #include "gl/geometry.h"
 
@@ -92,11 +93,11 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 			
 			if (element_2d.line_plot_2d_metadata.number_of_points == 0) { return; }
 			
-			assert(context->lineplot_2d_shader != 0);
-			glUseProgram(context->lineplot_2d_shader);
-			set_shader_uniform(context->lineplot_2d_shader, "line_color", element_2d.line_plot_2d_metadata.settings.line_color);
-			set_shader_uniform(context->lineplot_2d_shader, "model", model_to_world_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			set_shader_uniform(context->lineplot_2d_shader, "view", world_to_camera_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
+			unsigned int lineplot_2d_shader = get_lineplot_2d_shader(&context->asset_context);
+			glUseProgram(lineplot_2d_shader);
+			set_shader_uniform(lineplot_2d_shader, "line_color", element_2d.line_plot_2d_metadata.settings.line_color);
+			set_shader_uniform(lineplot_2d_shader, "model", model_to_world_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
+			set_shader_uniform(lineplot_2d_shader, "view", world_to_camera_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
 			
 			glLineWidth(element_2d.line_plot_2d_metadata.settings.line_width);
 			glEnable(GL_LINE_SMOOTH);
@@ -153,11 +154,11 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 				glCheckError();
 			}
 			
-			assert(context->point_2d_shader != 0);
-			glUseProgram(context->point_2d_shader);
+			unsigned int point_2d_shader = get_point_2d_shader(&context->asset_context);
+			glUseProgram(point_2d_shader);
 			
-			set_shader_uniform(context->point_2d_shader, "model", model_to_world_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			set_shader_uniform(context->point_2d_shader, "view", world_to_camera_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
+			set_shader_uniform(point_2d_shader, "model", model_to_world_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
+			set_shader_uniform(point_2d_shader, "view", world_to_camera_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
 			
 			glBindVertexArray(element_2d.point_2d_metadata.vao);
 			glEnable(GL_PROGRAM_POINT_SIZE);
@@ -296,10 +297,10 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 			const Matrix4f model_matrix = model_to_world_matrix *
 					ScaledTransform2Df(0.0f, Vector2f::Zero(), Vector2f(static_cast<float>(image_draw_width), static_cast<float>(image_draw_height))).transformation_matrix_3d();
 			
-			assert(context->image_2d_shader != 0);
-			glUseProgram(context->image_2d_shader);
-			set_shader_uniform(context->image_2d_shader, "model", model_matrix);
-			set_shader_uniform(context->image_2d_shader, "view", world_to_camera_matrix);
+			unsigned int image_2d_shader = get_image_2d_shader(&context->asset_context);
+			glUseProgram(image_2d_shader);
+			set_shader_uniform(image_2d_shader, "model", model_matrix);
+			set_shader_uniform(image_2d_shader, "view", world_to_camera_matrix);
 			
 			glBindVertexArray(element_2d.image_2d_metadata.vao);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_2d.image_2d_metadata.ebo);
@@ -476,13 +477,13 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 				
 			}
 			
-			assert(context->line_3d_shader != 0);
-			glUseProgram(context->line_3d_shader);
+			unsigned int line_3d_shader = get_line_3d_shader(&context->asset_context);
+			glUseProgram(line_3d_shader);
 			
 			// TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			set_shader_uniform(context->line_3d_shader, "model", model_to_world_matrix);
-			set_shader_uniform(context->line_3d_shader, "view", world_to_camera_matrix);
-			set_shader_uniform(context->line_3d_shader, "projection", projection_matrix);
+			set_shader_uniform(line_3d_shader, "model", model_to_world_matrix);
+			set_shader_uniform(line_3d_shader, "view", world_to_camera_matrix);
+			set_shader_uniform(line_3d_shader, "projection", projection_matrix);
 			
 			glLineWidth(1.0f);
 			glBindVertexArray(element_3d.grid_3d_metadata.vao_minor);
@@ -531,13 +532,13 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 				element_3d.data_buffer_ptr = nullptr;
 			}
 			
-			assert(context->point_3d_shader != 0);
-			glUseProgram(context->point_3d_shader);
+			unsigned int point_3d_shader = get_point_3d_shader(&context->asset_context);
+			glUseProgram(point_3d_shader);
 			
 			// TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			set_shader_uniform(context->line_3d_shader, "model", model_to_world_matrix);
-			set_shader_uniform(context->line_3d_shader, "view", world_to_camera_matrix);
-			set_shader_uniform(context->line_3d_shader, "projection", projection_matrix);
+			set_shader_uniform(point_3d_shader, "model", model_to_world_matrix);
+			set_shader_uniform(point_3d_shader, "view", world_to_camera_matrix);
+			set_shader_uniform(point_3d_shader, "projection", projection_matrix);
 			
 			glBindVertexArray(element_3d.point_3d_metadata.vao);
 			glEnable(GL_PROGRAM_POINT_SIZE);
@@ -569,13 +570,13 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 				element_3d.data_buffer_ptr = nullptr;
 			}
 			
-			assert(context->line_3d_shader != 0);
-			glUseProgram(context->line_3d_shader);
+			unsigned int line_3d_shader = get_line_3d_shader(&context->asset_context);
+			glUseProgram(line_3d_shader);
 			
 			// TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			set_shader_uniform(context->line_3d_shader, "model", model_to_world_matrix);
-			set_shader_uniform(context->line_3d_shader, "view", world_to_camera_matrix);
-			set_shader_uniform(context->line_3d_shader, "projection", projection_matrix);
+			set_shader_uniform(line_3d_shader, "model", model_to_world_matrix);
+			set_shader_uniform(line_3d_shader, "view", world_to_camera_matrix);
+			set_shader_uniform(line_3d_shader, "projection", projection_matrix);
 			
 			glLineWidth(element_3d.show_lines_3d_settings.line_width);
 			glBindVertexArray(element_3d.line_3d_metadata.vao);
@@ -596,18 +597,6 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			glCheckError();
 		} break;
 		case Toucan::ElementType3D::Primitive3D: {
-			if (context->sphere_vao == 0) {
-				generate_primitive_data(PrimitiveType::Sphere, &context->sphere_vao, &context->sphere_vbo, &context->sphere_ebo, &context->sphere_number_of_indices);
-			}
-			
-			if (context->cube_vao == 0) {
-				generate_primitive_data(PrimitiveType::Cube, &context->cube_vao, &context->cube_vbo, &context->cube_ebo, &context->cube_number_of_indices);
-			}
-			
-			if (context->cylinder_vao == 0) {
-				generate_primitive_data(PrimitiveType::Cylinder, &context->cylinder_vao, &context->cylinder_vbo, &context->cylinder_ebo, &context->cylinder_number_of_indices);
-			}
-			
 			if (element_3d.data_buffer_ptr != nullptr) {
 				
 				// Free old data
@@ -620,42 +609,32 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 				element_3d.data_buffer_ptr = nullptr;
 			}
 			
-			assert(context->mesh_3d_shader);
-			glUseProgram(context->mesh_3d_shader);
+			unsigned int mesh_3d_shader = get_mesh_3d_shader(&context->asset_context);
+			glUseProgram(mesh_3d_shader);
 			
 			// TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			set_shader_uniform(context->mesh_3d_shader, "view", world_to_camera_matrix);
-			set_shader_uniform(context->mesh_3d_shader, "projection", projection_matrix);
-			set_shader_uniform(context->mesh_3d_shader, "light_vector", element_3d.show_primitives_3d_settings.light_vector);
+			set_shader_uniform(mesh_3d_shader, "view", world_to_camera_matrix);
+			set_shader_uniform(mesh_3d_shader, "projection", projection_matrix);
+			set_shader_uniform(mesh_3d_shader, "light_vector", element_3d.show_primitives_3d_settings.light_vector);
 			
 			for (int primitive_index = 0; primitive_index < element_3d.primitive_3d_metadata.number_of_primitives; ++primitive_index) {
 				const Primitive3D& primitive = element_3d.primitive_3d_metadata.vertex_data_ptr[primitive_index];
 				
-				int number_of_indices;
+				const GeometryHandles* geometry_handles_ptr = nullptr;
 				
 				switch (primitive.type) {
-					case PrimitiveType::Cube: {
-						glBindVertexArray(context->cube_vao);
-						glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, context->cube_ebo);
-						number_of_indices = context->cube_number_of_indices;
-					} break;
-					case PrimitiveType::Sphere: {
-						glBindVertexArray(context->sphere_vao);
-						glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, context->sphere_ebo);
-						number_of_indices = context->sphere_number_of_indices;
-					} break;
-					case PrimitiveType::Cylinder: {
-						glBindVertexArray(context->cylinder_vao);
-						glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, context->cylinder_ebo);
-						number_of_indices = context->cylinder_number_of_indices;
-					} break;
+					case PrimitiveType::Cube: { geometry_handles_ptr = get_cube_handles_ptr(&context->asset_context); } break;
+					case PrimitiveType::Sphere: { geometry_handles_ptr = get_sphere_handles_ptr(&context->asset_context); } break;
+					case PrimitiveType::Cylinder: { geometry_handles_ptr = get_cylinder_handles_ptr(&context->asset_context); } break;
 				}
 				
 				// TODO(Matias) Use model transform
-				set_shader_uniform(context->mesh_3d_shader, "model", model_to_world_matrix * primitive.scaled_transform.transformation_matrix());
-				set_shader_uniform(context->mesh_3d_shader, "color", primitive.color);
+				set_shader_uniform(mesh_3d_shader, "model", model_to_world_matrix * primitive.scaled_transform.transformation_matrix());
+				set_shader_uniform(mesh_3d_shader, "color", primitive.color);
 				
-				glDrawElements(GL_TRIANGLES, number_of_indices, GL_UNSIGNED_INT, nullptr);
+				glBindVertexArray(geometry_handles_ptr->vao);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry_handles_ptr->ebo);
+				glDrawElements(GL_TRIANGLES, geometry_handles_ptr->number_of_indices, GL_UNSIGNED_INT, nullptr);
 			}
 			
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

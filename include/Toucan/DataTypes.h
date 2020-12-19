@@ -161,17 +161,6 @@ struct Point2D {
 	PointShape shape;
 };
 
-struct Vertex {
-	constexpr Vertex() :
-	position{Vector3f::Zero()}, normal{Vector3f::Zero()}, uv{Vector2f::Zero()} { }
-	
-	constexpr Vertex(const Vector3f& position, const Vector3f& normal, const Vector2f& uv) :
-	position{position}, normal{normal}, uv{uv} { }
-	
-	Vector3f position;
-	Vector3f normal;
-	Vector2f uv;
-};
 
 struct Point3D {
 	constexpr Point3D() :

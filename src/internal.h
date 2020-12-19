@@ -13,6 +13,7 @@
 
 #include "Toucan/DataTypes.h"
 
+#include "asset.h"
 
 namespace Toucan {
 
@@ -171,30 +172,7 @@ struct ToucanContext {
 	std::list<Toucan::Figure3D> figures_3d;
 	Toucan::Figure3D* current_figure_3d = nullptr;
 	
-	unsigned int icon_texture = 0;
-	
-	unsigned int lineplot_2d_shader = 0;
-	unsigned int point_2d_shader = 0;
-	unsigned int image_2d_shader = 0;
-	
-	unsigned int point_3d_shader = 0;
-	unsigned int line_3d_shader = 0;
-	unsigned int mesh_3d_shader = 0;
-	
-	unsigned int sphere_vao = 0;
-	unsigned int sphere_vbo = 0;
-	unsigned int sphere_ebo = 0;
-	unsigned int sphere_number_of_indices;
-	
-	unsigned int cube_vao = 0;
-	unsigned int cube_vbo = 0;
-	unsigned int cube_ebo = 0;
-	unsigned int cube_number_of_indices;
-	
-	unsigned int cylinder_vao = 0;
-	unsigned int cylinder_vbo = 0;
-	unsigned int cylinder_ebo = 0;
-	unsigned int cylinder_number_of_indices;
+	AssetContext asset_context = {};
 };
 
 } // namespace Toucan

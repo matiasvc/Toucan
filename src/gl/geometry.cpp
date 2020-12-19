@@ -81,35 +81,35 @@ GeometryData generate_cube_geometry_data() {
 	// TODO(Matias): Fix UV coordinates
 	geometry_data.vertices = {
 			// Front
-			Toucan::Vertex(Toucan::Vector3f( 0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 0
-			Toucan::Vertex(Toucan::Vector3f(-0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 1
-			Toucan::Vertex(Toucan::Vector3f(-0.5f, -0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 2
-			Toucan::Vertex(Toucan::Vector3f( 0.5f, -0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 3
+			Vertex(Toucan::Vector3f( 0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 0
+			Vertex(Toucan::Vector3f(-0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 1
+			Vertex(Toucan::Vector3f(-0.5f, -0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 2
+			Vertex(Toucan::Vector3f( 0.5f, -0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 3
 			// Top
-			Toucan::Vertex(Toucan::Vector3f( 0.5f, -0.5f,  0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 4
-			Toucan::Vertex(Toucan::Vector3f(-0.5f, -0.5f,  0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 5
-			Toucan::Vertex(Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 6
-			Toucan::Vertex(Toucan::Vector3f( 0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 7
+			Vertex(Toucan::Vector3f( 0.5f, -0.5f,  0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 4
+			Vertex(Toucan::Vector3f(-0.5f, -0.5f,  0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 5
+			Vertex(Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 6
+			Vertex(Toucan::Vector3f( 0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 7
 			// Right
-			Toucan::Vertex(Toucan::Vector3f( 0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 8
-			Toucan::Vertex(Toucan::Vector3f( 0.5f,  0.5f, -0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 9
-			Toucan::Vertex(Toucan::Vector3f( 0.5f, -0.5f, -0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 10
-			Toucan::Vertex(Toucan::Vector3f( 0.5f, -0.5f,  0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 11
+			Vertex(Toucan::Vector3f( 0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 8
+			Vertex(Toucan::Vector3f( 0.5f,  0.5f, -0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 9
+			Vertex(Toucan::Vector3f( 0.5f, -0.5f, -0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 10
+			Vertex(Toucan::Vector3f( 0.5f, -0.5f,  0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 11
 			// Back
-			Toucan::Vertex(Toucan::Vector3f( 0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 12
-			Toucan::Vertex(Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 13
-			Toucan::Vertex(Toucan::Vector3f(-0.5f,  0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 14
-			Toucan::Vertex(Toucan::Vector3f( 0.5f,  0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 15
+			Vertex(Toucan::Vector3f( 0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 12
+			Vertex(Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 13
+			Vertex(Toucan::Vector3f(-0.5f,  0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 14
+			Vertex(Toucan::Vector3f( 0.5f,  0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 15
 			// Left
-			Toucan::Vertex(Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 16
-			Toucan::Vertex(Toucan::Vector3f(-0.5f, -0.5f,  0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 17
-			Toucan::Vertex(Toucan::Vector3f(-0.5f,  0.5f,  0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 18
-			Toucan::Vertex(Toucan::Vector3f(-0.5f,  0.5f, -0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 19
+			Vertex(Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 16
+			Vertex(Toucan::Vector3f(-0.5f, -0.5f,  0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 17
+			Vertex(Toucan::Vector3f(-0.5f,  0.5f,  0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 18
+			Vertex(Toucan::Vector3f(-0.5f,  0.5f, -0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 19
 			// Bottom
-			Toucan::Vertex(Toucan::Vector3f( 0.5f,  0.5f, -0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 20
-			Toucan::Vertex(Toucan::Vector3f(-0.5f,  0.5f, -0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 21
-			Toucan::Vertex(Toucan::Vector3f(-0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 22
-			Toucan::Vertex(Toucan::Vector3f( 0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 23
+			Vertex(Toucan::Vector3f( 0.5f,  0.5f, -0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 20
+			Vertex(Toucan::Vector3f(-0.5f,  0.5f, -0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 21
+			Vertex(Toucan::Vector3f(-0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 22
+			Vertex(Toucan::Vector3f( 0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 23
 	};
 	
 	geometry_data.indices = {
@@ -196,67 +196,40 @@ GeometryData generate_cylinder_geometry_data(int number_of_sectors) {
 	return geometry_data;
 }
 
-void generate_primitive_data(Toucan::PrimitiveType primitive_type, unsigned int* const vao_ptr, unsigned int* const vbo_ptr, unsigned int* const ebo_ptr, unsigned int* const number_of_indices_ptr) {
+GeometryHandles generate_geometry_handles(const GeometryData& geometry_data) {
+	GeometryHandles geometry_handles;
+	geometry_handles.number_of_indices = geometry_data.indices.size();
 	
-	glGenVertexArrays(1, vao_ptr);
-	glGenBuffers(1, vbo_ptr);
-	glGenBuffers(1, ebo_ptr);
+	glGenVertexArrays(1, &geometry_handles.vao);
+	glGenBuffers(1, &geometry_handles.vbo);
+	glGenBuffers(1, &geometry_handles.ebo);
 	
-	switch (primitive_type) {
-		case Toucan::PrimitiveType::Sphere: {
-			const auto geometry_data = generate_sphere_geometry_data();
-			*number_of_indices_ptr = geometry_data.indices.size();
-			
-			glBindVertexArray(*vao_ptr);
-			glBindBuffer(GL_ARRAY_BUFFER, *vbo_ptr);
-			glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Toucan::Vertex) * geometry_data.vertices.size()), geometry_data.vertices.data(), GL_STATIC_DRAW);
-			
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ebo_ptr);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(unsigned int) * geometry_data.indices.size()), geometry_data.indices.data(), GL_STATIC_DRAW);
-		} break;
-		case Toucan::PrimitiveType::Cube: {
-			const auto geometry_data = generate_cube_geometry_data();
-			*number_of_indices_ptr = geometry_data.indices.size();
-			
-			glBindVertexArray(*vao_ptr);
-			glBindBuffer(GL_ARRAY_BUFFER, *vbo_ptr);
-			glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Toucan::Vertex) * geometry_data.vertices.size()), geometry_data.vertices.data(), GL_STATIC_DRAW);
-			
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ebo_ptr);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(unsigned int) * geometry_data.indices.size()), geometry_data.indices.data(), GL_STATIC_DRAW);
-		} break;
-		case Toucan::PrimitiveType::Cylinder: {
-			const auto geometry_data = generate_cylinder_geometry_data();
-			*number_of_indices_ptr = geometry_data.indices.size();
-			
-			glBindVertexArray(*vao_ptr);
-			glBindBuffer(GL_ARRAY_BUFFER, *vbo_ptr);
-			glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Toucan::Vertex) * geometry_data.vertices.size()), geometry_data.vertices.data(), GL_STATIC_DRAW);
-			
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ebo_ptr);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(unsigned int) * geometry_data.indices.size()), geometry_data.indices.data(), GL_STATIC_DRAW);
-		} break;
-	}
+	glBindVertexArray(geometry_handles.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, geometry_handles.vbo);
+	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Vertex) * geometry_data.vertices.size()), geometry_data.vertices.data(), GL_STATIC_DRAW);
+	
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry_handles.ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(unsigned int) * geometry_data.indices.size()), geometry_data.indices.data(), GL_STATIC_DRAW);
 	
 	// Position
 	constexpr auto position_location = 0;
-	glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, sizeof(Toucan::Vertex), reinterpret_cast<void*>(offset_of(&Toucan::Vertex::position)));
+	glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offset_of(&Vertex::position)));
 	glEnableVertexAttribArray(position_location);
 	
 	// Normal
 	constexpr auto normal_location = 1;
-	glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, sizeof(Toucan::Vertex), reinterpret_cast<void*>(offset_of(&Toucan::Vertex::normal)));
+	glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offset_of(&Vertex::normal)));
 	glEnableVertexAttribArray(normal_location);
 	
 	// UV
 	constexpr auto uv_location = 2;
-	glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(Toucan::Vertex), reinterpret_cast<void*>(offset_of(&Toucan::Vertex::uv)));
+	glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offset_of(&Vertex::uv)));
 	glEnableVertexAttribArray(uv_location);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	
-	glCheckError();
+	return geometry_handles;
 }
 
