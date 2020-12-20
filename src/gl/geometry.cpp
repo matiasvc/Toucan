@@ -14,7 +14,6 @@ GeometryData generate_sphere_geometry_data(int number_of_sectors, int number_of_
 	
 	constexpr float radius = 0.5f;
 	constexpr float radius_inv = 1.0f / radius;
-
 	
 	const float sector_step = 2*M_PI/number_of_sectors;
 	const float stack_step = M_PI/number_of_stacks;

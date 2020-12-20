@@ -267,6 +267,7 @@ struct ShowPoints2DSettings {
 struct ShowImage2DSettings {
 	unsigned int image_display_width = 0;
 	unsigned int image_display_height = 0;
+	ScaledTransform2Df scaled_transform;
 };
 
 struct ShowPoints3DSettings {

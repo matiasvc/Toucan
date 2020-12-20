@@ -104,6 +104,8 @@ struct Point3DMetadata {
 	unsigned int vbo;
 	
 	int number_of_points;
+	
+	ShowPoints3DSettings settings;
 };
 
 struct Line3DMetadata {
@@ -111,11 +113,15 @@ struct Line3DMetadata {
 	unsigned int vbo;
 	
 	int number_of_line_vertices;
+	
+	ShowLines3DSettings settings;
 };
 
 struct Primitive3DMetadata {
 	Primitive3D* vertex_data_ptr;
 	int number_of_primitives;
+	
+	ShowPrimitives3DSettings settings;
 };
 
 struct Element3D {
@@ -129,11 +135,6 @@ struct Element3D {
 		Point3DMetadata point_3d_metadata;
 		Line3DMetadata line_3d_metadata;
 		Primitive3DMetadata primitive_3d_metadata;
-	};
-	union {
-		ShowPoints3DSettings show_points_3d_settings;
-		ShowLines3DSettings show_lines_3d_settings;
-		ShowPrimitives3DSettings show_primitives_3d_settings;
 	};
 };
 

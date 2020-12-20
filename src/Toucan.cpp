@@ -378,7 +378,7 @@ void Toucan::ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::
 	std::memcpy(current_element.data_buffer_ptr, points_buffer.data_ptr, data_buffer_size);
 	
 	current_element.point_3d_metadata.number_of_points = points_buffer.number_of_elements;
-	current_element.show_points_3d_settings = settings;
+	current_element.point_3d_metadata.settings = settings;
 }
 
 
@@ -404,7 +404,7 @@ void Toucan::ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::L
 	std::memcpy(current_element.data_buffer_ptr, lines_buffer.data_ptr, data_buffer_size);
 	
 	current_element.line_3d_metadata.number_of_line_vertices = lines_buffer.number_of_elements;
-	current_element.show_lines_3d_settings = settings;
+	current_element.line_3d_metadata.settings = settings;
 }
 
 void Toucan::ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Toucan::Primitive3D>& primitives_buffer, const ShowPrimitives3DSettings& settings) {
@@ -429,7 +429,7 @@ void Toucan::ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Touc
 	std::memcpy(current_element.data_buffer_ptr, primitives_buffer.data_ptr, data_buffer_size);
 	
 	current_element.primitive_3d_metadata.number_of_primitives = primitives_buffer.number_of_elements;
-	current_element.show_primitives_3d_settings = settings;
+	current_element.primitive_3d_metadata.settings = settings;
 }
 
 Toucan::Rectangle get_lineplot_2d_data_bounds(const Toucan::Element2D& element_2d, const Toucan::RigidTransform2Df& local_transform) {
@@ -812,8 +812,6 @@ void render_loop(Toucan::ToucanSettings settings) {
 				}
 				
 				// ***** Drawing *****
-				
-				// Compute draw size
 				
 				// Check if framebuffer needs resizing or we received new data
 				const bool framebuffer_was_updated = Toucan::update_framebuffer_2d(figure_2d, figure_draw_size);
