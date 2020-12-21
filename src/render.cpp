@@ -189,51 +189,6 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 					glCheckError();
 				}
 				
-				// Create quad if it doesnt already exists
-				// TODO(Matias): Move quad data to context struct to have one global quad.
-				if (element_2d.image_2d_metadata.vao == 0) {
-					glGenVertexArrays(1, &element_2d.image_2d_metadata.vao);
-					glGenBuffers(1, &element_2d.image_2d_metadata.vbo);
-					glGenBuffers(1, &element_2d.image_2d_metadata.ebo);
-					
-					constexpr size_t num_of_vertices = 4;
-					Vertex vertices[num_of_vertices] = {
-							{Vector3f(0.0f, 0.0f, 0.0f), -Vector3f::UnitZ(), Vector2f(0.0f, 0.0f)},
-							{Vector3f(1.0f, 0.0f, 0.0f), -Vector3f::UnitZ(), Vector2f(1.0f, 0.0f)},
-							{Vector3f(0.0f, 1.0f, 0.0f), -Vector3f::UnitZ(), Vector2f(0.0f, 1.0f)},
-							{Vector3f(1.0f, 1.0f, 0.0f), -Vector3f::UnitZ(), Vector2f(1.0f, 1.0f)},
-					};
-					
-					glBindVertexArray(element_2d.image_2d_metadata.vao);
-					glBindBuffer(GL_ARRAY_BUFFER, element_2d.image_2d_metadata.vbo);
-					glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Vertex) * num_of_vertices), vertices, GL_STATIC_DRAW);
-					
-					constexpr size_t num_of_indices = 6;
-					unsigned int indices[num_of_indices] = {
-							0, 2, 1,
-							1, 2, 3
-					};
-					
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_2d.image_2d_metadata.ebo);
-					glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(unsigned int) * num_of_indices), indices, GL_STATIC_DRAW);
-					
-					// Position
-					constexpr auto position_location = 0;
-					glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offset_of(&Vertex::position)));
-					glEnableVertexAttribArray(position_location);
-					
-					// UV
-					constexpr auto uv_location = 1;
-					glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offset_of(&Vertex::uv)));
-					glEnableVertexAttribArray(uv_location);
-					
-					glBindBuffer(GL_ARRAY_BUFFER, 0);
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-					glBindVertexArray(0);
-					
-					glCheckError();
-				}
-				
 				// Upload Texture
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, element_2d.image_2d_metadata.texture);
@@ -306,8 +261,9 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 			set_shader_uniform(image_2d_shader, "model", model_matrix);
 			set_shader_uniform(image_2d_shader, "view", world_to_camera_matrix);
 			
-			glBindVertexArray(element_2d.image_2d_metadata.vao);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_2d.image_2d_metadata.ebo);
+			const IndexedGeometryHandles* geometry_handles_ptr = get_quad_handles_ptr(&context->asset_context);
+			glBindVertexArray(geometry_handles_ptr->vao);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry_handles_ptr->ebo);
 			
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, element_2d.image_2d_metadata.texture);
@@ -626,7 +582,7 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			for (int primitive_index = 0; primitive_index < element_3d.primitive_3d_metadata.number_of_primitives; ++primitive_index) {
 				const Primitive3D& primitive = element_3d.primitive_3d_metadata.vertex_data_ptr[primitive_index];
 				
-				const GeometryHandles* geometry_handles_ptr = nullptr;
+				const IndexedGeometryHandles* geometry_handles_ptr = nullptr;
 				
 				switch (primitive.type) {
 					case PrimitiveType::Cube: { geometry_handles_ptr = get_cube_handles_ptr(&context->asset_context); } break;

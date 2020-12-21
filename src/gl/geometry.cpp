@@ -4,11 +4,87 @@
 #include "util/GLDebug.h"
 #include "Utils.h"
 
-GeometryData generate_sphere_geometry_data(int number_of_sectors, int number_of_stacks) {
+struct TexturedVertex {
+	Toucan::Vector3f position;
+	Toucan::Vector3f normal;
+	Toucan::Vector2f uv;
+};
+
+struct ColoredVertex {
+	Toucan::Vector3f position;
+	Toucan::Vector3f color;
+};
+
+struct TexturedMeshGeometryData {
+	std::vector<TexturedVertex> vertices;
+	std::vector<unsigned int> indices;
+};
+
+
+IndexedGeometryHandles generate_geometry_handles(const TexturedMeshGeometryData& geometry_data) {
+	IndexedGeometryHandles geometry_handles;
+	geometry_handles.number_of_indices = geometry_data.indices.size();
+	
+	glGenVertexArrays(1, &geometry_handles.vao);
+	glGenBuffers(1, &geometry_handles.vbo);
+	glGenBuffers(1, &geometry_handles.ebo);
+	
+	glBindVertexArray(geometry_handles.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, geometry_handles.vbo);
+	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(TexturedVertex) * geometry_data.vertices.size()), geometry_data.vertices.data(), GL_STATIC_DRAW);
+	
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry_handles.ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(unsigned int) * geometry_data.indices.size()), geometry_data.indices.data(), GL_STATIC_DRAW);
+	
+	// Position
+	constexpr auto position_location = 0;
+	glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), reinterpret_cast<void*>(offset_of(&TexturedVertex::position)));
+	glEnableVertexAttribArray(position_location);
+	
+	// Normal
+	constexpr auto normal_location = 1;
+	glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), reinterpret_cast<void*>(offset_of(&TexturedVertex::normal)));
+	glEnableVertexAttribArray(normal_location);
+	
+	// UV
+	constexpr auto uv_location = 2;
+	glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), reinterpret_cast<void*>(offset_of(&TexturedVertex::uv)));
+	glEnableVertexAttribArray(uv_location);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	
+	return geometry_handles;
+}
+
+IndexedGeometryHandles generate_quad() {
+	TexturedMeshGeometryData geometry_data;
+	geometry_data.vertices.reserve(4);
+	geometry_data.indices.reserve(6);
+	
+	geometry_data.vertices = {
+			TexturedVertex{Toucan::Vector3f(0.0f, 0.0f, 0.0f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f(0.0f, 0.0f)},
+			TexturedVertex{Toucan::Vector3f(1.0f, 0.0f, 0.0f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f(1.0f, 0.0f)},
+			TexturedVertex{Toucan::Vector3f(0.0f, 1.0f, 0.0f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f(0.0f, 1.0f)},
+			TexturedVertex{Toucan::Vector3f(1.0f, 1.0f, 0.0f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f(1.0f, 1.0f)},
+	};
+	
+	geometry_data.indices = {
+		0, 2, 1,
+		1, 2, 3,
+	};
+	
+	assert(geometry_data.vertices.size() == 4);
+	assert(geometry_data.indices.size() == 6);
+	return generate_geometry_handles(geometry_data);
+}
+
+IndexedGeometryHandles generate_sphere(int number_of_sectors, int number_of_stacks) {
 	const size_t number_of_vertices = (number_of_sectors + 1)*(number_of_stacks + 1);
 	const size_t number_of_indices = 3*2*(number_of_stacks - 1)*(number_of_sectors);
 	
-	GeometryData geometry_data;
+	TexturedMeshGeometryData geometry_data;
 	geometry_data.vertices.reserve(number_of_vertices);
 	geometry_data.indices.reserve(number_of_indices);
 	
@@ -35,11 +111,11 @@ GeometryData generate_sphere_geometry_data(int number_of_sectors, int number_of_
 			const float u = static_cast<float>(sector_index) / static_cast<float>(number_of_sectors);
 			const float v = static_cast<float>(stack_index) / static_cast<float>(number_of_stacks);
 			
-			geometry_data.vertices.emplace_back(
-					Toucan::Vector3f(x, y, z),
-					radius_inv * Toucan::Vector3f(x, y ,z),
-					Toucan::Vector2f(u, v)
-			);
+			geometry_data.vertices.emplace_back(TexturedVertex{
+				Toucan::Vector3f(x, y, z),
+				radius_inv * Toucan::Vector3f(x, y, z),
+				Toucan::Vector2f(u, v)
+			});
 		}
 	}
 	assert(geometry_data.vertices.size() == number_of_vertices);
@@ -69,46 +145,46 @@ GeometryData generate_sphere_geometry_data(int number_of_sectors, int number_of_
 	
 	assert(geometry_data.vertices.size() == number_of_vertices);
 	assert(geometry_data.indices.size() == number_of_indices);
-	return geometry_data;
+	return generate_geometry_handles(geometry_data);
 }
 
-GeometryData generate_cube_geometry_data() {
-	GeometryData geometry_data; // 24 36
+IndexedGeometryHandles generate_cube() {
+	TexturedMeshGeometryData geometry_data;
 	geometry_data.vertices.reserve(24);
 	geometry_data.indices.reserve(36);
 	
 	// TODO(Matias): Fix UV coordinates
 	geometry_data.vertices = {
 			// Front
-			Vertex(Toucan::Vector3f( 0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 0
-			Vertex(Toucan::Vector3f(-0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 1
-			Vertex(Toucan::Vector3f(-0.5f, -0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 2
-			Vertex(Toucan::Vector3f( 0.5f, -0.5f,  0.5f),  Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 3
+			TexturedVertex{Toucan::Vector3f(0.5f, 0.5f, 0.5f), Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()}, // 0
+			TexturedVertex{Toucan::Vector3f(-0.5f, 0.5f, 0.5f), Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()}, // 1
+			TexturedVertex{Toucan::Vector3f(-0.5f, -0.5f, 0.5f), Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()}, // 2
+			TexturedVertex{Toucan::Vector3f(0.5f, -0.5f, 0.5f), Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()}, // 3
 			// Top
-			Vertex(Toucan::Vector3f( 0.5f, -0.5f,  0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 4
-			Vertex(Toucan::Vector3f(-0.5f, -0.5f,  0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 5
-			Vertex(Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 6
-			Vertex(Toucan::Vector3f( 0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 7
+			TexturedVertex{Toucan::Vector3f(0.5f, -0.5f, 0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()}, // 4
+			TexturedVertex{Toucan::Vector3f(-0.5f, -0.5f, 0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()}, // 5
+			TexturedVertex{Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()}, // 6
+			TexturedVertex{Toucan::Vector3f(0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()}, // 7
 			// Right
-			Vertex(Toucan::Vector3f( 0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 8
-			Vertex(Toucan::Vector3f( 0.5f,  0.5f, -0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 9
-			Vertex(Toucan::Vector3f( 0.5f, -0.5f, -0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 10
-			Vertex(Toucan::Vector3f( 0.5f, -0.5f,  0.5f),  Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 11
+			TexturedVertex{Toucan::Vector3f(0.5f, 0.5f, 0.5f), Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()}, // 8
+			TexturedVertex{Toucan::Vector3f(0.5f, 0.5f, -0.5f), Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()}, // 9
+			TexturedVertex{Toucan::Vector3f(0.5f, -0.5f, -0.5f), Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()}, // 10
+			TexturedVertex{Toucan::Vector3f(0.5f, -0.5f, 0.5f), Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()}, // 11
 			// Back
-			Vertex(Toucan::Vector3f( 0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 12
-			Vertex(Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 13
-			Vertex(Toucan::Vector3f(-0.5f,  0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 14
-			Vertex(Toucan::Vector3f( 0.5f,  0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()), // 15
+			TexturedVertex{Toucan::Vector3f(0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()}, // 12
+			TexturedVertex{Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()}, // 13
+			TexturedVertex{Toucan::Vector3f(-0.5f, 0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()}, // 14
+			TexturedVertex{Toucan::Vector3f(0.5f, 0.5f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()}, // 15
 			// Left
-			Vertex(Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 16
-			Vertex(Toucan::Vector3f(-0.5f, -0.5f,  0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 17
-			Vertex(Toucan::Vector3f(-0.5f,  0.5f,  0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 18
-			Vertex(Toucan::Vector3f(-0.5f,  0.5f, -0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()), // 19
+			TexturedVertex{Toucan::Vector3f(-0.5f, -0.5f, -0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()}, // 16
+			TexturedVertex{Toucan::Vector3f(-0.5f, -0.5f, 0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()}, // 17
+			TexturedVertex{Toucan::Vector3f(-0.5f, 0.5f, 0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()}, // 18
+			TexturedVertex{Toucan::Vector3f(-0.5f, 0.5f, -0.5f), -Toucan::Vector3f::UnitX(), Toucan::Vector2f::Zero()}, // 19
 			// Bottom
-			Vertex(Toucan::Vector3f( 0.5f,  0.5f, -0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 20
-			Vertex(Toucan::Vector3f(-0.5f,  0.5f, -0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 21
-			Vertex(Toucan::Vector3f(-0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 22
-			Vertex(Toucan::Vector3f( 0.5f,  0.5f,  0.5f),  Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()), // 23
+			TexturedVertex{Toucan::Vector3f(0.5f, 0.5f, -0.5f), Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()}, // 20
+			TexturedVertex{Toucan::Vector3f(-0.5f, 0.5f, -0.5f), Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()}, // 21
+			TexturedVertex{Toucan::Vector3f(-0.5f, 0.5f, 0.5f), Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()}, // 22
+			TexturedVertex{Toucan::Vector3f(0.5f, 0.5f, 0.5f), Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()}, // 23
 	};
 	
 	geometry_data.indices = {
@@ -134,14 +210,14 @@ GeometryData generate_cube_geometry_data() {
 	
 	assert(geometry_data.vertices.size() == 24);
 	assert(geometry_data.indices.size() == 36);
-	return geometry_data;
+	return generate_geometry_handles(geometry_data);
 }
 
-GeometryData generate_cylinder_geometry_data(int number_of_sectors) {
+IndexedGeometryHandles generate_cylinder(int number_of_sectors) {
 	const size_t number_of_vertices = 2 + 2*(number_of_sectors + 1) + 2*(number_of_sectors + 1);
 	const size_t number_of_indices = 2*3*number_of_sectors + 2*3*number_of_sectors;
 	
-	GeometryData geometry_data;
+	TexturedMeshGeometryData geometry_data;
 	geometry_data.vertices.reserve(number_of_vertices);
 	geometry_data.indices.reserve(number_of_indices);
 	
@@ -153,8 +229,8 @@ GeometryData generate_cylinder_geometry_data(int number_of_sectors) {
 	int vertex_index = 2;
 	
 	// TODO(Matias): Fix UV coordinates
-	geometry_data.vertices.emplace_back(Toucan::Vector3f(0.0f, -0.5f, 0.0f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero());
-	geometry_data.vertices.emplace_back(Toucan::Vector3f(0.0f, 0.5f, 0.0f), Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero());
+	geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(0.0f, -0.5f, 0.0f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()});
+	geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(0.0f, 0.5f, 0.0f), Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()});
 	
 	// Top cap
 	for (int sector_index = 0; sector_index <= number_of_sectors; ++sector_index) {
@@ -163,10 +239,10 @@ GeometryData generate_cylinder_geometry_data(int number_of_sectors) {
 		const float x = std::cos(angle);
 		const float z = std::sin(angle);
 		
-		geometry_data.vertices.emplace_back(Toucan::Vector3f(radius*x, -0.5f, radius*z), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero());
-		geometry_data.vertices.emplace_back(Toucan::Vector3f(radius*x, -0.5f, radius*z), Toucan::Vector3f(x, 0.0f, z), Toucan::Vector2f::Zero());
-		geometry_data.vertices.emplace_back(Toucan::Vector3f(radius*x, 0.5f, radius*z), Toucan::Vector3f(x, 0.0f, z), Toucan::Vector2f::Zero());
-		geometry_data.vertices.emplace_back(Toucan::Vector3f(radius*x, 0.5f, radius*z), Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero());
+		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, -0.5f, radius*z), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()});
+		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, -0.5f, radius*z), Toucan::Vector3f(x, 0.0f, z), Toucan::Vector2f::Zero()});
+		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, 0.5f, radius*z), Toucan::Vector3f(x, 0.0f, z), Toucan::Vector2f::Zero()});
+		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, 0.5f, radius*z), Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()});
 		vertex_index += 4;
 		
 		if (sector_index != 0) {
@@ -191,44 +267,7 @@ GeometryData generate_cylinder_geometry_data(int number_of_sectors) {
 	
 	assert(geometry_data.vertices.size() == number_of_vertices);
 	assert(geometry_data.indices.size() == number_of_indices);
-	
-	return geometry_data;
+	return generate_geometry_handles(geometry_data);
 }
 
-GeometryHandles generate_geometry_handles(const GeometryData& geometry_data) {
-	GeometryHandles geometry_handles;
-	geometry_handles.number_of_indices = geometry_data.indices.size();
-	
-	glGenVertexArrays(1, &geometry_handles.vao);
-	glGenBuffers(1, &geometry_handles.vbo);
-	glGenBuffers(1, &geometry_handles.ebo);
-	
-	glBindVertexArray(geometry_handles.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, geometry_handles.vbo);
-	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Vertex) * geometry_data.vertices.size()), geometry_data.vertices.data(), GL_STATIC_DRAW);
-	
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry_handles.ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(unsigned int) * geometry_data.indices.size()), geometry_data.indices.data(), GL_STATIC_DRAW);
-	
-	// Position
-	constexpr auto position_location = 0;
-	glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offset_of(&Vertex::position)));
-	glEnableVertexAttribArray(position_location);
-	
-	// Normal
-	constexpr auto normal_location = 1;
-	glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offset_of(&Vertex::normal)));
-	glEnableVertexAttribArray(normal_location);
-	
-	// UV
-	constexpr auto uv_location = 2;
-	glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offset_of(&Vertex::uv)));
-	glEnableVertexAttribArray(uv_location);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	
-	return geometry_handles;
-}
 

@@ -59,30 +59,31 @@ unsigned int get_mesh_3d_shader(AssetContext* context) {
 	return context->mesh_3d_shader;
 }
 
-const GeometryHandles* get_sphere_handles_ptr(AssetContext* context) {
+const IndexedGeometryHandles* get_quad_handles_ptr(AssetContext* context) {
+	if (context->quad_geometry_handles.vao != 0) { return &context->quad_geometry_handles; }
+	
+	context->quad_geometry_handles = generate_quad();
+	return &context->quad_geometry_handles;
+}
+
+const IndexedGeometryHandles* get_sphere_handles_ptr(AssetContext* context) {
 	if (context->sphere_geometry_handles.vao != 0) { return &context->sphere_geometry_handles; }
 	
-	GeometryData geometry_data = generate_sphere_geometry_data();
-	context->sphere_geometry_handles = generate_geometry_handles(geometry_data);
-	
+	context->sphere_geometry_handles = generate_sphere();
 	return &context->sphere_geometry_handles;
 }
 
-const GeometryHandles* get_cube_handles_ptr(AssetContext* context) {
+const IndexedGeometryHandles* get_cube_handles_ptr(AssetContext* context) {
 	if (context->cube_geometry_handles.vao != 0) { return &context->cube_geometry_handles; }
 	
-	GeometryData geometry_data = generate_cube_geometry_data();
-	context->cube_geometry_handles = generate_geometry_handles(geometry_data);
-	
+	context->cube_geometry_handles = generate_cube();
 	return &context->cube_geometry_handles;
 }
 
-const GeometryHandles* get_cylinder_handles_ptr(AssetContext* context) {
+const IndexedGeometryHandles* get_cylinder_handles_ptr(AssetContext* context) {
 	if (context->cylinder_geometry_handles.vao != 0) { return &context->cylinder_geometry_handles; }
 	
-	GeometryData geometry_data = generate_cylinder_geometry_data();
-	context->cylinder_geometry_handles = generate_geometry_handles(geometry_data);
-	
+	context->cylinder_geometry_handles = generate_cylinder();
 	return &context->cylinder_geometry_handles;
 }
 

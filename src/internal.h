@@ -38,10 +38,6 @@ struct Point2DMetadata{
 };
 
 struct Image2DMetadata {
-	unsigned int vao;
-	unsigned int vbo;
-	unsigned int ebo;
-	
 	unsigned int texture;
 	
 	int width;
