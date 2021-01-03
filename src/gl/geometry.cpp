@@ -20,8 +20,37 @@ struct TexturedMeshGeometryData {
 	std::vector<unsigned int> indices;
 };
 
+GeometryHandles generate_geometry_handles(const std::vector<ColoredVertex>& geometry_data) {
+	GeometryHandles geometry_handles;
+	geometry_handles.number_of_vertices = geometry_data.size();
+	
+	glGenVertexArrays(1, &geometry_handles.vao);
+	glGenBuffers(1, &geometry_handles.vbo);
+	
+	glBindVertexArray(geometry_handles.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, geometry_handles.vbo);
+	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(ColoredVertex) * geometry_data.size()), geometry_data.data(), GL_STATIC_DRAW);
+	
+	// Position
+	constexpr auto position_location = 0;
+	glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(offset_of(&ColoredVertex::position)));
+	glEnableVertexAttribArray(position_location);
+	
+	// Color
+	constexpr auto normal_location = 1;
+	glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(offset_of(&ColoredVertex::color)));
+	glEnableVertexAttribArray(normal_location);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	
+	return geometry_handles;
+}
 
-IndexedGeometryHandles generate_geometry_handles(const TexturedMeshGeometryData& geometry_data) {
+
+
+IndexedGeometryHandles generate_indexed_geometry_handles(const TexturedMeshGeometryData& geometry_data) {
 	IndexedGeometryHandles geometry_handles;
 	geometry_handles.number_of_indices = geometry_data.indices.size();
 	
@@ -58,6 +87,23 @@ IndexedGeometryHandles generate_geometry_handles(const TexturedMeshGeometryData&
 	return geometry_handles;
 }
 
+GeometryHandles generate_axis() {
+	std::vector<ColoredVertex> geometry_data;
+	geometry_data.reserve(6);
+	
+	geometry_data = {
+			ColoredVertex{Toucan::Vector3f(0.0f, 0.0f, 0.0f), Toucan::Vector3f(1.0f, 0.0f, 0.0f)},
+			ColoredVertex{Toucan::Vector3f(1.0f, 0.0f, 0.0f), Toucan::Vector3f(1.0f, 0.0f, 0.0f)},
+			ColoredVertex{Toucan::Vector3f(0.0f, 0.0f, 0.0f), Toucan::Vector3f(0.0f, 1.0f, 0.0f)},
+			ColoredVertex{Toucan::Vector3f(0.0f, 1.0f, 0.0f), Toucan::Vector3f(0.0f, 1.0f, 0.0f)},
+			ColoredVertex{Toucan::Vector3f(0.0f, 0.0f, 0.0f), Toucan::Vector3f(0.0f, 0.0f, 1.0f)},
+			ColoredVertex{Toucan::Vector3f(0.0f, 0.0f, 1.0f), Toucan::Vector3f(0.0f, 0.0f, 1.0f)},
+	};
+	
+	assert(geometry_data.size() == 6);
+	return generate_geometry_handles(geometry_data);
+}
+
 IndexedGeometryHandles generate_quad() {
 	TexturedMeshGeometryData geometry_data;
 	geometry_data.vertices.reserve(4);
@@ -77,7 +123,7 @@ IndexedGeometryHandles generate_quad() {
 	
 	assert(geometry_data.vertices.size() == 4);
 	assert(geometry_data.indices.size() == 6);
-	return generate_geometry_handles(geometry_data);
+	return generate_indexed_geometry_handles(geometry_data);
 }
 
 IndexedGeometryHandles generate_sphere(int number_of_sectors, int number_of_stacks) {
@@ -145,7 +191,7 @@ IndexedGeometryHandles generate_sphere(int number_of_sectors, int number_of_stac
 	
 	assert(geometry_data.vertices.size() == number_of_vertices);
 	assert(geometry_data.indices.size() == number_of_indices);
-	return generate_geometry_handles(geometry_data);
+	return generate_indexed_geometry_handles(geometry_data);
 }
 
 IndexedGeometryHandles generate_cube() {
@@ -210,7 +256,7 @@ IndexedGeometryHandles generate_cube() {
 	
 	assert(geometry_data.vertices.size() == 24);
 	assert(geometry_data.indices.size() == 36);
-	return generate_geometry_handles(geometry_data);
+	return generate_indexed_geometry_handles(geometry_data);
 }
 
 IndexedGeometryHandles generate_cylinder(int number_of_sectors) {
@@ -267,7 +313,7 @@ IndexedGeometryHandles generate_cylinder(int number_of_sectors) {
 	
 	assert(geometry_data.vertices.size() == number_of_vertices);
 	assert(geometry_data.indices.size() == number_of_indices);
-	return generate_geometry_handles(geometry_data);
+	return generate_indexed_geometry_handles(geometry_data);
 }
 
 

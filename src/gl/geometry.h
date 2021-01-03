@@ -18,6 +18,8 @@ struct IndexedGeometryHandles {
 	unsigned int number_of_indices = 0;
 };
 
+GeometryHandles generate_axis();
+
 IndexedGeometryHandles generate_quad();
 IndexedGeometryHandles generate_sphere(int number_of_sectors = 32, int number_of_stacks = 20);
 IndexedGeometryHandles generate_cube();

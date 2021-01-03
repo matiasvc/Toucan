@@ -80,7 +80,7 @@ struct Figure2D {
 	Vector2i framebuffer_size = Vector2i(128, 128);
 };
 
-enum class ElementType3D { Grid3D, Point3D, Line3D, Primitive3D };
+enum class ElementType3D { Grid3D, Axis3D, Point3D, Line3D, Primitive3D };
 
 struct Grid3DMetadata {
 	unsigned int vao_major;
@@ -93,6 +93,10 @@ struct Grid3DMetadata {
 	
 	float spacing;
 	int lines;
+};
+
+struct Axis3DMetadata {
+	ShowAxis3DSettings settings;
 };
 
 struct Point3DMetadata {
@@ -128,6 +132,7 @@ struct Element3D {
 	void* data_buffer_ptr = nullptr; // non-null if new data should be uploaded to device
 	union {
 		Grid3DMetadata grid_3d_metadata;
+		Axis3DMetadata axis_3d_metadata;
 		Point3DMetadata point_3d_metadata;
 		Line3DMetadata line_3d_metadata;
 		Primitive3DMetadata primitive_3d_metadata;

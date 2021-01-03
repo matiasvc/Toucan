@@ -50,10 +50,10 @@ void EndFigure3D();
 void PushPose3D(const Toucan::RigidTransform3Df& pose);
 void PopPose3D();
 
+void ShowAxis3D(const std::string& name, const ShowAxis3DSettings& settings = {});
 void ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::Point3D>& points_buffer, const ShowPoints3DSettings& settings = {});
 void ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::LineVertex3D>& lines_buffer, const ShowLines3DSettings& settings = {});
 void ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Toucan::Primitive3D>& primitives_buffer, const ShowPrimitives3DSettings& settings = {});
-
 
 // Helper functions
 template <size_t N>

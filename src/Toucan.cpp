@@ -356,6 +356,20 @@ void Toucan::PopPose3D() {
 	current_figure.pose_stack.pop_back();
 }
 
+void Toucan::ShowAxis3D(const std::string& name, const ShowAxis3DSettings& settings) {
+	validate_initialized(ShowAxis3D)
+	auto& context = *toucan_context_ptr;
+	validate_active_figure3d(ShowAxis3D)
+	auto& current_figure = *context.current_figure_3d;
+	
+	auto& current_element = get_or_create_element_3d(current_figure, name, Toucan::ElementType3D::Axis3D);
+	
+	current_element.pose = current_figure.pose_stack.back();
+	
+	current_element.data_buffer_ptr = reinterpret_cast<void*>(1);
+	current_element.axis_3d_metadata.settings = settings;
+}
+
 void Toucan::ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::Point3D>& points_buffer, const ShowPoints3DSettings& settings) {
 	validate_initialized(ShowPoints3D)
 	auto& context = *toucan_context_ptr;

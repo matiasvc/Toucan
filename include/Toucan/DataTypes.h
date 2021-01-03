@@ -270,6 +270,10 @@ struct ShowImage2DSettings {
 	ScaledTransform2Df scaled_transform;
 };
 
+struct ShowAxis3DSettings {
+	float size = 0.5f;
+};
+
 struct ShowPoints3DSettings {
 	ScaledTransform3Df scaled_transform;
 };

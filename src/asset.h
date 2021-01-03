@@ -11,6 +11,7 @@ struct AssetContext {
 	unsigned int line_3d_shader = 0;
 	unsigned int mesh_3d_shader = 0;
 	
+	GeometryHandles origin_axis_handles = {};
 	IndexedGeometryHandles quad_geometry_handles = {};
 	IndexedGeometryHandles sphere_geometry_handles = {};
 	IndexedGeometryHandles cube_geometry_handles = {};
@@ -25,6 +26,7 @@ unsigned int get_point_3d_shader(AssetContext* context);
 unsigned int get_line_3d_shader(AssetContext* context);
 unsigned int get_mesh_3d_shader(AssetContext* context);
 
+const GeometryHandles* get_axis_handles_ptr(AssetContext* context);
 const IndexedGeometryHandles* get_quad_handles_ptr(AssetContext* context);
 const IndexedGeometryHandles* get_sphere_handles_ptr(AssetContext* context);
 const IndexedGeometryHandles* get_cube_handles_ptr(AssetContext* context);

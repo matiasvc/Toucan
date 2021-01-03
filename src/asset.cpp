@@ -59,6 +59,13 @@ unsigned int get_mesh_3d_shader(AssetContext* context) {
 	return context->mesh_3d_shader;
 }
 
+const GeometryHandles* get_axis_handles_ptr(AssetContext* context) {
+	if (context->origin_axis_handles.vao != 0) { return &context->origin_axis_handles; }
+	
+	context->origin_axis_handles = generate_axis();
+	return &context->origin_axis_handles;
+}
+
 const IndexedGeometryHandles* get_quad_handles_ptr(AssetContext* context) {
 	if (context->quad_geometry_handles.vao != 0) { return &context->quad_geometry_handles; }
 	

@@ -458,6 +458,26 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			
 			glCheckError();
 		} break;
+		case Toucan::ElementType3D::Axis3D: {
+			unsigned int line_3d_shader = get_line_3d_shader(&context->asset_context);
+			glUseProgram(line_3d_shader);
+			
+			const Toucan::Matrix4f  model_matrix = model_to_world_matrix * Toucan::ScaledTransform3Df(
+					Quaternionf::Identity(), Toucan::Vector3f::Zero(), Toucan::Vector3f::Ones()*element_3d.axis_3d_metadata.settings.size
+			).transformation_matrix();
+			
+			set_shader_uniform(line_3d_shader, "model", model_matrix);
+			set_shader_uniform(line_3d_shader, "view", world_to_camera_matrix);
+			set_shader_uniform(line_3d_shader, "projection", projection_matrix);
+			
+			const GeometryHandles* geometry_handles_ptr = get_axis_handles_ptr(&context->asset_context);
+			
+			glLineWidth(1.0);
+			glBindVertexArray(geometry_handles_ptr->vao);
+			glDrawArrays(GL_LINES, 0, geometry_handles_ptr->number_of_vertices);
+			glBindVertexArray(0);
+			glCheckError();
+		} break;
 		case Toucan::ElementType3D::Point3D: {
 			// Create buffers if they doesnt already exists
 			if (element_3d.point_3d_metadata.vao == 0) { glGenVertexArrays(1, &element_3d.point_3d_metadata.vao); glCheckError(); }
@@ -606,3 +626,4 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 		} break;
 	}
 }
+
