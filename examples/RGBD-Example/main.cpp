@@ -98,7 +98,7 @@ int main() {
 		auto gt_t = gt_pose.translation();
 		auto gt_q = gt_pose.unit_quaternion();
 		
-		pose_path.emplace_back(Toucan::LineVertex3D{Toucan::Vector3f(gt_t.x(), gt_t.y(), gt_t.z()), Toucan::Color::Blue()});
+		pose_path.emplace_back(Toucan::LineVertex3D{Toucan::Vector3f(gt_t.x(), gt_t.y(), gt_t.z()), Toucan::Color::Magenta()});
 		Toucan::BeginFigure3D("Point Projection");
 		{
 			Toucan::PushPose3D(Toucan::RigidTransform3Df(Toucan::Quaternionf(Toucan::Vector3f::UnitX(), M_PI_2), Toucan::Vector3f::Zero()));

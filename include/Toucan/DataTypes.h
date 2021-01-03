@@ -31,11 +31,15 @@ struct Color {
 	constexpr Color(float r, float g, float b) :
 	r{r}, g{g}, b{b} { }
 	
-	constexpr static Color Red()   { return Color(1.0f, 0.0f, 0.0); }
-	constexpr static Color Green() { return Color(0.0f, 1.0f, 0.0); }
-	constexpr static Color Blue()  { return Color(0.0f, 0.0f, 1.0); }
-	constexpr static Color Black() { return Color(0.0f, 0.0f, 0.0); }
-	constexpr static Color White() { return Color(1.0f, 1.0f, 1.0); }
+	constexpr static Color Red()     { return Color(1.0f, 0.0f, 0.0); }
+	constexpr static Color Green()   { return Color(0.0f, 1.0f, 0.0); }
+	constexpr static Color Blue()    { return Color(0.0f, 0.0f, 1.0); }
+	constexpr static Color Black()   { return Color(0.0f, 0.0f, 0.0); }
+	constexpr static Color White()   { return Color(1.0f, 1.0f, 1.0); }
+	constexpr static Color Gray()    { return Color(0.5f, 0.5f, 0.5); }
+	constexpr static Color Yellow()  { return Color(1.0f, 1.0f, 0.0); }
+	constexpr static Color Cyan()    { return Color(0.0f, 1.0f, 1.0); }
+	constexpr static Color Magenta() { return Color(1.0f, 0.0f, 1.0); }
 	
 	float r;
 	float g;
