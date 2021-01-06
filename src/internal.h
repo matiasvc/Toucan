@@ -162,6 +162,9 @@ struct ToucanContext {
 	std::atomic_bool window_open = true;
 	std::thread render_thread;
 	
+	std::mutex initialized_mutex;
+	std::condition_variable initialized_cv;
+	
 	std::mutex window_close_mutex;
 	std::condition_variable window_close_cv;
 	

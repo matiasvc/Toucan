@@ -114,6 +114,9 @@ void Toucan::Initialize(Toucan::ToucanSettings settings) {
 	if (toucan_context_ptr != nullptr) { throw std::runtime_error("Toucan error! 'Toucan::Initialize' was called when Toucan already was initialized. Did you call 'Toucan::Initialize' multiple times?"); }
 	toucan_context_ptr = new ToucanContext;
 	toucan_context_ptr->render_thread = std::thread(render_loop, settings);
+	
+	std::unique_lock lock(toucan_context_ptr->initialized_mutex);
+	toucan_context_ptr->initialized_cv.wait(lock);
 }
 
 void Toucan::Destroy() {
@@ -645,6 +648,8 @@ void render_loop(Toucan::ToucanSettings settings) {
 		int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_4_1, (void**)&toucan_context_ptr->rdoc_api);
 		assert(ret == 1);
 	}
+	
+	toucan_context_ptr->initialized_cv.notify_all();
 	
 	auto& imgui_style = ImGui::GetStyle();
 	imgui_style.WindowMinSize = ImVec2(200.0f, 200.0f);
