@@ -655,6 +655,8 @@ void render_loop(Toucan::ToucanSettings settings) {
 	imgui_style.WindowMinSize = ImVec2(200.0f, 200.0f);
 	
 	while (toucan_context_ptr->should_render and not glfwWindowShouldClose(toucan_context_ptr->window_ptr)) {
+		const auto frame_start = std::chrono::steady_clock::now();
+		
 		glfwPollEvents();
 		
 		ImGui_ImplOpenGL3_NewFrame();
@@ -1038,8 +1040,15 @@ void render_loop(Toucan::ToucanSettings settings) {
 		
 		glfwSwapBuffers(toucan_context_ptr->window_ptr);
 		
+		const auto frame_end = std::chrono::steady_clock::now();
+		const auto current_frame_duration = frame_end - frame_start;
+		
 		using namespace std::chrono_literals;
-		std::this_thread::sleep_for(0.01s); // TODO(Matias): Cap fps properly
+		const auto min_frame_duration = 1000ms / settings.max_frames_per_second;
+		
+		if (current_frame_duration < min_frame_duration) {
+			std::this_thread::sleep_for(min_frame_duration - current_frame_duration);
+		}
 	}
 	
 	ImGui::DestroyContext();

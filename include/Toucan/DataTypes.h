@@ -242,6 +242,7 @@ struct ToucanSettings {
 	unsigned int height = 1200;
 	bool resizeable = true;
 	bool floating = false;
+	float max_frames_per_second = 60.0f;
 };
 
 enum class YAxisDirection {UP, DOWN};
