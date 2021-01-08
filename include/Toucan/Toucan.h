@@ -24,6 +24,7 @@ void EndFigure2D();
 
 void PushPose2D(const Toucan::RigidTransform2Df& pose);
 void PopPose2D();
+void ClearPose2D();
 
 void ShowLinePlot2D(const std::string& name, const Toucan::Buffer<Toucan::Vector2f>& line_buffer, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {});
 void ShowPoints2D(const std::string& name, const Toucan::Buffer<Toucan::Point2D>& points_buffer, int draw_layer = 0, const ShowPoints2DSettings& settings = {});
@@ -49,6 +50,7 @@ void EndFigure3D();
 // ***** Elements 3D *****
 void PushPose3D(const Toucan::RigidTransform3Df& pose);
 void PopPose3D();
+void ClearPose3D();
 
 void ShowAxis3D(const std::string& name, const ShowAxis3DSettings& settings = {});
 void ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::Point3D>& points_buffer, const ShowPoints3DSettings& settings = {});

@@ -204,6 +204,18 @@ void Toucan::PopPose2D() {
 	current_figure.pose_stack.pop_back();
 }
 
+void Toucan::ClearPose2D() {
+	validate_initialized(PopPose2D)
+	auto& context = *toucan_context_ptr;
+	validate_active_figure2d(PopPose2D)
+	auto& current_figure = *context.current_figure_2d;
+	
+	if (current_figure.pose_stack.size() <= 1) { throw std::runtime_error("Toucan error! 'Toucan::ClearPose2D' was called without any matching call to `Toucan::PushPose2D`."); }
+	
+	current_figure.pose_stack.clear();
+	current_figure.pose_stack.emplace_back(); // Add identity pose back
+}
+
 void Toucan::ShowLinePlot2D(const std::string& name, const Toucan::Buffer<Toucan::Vector2f>& line_buffer, int draw_layer, const ShowLinePlot2DSettings& settings) {
 	validate_initialized(PopPose2D)
 	auto& context = *toucan_context_ptr;
@@ -357,6 +369,18 @@ void Toucan::PopPose3D() {
 	if (current_figure.pose_stack.size() <= 1) { throw std::runtime_error("Toucan error! 'Toucan::PopPose3D' was called without a matching call to `Toucan::PushPose3D`."); }
 	
 	current_figure.pose_stack.pop_back();
+}
+
+void Toucan::ClearPose3D() {
+	validate_initialized(PopPose3D)
+	auto& context = *toucan_context_ptr;
+	validate_active_figure3d(PopPose3D)
+	auto& current_figure = *context.current_figure_3d;
+	
+	if (current_figure.pose_stack.size() <= 1) { throw std::runtime_error("Toucan error! 'Toucan::ClearPose3D' was called without any matching call to `Toucan::PushPose3D`."); }
+	
+	current_figure.pose_stack.clear();
+	current_figure.pose_stack.emplace_back(); // Add identity pose back
 }
 
 void Toucan::ShowAxis3D(const std::string& name, const ShowAxis3DSettings& settings) {
