@@ -564,7 +564,7 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			glBindVertexArray(element_3d.line_3d_metadata.vao);
 			
 			switch (element_3d.line_3d_metadata.settings.line_type) {
-				case LineType::LINES:
+				case LineType::LINE_SEGMENTS:
 					glDrawArrays(GL_LINES, 0, element_3d.line_3d_metadata.number_of_line_vertices);
 					break;
 				case LineType::LINE_STRIP:

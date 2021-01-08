@@ -283,7 +283,7 @@ struct ShowPoints3DSettings {
 	ScaledTransform3Df scaled_transform;
 };
 
-enum class LineType { LINES, LINE_STRIP, LINE_LOOP };
+enum class LineType { LINE_SEGMENTS, LINE_STRIP, LINE_LOOP };
 
 struct ShowLines3DSettings {
 	ScaledTransform3Df scaled_transform;
