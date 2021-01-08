@@ -16,12 +16,10 @@ bool IsWindowOpen();
 void SleepUntilWindowClosed();
 
 // ***** Figure 2D *****
-
 void BeginFigure2D(const std::string& name, const Figure2DSettings& settings = {});
 void EndFigure2D();
 
 // ***** Elements 2D *****
-
 void PushPose2D(const Toucan::RigidTransform2Df& pose);
 void PopPose2D();
 void ClearPose2D();
