@@ -55,6 +55,26 @@ void ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::Point3D>
 void ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::LineVertex3D>& lines_buffer, const ShowLines3DSettings& settings = {});
 void ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Toucan::Primitive3D>& primitives_buffer, const ShowPrimitives3DSettings& settings = {});
 
+// ***** Input *****
+void BeginInputWindow(const std::string& name, const InputSettings& settings = {});
+void EndInputWindow();
+
+// ***** Elements Input *****
+bool ShowButton(const std::string& name, const ShowButtonSettings& settings = {});
+
+bool ShowCheckbox(const std::string& name, bool& value, const ShowCheckboxSettings& = {});
+
+bool ShowSliderFloat(const std::string& name, float& value, const ShowSliderFloatSettings& settings = {});
+bool ShowSliderFloat2(const std::string& name, Vector2f& value, const ShowSliderFloatSettings& settings = {});
+bool ShowSliderFloat3(const std::string& name, Vector3f& value, const ShowSliderFloatSettings& settings = {});
+bool ShowSliderFloat4(const std::string& name, Vector4f& value, const ShowSliderFloatSettings& settings = {});
+
+bool ShowSliderInt(const std::string& name, int& value, const ShowSliderIntSettings& settings = {});
+bool ShowSliderInt2(const std::string& name, Vector2i& value, const ShowSliderIntSettings& settings = {});
+bool ShowSliderInt3(const std::string& name, Vector3i& value, const ShowSliderIntSettings& settings = {});
+bool ShowSliderInt4(const std::string& name, Vector4i& value, const ShowSliderIntSettings& settings = {});
+
+
 // Helper functions
 template <size_t N>
 inline void ShowLinePlot2D(const std::string& name, const std::array<Toucan::Vector2f, N>& points, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {

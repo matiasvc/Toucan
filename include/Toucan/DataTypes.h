@@ -259,6 +259,10 @@ struct Figure3DSettings {
 
 };
 
+struct InputSettings {
+
+};
+
 struct ShowLinePlot2DSettings {
 	ScaledTransform2Df scaled_transform;
 	Color line_color = Color::White();
@@ -294,6 +298,24 @@ struct ShowLines3DSettings {
 struct ShowPrimitives3DSettings {
 	ScaledTransform3Df scaled_transform;
 	Vector3f light_vector = Vector3f(-1.0f, -1.25f, -1.5f).normalized();
+};
+
+struct ShowButtonSettings {
+
+};
+
+struct ShowCheckboxSettings {
+
+};
+
+struct ShowSliderFloatSettings {
+	float min_value = -5.0f;
+	float max_value = 5.0f;
+};
+
+struct ShowSliderIntSettings {
+	int min_value = -5;
+	int max_value = 5;
 };
 
 } // namespace Toucan

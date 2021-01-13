@@ -53,6 +53,12 @@ if (toucan_context_ptr->current_figure_3d == nullptr) { throw std::runtime_error
 #define validate_inactive_figure3d(function_name) \
 if (toucan_context_ptr->current_figure_3d != nullptr) { throw std::runtime_error("Toucan error! 'Toucan::"#function_name"' was called while another Figure2D was active. Did you forget to call 'Toucan::EndFigure2D'?"); }
 
+#define validate_active_input_window(function_name) \
+if (toucan_context_ptr->current_input_window == nullptr) { throw std::runtime_error("Toucan error! 'Toucan::"#function_name"' was called without an active Figure2D. Did you forget to call 'Toucan::BeginFigure2D'?"); }
+
+#define validate_inactive_input_window(function_name) \
+if (toucan_context_ptr->current_input_window != nullptr) { throw std::runtime_error("Toucan error! 'Toucan::"#function_name"' was called while another InputWindow was active. Did you forget to call 'Toucan::EndInputWindow'?"); }
+
 Toucan::Element2D& get_or_create_element_2d(Toucan::Figure2D& figure, const std::string& name, int draw_layer, Toucan::ElementType2D type) {
 	// Does the Element2D object with that name already exist?
 	Toucan::Element2D* current_element_ptr = nullptr;
@@ -104,6 +110,30 @@ Toucan::Element3D& get_or_create_element_3d(Toucan::Figure3D& figure, const std:
 		new_element_3d.type = type;
 		
 		auto& inserted_element = figure.elements.emplace_back(new_element_3d);
+		current_element_ptr = &inserted_element;
+	}
+	
+	return *current_element_ptr;
+}
+
+Toucan::ElementInput& get_or_create_element_input(Toucan::InputWindow& input_window, const std::string& name, Toucan::ElementInputType type) {
+	// Does the Element3D object with that name already exist?
+	Toucan::ElementInput* current_element_ptr = nullptr;
+	for (auto& element : input_window.elements) {
+		if (element.name == name) {
+			current_element_ptr = &element;
+			break;
+		}
+	}
+	
+	// If it does not exist, we must create a new one.
+	if (current_element_ptr == nullptr) {
+		
+		Toucan::ElementInput new_element_3d = {};
+		new_element_3d.name = name;
+		new_element_3d.type = type;
+		
+		auto& inserted_element = input_window.elements.emplace_back(new_element_3d);
 		current_element_ptr = &inserted_element;
 	}
 	
@@ -471,6 +501,228 @@ void Toucan::ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Touc
 	
 	current_element.primitive_3d_metadata.number_of_primitives = primitives_buffer.number_of_elements;
 	current_element.primitive_3d_metadata.settings = settings;
+}
+
+void Toucan::BeginInputWindow(const std::string& name, const InputSettings& settings) {
+	validate_initialized(BeginInputWindow)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_inactive_input_window(BeginFigure3D)
+	
+	Toucan::InputWindow* input_window_ptr = nullptr;
+	for (auto& input_window : toucan_context.input_windows) { // Does the InputWindow already exists
+		if (input_window.name == name) {
+			input_window_ptr = &input_window;
+			break;
+		}
+	}
+	
+	if (input_window_ptr == nullptr) { // Do we need to create a new InputWindow
+		auto& input_window = toucan_context.input_windows.emplace_back();
+		input_window.name = name;
+		input_window_ptr = &input_window;
+	}
+	
+	input_window_ptr->mutex.lock();
+	
+	input_window_ptr->settings = settings;
+	toucan_context.current_input_window = input_window_ptr;
+}
+
+void Toucan::EndInputWindow() {
+	validate_initialized(BeginInputWindow)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(BeginInputWindow)
+	
+	toucan_context.current_input_window->mutex.unlock();
+	toucan_context.current_input_window = nullptr;
+}
+
+bool Toucan::ShowButton(const std::string& name, const ShowButtonSettings& settings) {
+	validate_initialized(ShowButton)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(ShowButton)
+	auto& current_input_window = *toucan_context.current_input_window;
+	
+	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::BUTTON);
+	
+	current_element.show_button_metadata.settings = settings;
+	if (current_element.show_button_metadata.number_of_click_events > 0) {
+		current_element.show_button_metadata.number_of_click_events--;
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool Toucan::ShowCheckbox(const std::string& name, bool& value, const ShowCheckboxSettings& settings) {
+	validate_initialized(ShowSliderFloat)
+	auto &toucan_context = *toucan_context_ptr;
+	validate_active_input_window(ShowSliderFloat)
+	auto &current_input_window = *toucan_context.current_input_window;
+	
+	auto &current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::CHECKBOX);
+	
+	current_element.show_checkbox_metadata.settings = settings;
+	if (current_element.show_checkbox_metadata.value_changed) {
+		value = current_element.show_checkbox_metadata.value;
+		current_element.show_checkbox_metadata.value_changed = false;
+		return true;
+	} else {
+		current_element.show_checkbox_metadata.value = value;
+		return false;
+	}
+}
+
+bool Toucan::ShowSliderFloat(const std::string& name, float& value, const ShowSliderFloatSettings& settings) {
+	validate_initialized(ShowSliderFloat)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(ShowSliderFloat)
+	auto& current_input_window = *toucan_context.current_input_window;
+	
+	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_FLOAT);
+	
+	current_element.show_slider_float_metadata.settings = settings;
+	if (current_element.show_slider_float_metadata.value_changed) {
+		value = current_element.show_slider_float_metadata.value;
+		current_element.show_slider_float_metadata.value_changed = false;
+		return true;
+	} else {
+		current_element.show_slider_float_metadata.value = value;
+		return false;
+	}
+}
+
+bool Toucan::ShowSliderFloat2(const std::string& name, Vector2f& value, const ShowSliderFloatSettings& settings) {
+	validate_initialized(ShowSliderFloat)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(ShowSliderFloat)
+	auto& current_input_window = *toucan_context.current_input_window;
+	
+	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_FLOAT2);
+	
+	current_element.show_slider_float2_metadata.settings = settings;
+	if (current_element.show_slider_float2_metadata.value_changed) {
+		value = current_element.show_slider_float2_metadata.value;
+		current_element.show_slider_float2_metadata.value_changed = false;
+		return true;
+	} else {
+		current_element.show_slider_float2_metadata.value = value;
+		return false;
+	}
+}
+
+bool Toucan::ShowSliderFloat3(const std::string& name, Vector3f& value, const ShowSliderFloatSettings& settings) {
+	validate_initialized(ShowSliderFloat)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(ShowSliderFloat)
+	auto& current_input_window = *toucan_context.current_input_window;
+	
+	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_FLOAT3);
+	
+	current_element.show_slider_float3_metadata.settings = settings;
+	if (current_element.show_slider_float3_metadata.value_changed) {
+		value = current_element.show_slider_float3_metadata.value;
+		current_element.show_slider_float3_metadata.value_changed = false;
+		return true;
+	} else {
+		current_element.show_slider_float3_metadata.value = value;
+		return false;
+	}
+}
+
+bool Toucan::ShowSliderFloat4(const std::string& name, Vector4f& value, const ShowSliderFloatSettings& settings) {
+	validate_initialized(ShowSliderFloat)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(ShowSliderFloat)
+	auto& current_input_window = *toucan_context.current_input_window;
+	
+	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_FLOAT4);
+	
+	current_element.show_slider_float4_metadata.settings = settings;
+	if (current_element.show_slider_float4_metadata.value_changed) {
+		value = current_element.show_slider_float4_metadata.value;
+		current_element.show_slider_float4_metadata.value_changed = false;
+		return true;
+	} else {
+		current_element.show_slider_float4_metadata.value = value;
+		return false;
+	}
+}
+
+bool Toucan::ShowSliderInt(const std::string& name, int& value, const ShowSliderIntSettings& settings) {
+	validate_initialized(ShowSliderFloat)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(ShowSliderFloat)
+	auto& current_input_window = *toucan_context.current_input_window;
+	
+	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_INT);
+	
+	current_element.show_slider_int_metadata.settings = settings;
+	if (current_element.show_slider_int_metadata.value_changed) {
+		value = current_element.show_slider_int_metadata.value;
+		current_element.show_slider_int_metadata.value_changed = false;
+		return true;
+	} else {
+		current_element.show_slider_int_metadata.value = value;
+		return false;
+	}
+}
+
+bool Toucan::ShowSliderInt2(const std::string& name, Vector2i& value, const ShowSliderIntSettings& settings) {
+	validate_initialized(ShowSliderFloat)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(ShowSliderFloat)
+	auto& current_input_window = *toucan_context.current_input_window;
+	
+	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_INT2);
+	
+	current_element.show_slider_int2_metadata.settings = settings;
+	if (current_element.show_slider_int2_metadata.value_changed) {
+		value = current_element.show_slider_int2_metadata.value;
+		current_element.show_slider_int2_metadata.value_changed = false;
+		return true;
+	} else {
+		current_element.show_slider_int2_metadata.value = value;
+		return false;
+	}
+}
+
+bool Toucan::ShowSliderInt3(const std::string& name, Vector3i& value, const ShowSliderIntSettings& settings) {
+	validate_initialized(ShowSliderFloat)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(ShowSliderFloat)
+	auto& current_input_window = *toucan_context.current_input_window;
+	
+	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_INT3);
+	
+	current_element.show_slider_int3_metadata.settings = settings;
+	if (current_element.show_slider_int3_metadata.value_changed) {
+		value = current_element.show_slider_int3_metadata.value;
+		current_element.show_slider_int3_metadata.value_changed = false;
+		return true;
+	} else {
+		current_element.show_slider_int3_metadata.value = value;
+		return false;
+	}
+}
+
+bool Toucan::ShowSliderInt4(const std::string& name, Vector4i& value, const ShowSliderIntSettings& settings) {
+	validate_initialized(ShowSliderFloat)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(ShowSliderFloat)
+	auto& current_input_window = *toucan_context.current_input_window;
+	
+	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_INT4);
+	
+	current_element.show_slider_int4_metadata.settings = settings;
+	if (current_element.show_slider_int4_metadata.value_changed) {
+		value = current_element.show_slider_int4_metadata.value;
+		current_element.show_slider_int4_metadata.value_changed = false;
+		return true;
+	} else {
+		current_element.show_slider_int4_metadata.value = value;
+		return false;
+	}
 }
 
 Toucan::Rectangle get_lineplot_2d_data_bounds(const Toucan::Element2D& element_2d, const Toucan::RigidTransform2Df& local_transform) {
@@ -1055,6 +1307,103 @@ void render_loop(Toucan::ToucanSettings settings) {
 				window_draw_list->AddImage(reinterpret_cast<void*>(figure_3d.framebuffer_color_texture), window_global_content_min, window_global_content_max);
 				
 				ImGui::EndChild();
+			}
+			ImGui::End();
+		}
+		
+		// Draw all InputWindows
+		for (auto& input_window : toucan_context_ptr->input_windows) {
+			if (ImGui::Begin(input_window.name.c_str())) {
+				std::unique_lock lock(input_window.mutex);
+				
+				for (auto& input_element : input_window.elements) {
+					switch (input_element.type) {
+						case Toucan::ElementInputType::BUTTON : {
+							if (ImGui::Button(input_element.name.c_str())) {
+								input_element.show_button_metadata.number_of_click_events++;
+							}
+						} break;
+						case Toucan::ElementInputType::CHECKBOX : {
+							bool* value_ptr = &input_element.show_checkbox_metadata.value;
+							
+							if (ImGui::Checkbox(input_element.name.c_str(), value_ptr)) {
+								input_element.show_checkbox_metadata.value_changed = true;
+							}
+						} break;
+						case Toucan::ElementInputType::SLIDER_FLOAT : {
+							float* value_ptr = &input_element.show_slider_float_metadata.value;
+							const float min_value = input_element.show_slider_float_metadata.settings.min_value;
+							const float max_value = input_element.show_slider_float_metadata.settings.max_value;
+							
+							if (ImGui::SliderFloat(input_element.name.c_str(), value_ptr, min_value, max_value)) {
+								input_element.show_slider_float_metadata.value_changed = true;
+							}
+						} break;
+						case Toucan::ElementInputType::SLIDER_FLOAT2 : {
+							float* value_ptr = input_element.show_slider_float2_metadata.value.data();
+							const float min_value = input_element.show_slider_float2_metadata.settings.min_value;
+							const float max_value = input_element.show_slider_float2_metadata.settings.max_value;
+							
+							if (ImGui::SliderFloat2(input_element.name.c_str(), value_ptr, min_value, max_value)) {
+								input_element.show_slider_float2_metadata.value_changed = true;
+							}
+						} break;
+						case Toucan::ElementInputType::SLIDER_FLOAT3 : {
+							float* value_ptr = input_element.show_slider_float3_metadata.value.data();
+							const float min_value = input_element.show_slider_float3_metadata.settings.min_value;
+							const float max_value = input_element.show_slider_float3_metadata.settings.max_value;
+							
+							if (ImGui::SliderFloat3(input_element.name.c_str(), value_ptr, min_value, max_value)) {
+								input_element.show_slider_float3_metadata.value_changed = true;
+							}
+						} break;
+						case Toucan::ElementInputType::SLIDER_FLOAT4 : {
+							float* value_ptr = input_element.show_slider_float4_metadata.value.data();
+							const float min_value = input_element.show_slider_float4_metadata.settings.min_value;
+							const float max_value = input_element.show_slider_float4_metadata.settings.max_value;
+							
+							if (ImGui::SliderFloat4(input_element.name.c_str(), value_ptr, min_value, max_value)) {
+								input_element.show_slider_float4_metadata.value_changed = true;
+							}
+						} break;
+						case Toucan::ElementInputType::SLIDER_INT : {
+							int* value_ptr = &input_element.show_slider_int_metadata.value;
+							const int min_value = input_element.show_slider_int_metadata.settings.min_value;
+							const int max_value = input_element.show_slider_int_metadata.settings.max_value;
+							
+							if (ImGui::SliderInt(input_element.name.c_str(), value_ptr, min_value, max_value)) {
+								input_element.show_slider_int_metadata.value_changed = true;
+							}
+						} break;
+						case Toucan::ElementInputType::SLIDER_INT2 : {
+							int* value_ptr = input_element.show_slider_int2_metadata.value.data();
+							const int min_value = input_element.show_slider_int2_metadata.settings.min_value;
+							const int max_value = input_element.show_slider_int2_metadata.settings.max_value;
+							
+							if (ImGui::SliderInt2(input_element.name.c_str(), value_ptr, min_value, max_value)) {
+								input_element.show_slider_int2_metadata.value_changed = true;
+							}
+						} break;
+						case Toucan::ElementInputType::SLIDER_INT3 : {
+							int* value_ptr = input_element.show_slider_int3_metadata.value.data();
+							const int min_value = input_element.show_slider_int3_metadata.settings.min_value;
+							const int max_value = input_element.show_slider_int3_metadata.settings.max_value;
+							
+							if (ImGui::SliderInt3(input_element.name.c_str(), value_ptr, min_value, max_value)) {
+								input_element.show_slider_int3_metadata.value_changed = true;
+							}
+						} break;
+						case Toucan::ElementInputType::SLIDER_INT4 : {
+							int* value_ptr = input_element.show_slider_int4_metadata.value.data();
+							const int min_value = input_element.show_slider_int4_metadata.settings.min_value;
+							const int max_value = input_element.show_slider_int4_metadata.settings.max_value;
+							
+							if (ImGui::SliderInt4(input_element.name.c_str(), value_ptr, min_value, max_value)) {
+								input_element.show_slider_int4_metadata.value_changed = true;
+							}
+						} break;
+					}
+				}
 			}
 			ImGui::End();
 		}
