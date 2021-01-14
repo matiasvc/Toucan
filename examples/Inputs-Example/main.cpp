@@ -27,39 +27,39 @@ int main() {
 			}
 			
 			if (Toucan::ShowCheckbox("Checkbox", checkbox_value)) {
-				std::cout << "Checkbox value changed to " << checkbox_value << '\n';
+				std::cout << "Checkbox value changed to:\n" << checkbox_value << '\n';
 			}
 			
 			if (Toucan::ShowSliderFloat("Slider float", slider_float_value)) {
-				std::cout << "Slider float value changed to " << slider_float_value << '\n';
+				std::cout << "Slider float value changed to:\n" << slider_float_value << '\n';
 			}
 			
 			if (Toucan::ShowSliderFloat2("Slider float 2", slider_float2_value)) {
-				std::cout << "Slider float 2 value changed to " << slider_float2_value << '\n';
+				std::cout << "Slider float 2 value changed to:\n" << slider_float2_value << '\n';
 			}
 			
 			if (Toucan::ShowSliderFloat3("Slider float 3", slider_float3_value)) {
-				std::cout << "Slider float 3 value changed to " << slider_float3_value << '\n';
+				std::cout << "Slider float 3 value changed to:\n" << slider_float3_value << '\n';
 			}
 			
 			if (Toucan::ShowSliderFloat4("Slider float 4", slider_float4_value)) {
-				std::cout << "Slider float 4 value changed to " << slider_float4_value << '\n';
+				std::cout << "Slider float 4 value changed to:\n" << slider_float4_value << '\n';
 			}
 			
 			if (Toucan::ShowSliderInt("Slider int", slider_int_value)) {
-				std::cout << "Slider int value changed to " << slider_int_value << '\n';
+				std::cout << "Slider int value changed to:\n" << slider_int_value << '\n';
 			}
 			
 			if (Toucan::ShowSliderInt2("Slider int 2", slider_int2_value)) {
-				std::cout << "Slider int 2 value changed to " << slider_int2_value << '\n';
+				std::cout << "Slider int 2 value changed to:\n" << slider_int2_value << '\n';
 			}
 			
 			if (Toucan::ShowSliderInt3("Slider int 3", slider_int3_value)) {
-				std::cout << "Slider int 3 value changed to " << slider_int3_value << '\n';
+				std::cout << "Slider int 3 value changed to:\n" << slider_int3_value << '\n';
 			}
 			
 			if (Toucan::ShowSliderInt4("Slider int 4", slider_int4_value)) {
-				std::cout << "Slider int 4 value changed to " << slider_int4_value << '\n';
+				std::cout << "Slider int 4 value changed to:\n" << slider_int4_value << '\n';
 			}
 		}
 		Toucan::EndInputWindow();
