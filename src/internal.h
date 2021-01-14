@@ -160,7 +160,8 @@ struct Figure3D {
 enum class ElementInputType {
 	BUTTON, CHECKBOX,
 	SLIDER_FLOAT, SLIDER_FLOAT2, SLIDER_FLOAT3, SLIDER_FLOAT4,
-	SLIDER_INT, SLIDER_INT2, SLIDER_INT3, SLIDER_INT4
+	SLIDER_INT, SLIDER_INT2, SLIDER_INT3, SLIDER_INT4,
+	COLOR_PICKER
 };
 
 struct ShowButtonMetadata {
@@ -222,6 +223,12 @@ struct ShowSliderInt4Metadata {
 	ShowSliderIntSettings settings;
 };
 
+struct ShowColorPickerMetadata {
+	Color value;
+	bool value_changed;
+	ShowColorPickerSettings settings;
+};
+
 struct ElementInput {
 	std::string name;
 	ElementInputType type;
@@ -237,6 +244,7 @@ struct ElementInput {
 		ShowSliderInt2Metadata show_slider_int2_metadata;
 		ShowSliderInt3Metadata show_slider_int3_metadata;
 		ShowSliderInt4Metadata show_slider_int4_metadata;
+		ShowColorPickerMetadata show_color_picker_metadata;
 	};
 };
 

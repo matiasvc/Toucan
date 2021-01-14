@@ -318,4 +318,8 @@ struct ShowSliderIntSettings {
 	int max_value = 5;
 };
 
+struct ShowColorPickerSettings {
+
+};
+
 } // namespace Toucan

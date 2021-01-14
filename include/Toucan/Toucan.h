@@ -74,6 +74,7 @@ bool ShowSliderInt2(const std::string& name, Vector2i& value, const ShowSliderIn
 bool ShowSliderInt3(const std::string& name, Vector3i& value, const ShowSliderIntSettings& settings = {});
 bool ShowSliderInt4(const std::string& name, Vector4i& value, const ShowSliderIntSettings& settings = {});
 
+bool ShowColorPicker(const std::string& name, Color& value, const ShowColorPickerSettings& settings = {});
 
 // Helper functions
 template <size_t N>

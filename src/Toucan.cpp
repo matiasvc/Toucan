@@ -725,6 +725,25 @@ bool Toucan::ShowSliderInt4(const std::string& name, Vector4i& value, const Show
 	}
 }
 
+bool Toucan::ShowColorPicker(const std::string& name, Color& value, const ShowColorPickerSettings& settings) {
+	validate_initialized(ShowSliderFloat)
+	auto& toucan_context = * toucan_context_ptr;
+	validate_active_input_window(ShowSliderFloat)
+	auto& current_input_window = *toucan_context.current_input_window;
+	
+	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::COLOR_PICKER);
+	
+	current_element.show_color_picker_metadata.settings = settings;
+	if (current_element.show_color_picker_metadata.value_changed) {
+		value = current_element.show_color_picker_metadata.value;
+		current_element.show_color_picker_metadata.value_changed = false;
+		return true;
+	} else {
+		current_element.show_color_picker_metadata.value = value;
+		return false;
+	}
+}
+
 Toucan::Rectangle get_lineplot_2d_data_bounds(const Toucan::Element2D& element_2d, const Toucan::RigidTransform2Df& local_transform) {
 	assert(element_2d.type == Toucan::ElementType2D::LinePlot2D);
 	
@@ -1400,6 +1419,13 @@ void render_loop(Toucan::ToucanSettings settings) {
 							
 							if (ImGui::SliderInt4(input_element.name.c_str(), value_ptr, min_value, max_value)) {
 								input_element.show_slider_int4_metadata.value_changed = true;
+							}
+						} break;
+						case Toucan::ElementInputType::COLOR_PICKER : {
+							float* value_ptr = &input_element.show_color_picker_metadata.value.r;
+							
+							if (ImGui::ColorEdit3(input_element.name.c_str(), value_ptr)) {
+								input_element.show_color_picker_metadata.value_changed = true;
 							}
 						} break;
 					}

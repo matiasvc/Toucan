@@ -19,6 +19,8 @@ int main() {
 	Toucan::Vector3i slider_int3_value = Toucan::Vector3i::Zero();
 	Toucan::Vector4i slider_int4_value = Toucan::Vector4i::Zero();
 	
+	Toucan::Color color_value = Toucan::Color::White();
+	
 	while (Toucan::IsWindowOpen()) {
 		Toucan::BeginInputWindow("Inputs");
 		{
@@ -60,6 +62,11 @@ int main() {
 			
 			if (Toucan::ShowSliderInt4("Slider int 4", slider_int4_value)) {
 				std::cout << "Slider int 4 value changed to:\n" << slider_int4_value << '\n';
+			}
+			
+			if (Toucan::ShowColorPicker("Color picker", color_value)) {
+				std::cout << "Color picker value changed to:\n (" <<
+					color_value.r << ", " << color_value.g << ", " << color_value.b << ")\n";
 			}
 		}
 		Toucan::EndInputWindow();
