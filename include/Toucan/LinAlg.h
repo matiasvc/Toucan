@@ -51,6 +51,7 @@ public:
 	[[nodiscard]] constexpr scalar_t trace() const;
 	[[nodiscard]] constexpr scalar_t dot_product(const Matrix<scalar_t, rows, columns>& rhs) const;
 	[[nodiscard]] constexpr Matrix<scalar_t, rows, columns> cross_product(const Matrix<scalar_t, rows, columns>& rhs) const;
+	[[nodiscard]] constexpr Matrix<scalar_t, columns, rows> transpose() const;
 	
 	// Accessors
 	constexpr scalar_t& x();
@@ -240,6 +241,17 @@ constexpr inline Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>
 	product.y() = this->z()*rhs.x() - this->x()*rhs.z();
 	product.z() = this->x()*rhs.y() - this->y()*rhs.x();
 	return product;
+}
+
+template<typename scalar_t, int rows, int columns>
+constexpr inline Matrix<scalar_t, columns, rows> Matrix<scalar_t, rows, columns>::transpose() const {
+	Matrix<scalar_t, columns, rows> transpose;
+	for (int row_index = 0; row_index < rows; ++row_index) {
+		for (int column_index = 0; column_index < columns; ++column_index) {
+			transpose(column_index, row_index) = this->operator()(row_index, column_index);
+		}
+	}
+	return transpose;
 }
 
 /*** Accessors implementation ***/
