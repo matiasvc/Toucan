@@ -49,8 +49,8 @@ public:
 	
 	// Mathematical functions
 	[[nodiscard]] constexpr scalar_t trace() const;
-	[[nodiscard]] constexpr scalar_t dot_product(const Matrix<scalar_t, rows, columns>& rhs);
-	[[nodiscard]] constexpr Matrix<scalar_t, rows, columns> cross_product(const Matrix<scalar_t, rows, columns>& rhs);
+	[[nodiscard]] constexpr scalar_t dot_product(const Matrix<scalar_t, rows, columns>& rhs) const;
+	[[nodiscard]] constexpr Matrix<scalar_t, rows, columns> cross_product(const Matrix<scalar_t, rows, columns>& rhs) const;
 	
 	// Accessors
 	constexpr scalar_t& x();
@@ -223,7 +223,7 @@ constexpr inline scalar_t Matrix<scalar_t, rows, columns>::trace() const {
 }
 
 template<typename scalar_t, int rows, int columns>
-constexpr inline scalar_t Matrix<scalar_t, rows, columns>::dot_product(const Matrix<scalar_t, rows, columns>& rhs) {
+constexpr inline scalar_t Matrix<scalar_t, rows, columns>::dot_product(const Matrix<scalar_t, rows, columns>& rhs) const {
 	scalar_t sum = scalar_t(0);
 	for (int row_index = 0; row_index < rows; ++row_index) {
 		for (int column_index = 0; column_index < columns; ++column_index) {
@@ -233,7 +233,7 @@ constexpr inline scalar_t Matrix<scalar_t, rows, columns>::dot_product(const Mat
 	return sum;
 }
 template<typename scalar_t, int rows, int columns>
-constexpr inline Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::cross_product(const Matrix<scalar_t, rows, columns>& rhs) {
+constexpr inline Matrix<scalar_t, rows, columns> Matrix<scalar_t, rows, columns>::cross_product(const Matrix<scalar_t, rows, columns>& rhs) const {
 	static_assert((rows == 3 and columns == 1) or (rows == 1 and columns == 3), "Cross product is only defined for Vector3 or RowVector3");
 	Matrix<scalar_t, rows, columns> product;
 	product.x() = this->y()*rhs.z() - this->z()*rhs.y();
