@@ -11,27 +11,59 @@ constexpr size_t offset_of(U T::*member) {
 	return (char*) &((T*) nullptr->*member) - (char*) nullptr;
 }
 
-constexpr inline Toucan::Matrix4f create_3d_projection_matrix(float z_near, float z_far, float x_left, float x_right, float y_top, float y_bottom) {
+inline Toucan::Matrix4f create_3d_orientation_and_handedness_matrix(const Orientation& orientation, const Handedness& handedness) {
+	Toucan::Vector3f x_vec = Toucan::Vector3f::UnitX();
+	Toucan::Vector3f y_vec = Toucan::Vector3f::UnitY();
+	Toucan::Vector3f z_vec = Toucan::Vector3f::UnitZ();
+	
+	switch (orientation) {
+		case Orientation::X_UP : {
+			x_vec = Toucan::Vector3f::UnitZ();
+			y_vec = Toucan::Vector3f::UnitX();
+			z_vec = x_vec.cross_product(y_vec);
+			if (handedness == Handedness::LEFT_HANDED) { z_vec = -z_vec; }
+		} break;
+		case Orientation::X_DOWN : {
+			x_vec = -Toucan::Vector3f::UnitZ();
+			y_vec = Toucan::Vector3f::UnitX();
+			z_vec = x_vec.cross_product(y_vec);
+			if (handedness == Handedness::LEFT_HANDED) { z_vec = -z_vec; }
+		} break;
+		case Orientation::Y_UP : {
+			y_vec = Toucan::Vector3f::UnitZ();
+			z_vec = Toucan::Vector3f::UnitX();
+			x_vec = y_vec.cross_product(z_vec);
+			if (handedness == Handedness::LEFT_HANDED) { x_vec = -x_vec; }
+		} break;
+		case Orientation::Y_DOWN : {
+			y_vec = -Toucan::Vector3f::UnitZ();
+			z_vec = Toucan::Vector3f::UnitX();
+			x_vec = y_vec.cross_product(z_vec);
+			if (handedness == Handedness::LEFT_HANDED) { x_vec = -x_vec; }
+		} break;
+		case Orientation::Z_UP : {
+			z_vec = Toucan::Vector3f::UnitZ();
+			x_vec = Toucan::Vector3f::UnitX();
+			y_vec = z_vec.cross_product(x_vec);
+			if (handedness == Handedness::LEFT_HANDED) { y_vec = -y_vec; }
+		} break;
+		case Orientation::Z_DOWN : {
+			z_vec = -Toucan::Vector3f::UnitZ();
+			x_vec = Toucan::Vector3f::UnitX();
+			y_vec = z_vec.cross_product(x_vec);
+			if (handedness == Handedness::LEFT_HANDED) { y_vec = -y_vec; }
+		} break;
+	}
+	
+	
 	Toucan::Matrix4f m(
-			2.0f * z_near / (x_right - x_left), 0.0f,                               (x_right + x_left) / (x_right - x_left),  0.0f,
-			0.0f,                               2.0f * z_near / (y_bottom - y_top), (y_bottom + y_top) / (y_bottom - y_top),  0.0f,
-			0.0f,                               0.0f,                               (z_far + z_near) / (z_far - z_near),     -2.0f * z_far * z_near / (z_far - z_near),
-			0.0f,                               0.0f,                               1.0f,                                     0.0f
-	);
+			x_vec.x(), y_vec.x(), z_vec.x(), 0.0f,
+			x_vec.y(), y_vec.y(), z_vec.y(), 0.0f,
+			x_vec.z(), y_vec.z(), z_vec.z(), 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+			);
 	
 	return m;
-}
-
-constexpr inline Toucan::Matrix4f create_3d_projection_matrix(float z_near, float z_far, float fx, float fy, float cx, float cy, Vector2i image_size) {
-	float x_min = -z_near * cx / fx;
-	float x_max =  z_near * (image_size.x() - cx) / fx;
-	float y_min = -z_near * cy / fy;
-	float y_max =  z_near * (image_size.y() - cy) / fy;
-	return create_3d_projection_matrix(z_near, z_far, x_min, x_max, y_min, y_max);
-}
-
-constexpr inline Toucan::Matrix4f create_3d_projection_matrix(float z_min, float z_max, float f, Vector2i image_size) {
-	return create_3d_projection_matrix(z_min, z_max, f, f, 0.5f * image_size.x(), 0.5f * image_size.y(), image_size);
 }
 
 inline Toucan::Matrix4f create_2d_view_matrix(const Rectangle& draw_view, YAxisDirection y_axis_direction) {

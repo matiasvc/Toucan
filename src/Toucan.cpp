@@ -21,6 +21,7 @@
 #include "render.h"
 #include "Utils.h"
 #include "util/tick_number.h"
+#include "gl/projection.h"
 
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
@@ -1311,14 +1312,24 @@ void render_loop(Toucan::ToucanSettings settings) {
 					glEnable(GL_DEPTH_TEST);
 					glDepthFunc(GL_LEQUAL);
 					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // NOLINT
+					
 					const Toucan::Matrix4f world_to_camera_matrix = figure_3d.camera.get_pose().inverse().transformation_matrix();
-					const Toucan::Matrix4f projection_matrix = create_3d_projection_matrix(0.01, 100.0, 1024, figure_draw_size);
+					const Toucan::Matrix4f orientation_and_handedness_matrix = create_3d_orientation_and_handedness_matrix(figure_3d.settings.orientation, figure_3d.settings.handedness);
+					
+					const auto near_clip = figure_3d.settings.near_clip;
+					const auto far_clip = figure_3d.settings.far_clip;
+					const Toucan::Matrix4f projection_matrix = create_3d_projection_matrix<float>(near_clip, far_clip, 1024, figure_draw_size);
+					
 					for (auto& element : figure_3d.elements) {
 						const auto model_to_world_matrix = element.pose.transformation_matrix();
-						Toucan::draw_element_3d(element, model_to_world_matrix, world_to_camera_matrix, projection_matrix, toucan_context_ptr);
+						Toucan::draw_element_3d(element, model_to_world_matrix, orientation_and_handedness_matrix, world_to_camera_matrix, projection_matrix, toucan_context_ptr);
 					}
-					
 					glCheckError();
+					if (figure_3d.settings.show_axis_gizmo) {
+						Toucan::draw_axis_gizmo_3d(figure_3d.camera.get_orbit_pose(100.0f).inverse(), figure_draw_size, orientation_and_handedness_matrix, toucan_context_ptr);
+					}
+					glCheckError();
+					
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 					if(toucan_context_ptr->rdoc_api) toucan_context_ptr->rdoc_api->EndFrameCapture(nullptr, nullptr);
 				}

@@ -207,13 +207,12 @@ struct Primitive3D {
 
 struct OrbitCamera {
 	OrbitCamera() :
-	pitch{-M_PI/5}, yaw{M_PI/6}, distance{3.5}, orbit_center{Vector3f::Zero()} { }
+	pitch{4*M_PI/3}, yaw{M_PI/6}, distance{3.5}, orbit_center{Vector3f::Zero()} { }
 	
-	
-	void orbit(const Vector2f& delta) { yaw -= delta.x(); pitch += delta.y(); }
+	void orbit(const Vector2f& delta) { yaw += delta.x(); pitch += delta.y(); }
 	void move(const Vector2f& delta) {
-		orbit_center.x() += (-std::cos(yaw) * delta.x() + std::sin(yaw) * delta.y()) * distance;
-		orbit_center.z() += (std::sin(yaw) * delta.x() + std::cos(yaw) * delta.y()) * distance;
+		orbit_center.x() += (-std::cos(yaw) * delta.x() - std::sin(yaw) * delta.y()) * distance;
+		orbit_center.y() += (-std::sin(yaw) * delta.x() + std::cos(yaw) * delta.y()) * distance;
 	}
 	void change_distance(float delta) {
 		distance += static_cast<float>(std::log1p(distance)*delta/std::log(5)); // TODO(Matias): Make distance curve (log base) user editable
@@ -222,9 +221,17 @@ struct OrbitCamera {
 	
 	[[nodiscard]] RigidTransform3Df get_pose() const {
 		const Quaternionf orientation =
-				Quaternionf(Vector3f::UnitY(), yaw) *
+				Quaternionf(Vector3f::UnitZ(), yaw) *
 				Quaternionf(Vector3f::UnitX(), pitch);
 		const Vector3f translation = orientation * Vector3f(0.0f, 0.0f, -distance) + orbit_center;
+		return RigidTransform3Df(orientation, translation);
+	}
+	
+	[[nodiscard]] RigidTransform3Df get_orbit_pose(float distance) const {
+		const Quaternionf orientation =
+				Quaternionf(Vector3f::UnitZ(), yaw) *
+				Quaternionf(Vector3f::UnitX(), pitch);
+		const Vector3f translation = orientation * Vector3f(0.0f, 0.0f, -distance);
 		return RigidTransform3Df(orientation, translation);
 	}
 	
@@ -255,8 +262,23 @@ struct Figure2DSettings {
 	YAxisDirection y_axis_direction = YAxisDirection::UP;
 };
 
-struct Figure3DSettings {
+enum class Orientation {
+	X_UP, X_DOWN,
+	Y_UP, Y_DOWN,
+	Z_UP, Z_DOWN
+};
 
+enum class Handedness {
+	RIGHT_HANDED,
+	LEFT_HANDED
+};
+
+struct Figure3DSettings {
+	Orientation orientation = Orientation::Z_UP;
+	Handedness handedness = Handedness::RIGHT_HANDED;
+	float near_clip = 0.01f;
+	float far_clip = 200.0f;
+	bool show_axis_gizmo = true;
 };
 
 struct InputSettings {
@@ -297,7 +319,7 @@ struct ShowLines3DSettings {
 
 struct ShowPrimitives3DSettings {
 	ScaledTransform3Df scaled_transform;
-	Vector3f light_vector = Vector3f(-1.0f, -1.25f, -1.5f).normalized();
+	Vector3f light_vector = Vector3f(1.0f, 1.25f, 1.5f).normalized();
 };
 
 struct ShowButtonSettings {
