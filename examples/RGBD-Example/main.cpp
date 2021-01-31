@@ -101,16 +101,12 @@ int main() {
 		pose_path.emplace_back(Toucan::LineVertex3D{Toucan::Vector3f(gt_t.x(), gt_t.y(), gt_t.z()), Toucan::Color::Magenta()});
 		Toucan::BeginFigure3D("Point Projection");
 		{
-			Toucan::PushPose3D(Toucan::RigidTransform3Df(Toucan::Quaternionf(Toucan::Vector3f::UnitX(), M_PI_2), Toucan::Vector3f::Zero()));
-			{ // Static transform to align with our coordinate system
-				Toucan::ShowLines3D("Pose path", pose_path);
-				
-				Toucan::PushPose3D(Toucan::RigidTransform3Df(Toucan::Quaternionf(gt_q.w(), gt_q.x(), gt_q.y(), gt_q.z()), Toucan::Vector3f(gt_t.x(), gt_t.y(), gt_t.z())));
-				{ // The coordinate system of the camera
-					Toucan::ShowAxis3D("Axis");
-					Toucan::ShowPoints3D("Depth points", depth_points);
-				}
-				Toucan::PopPose3D();
+			Toucan::ShowLines3D("Pose path", pose_path);
+			
+			Toucan::PushPose3D(Toucan::RigidTransform3Df(Toucan::Quaternionf(gt_q.w(), gt_q.x(), gt_q.y(), gt_q.z()), Toucan::Vector3f(gt_t.x(), gt_t.y(), gt_t.z())));
+			{ // The coordinate system of the camera
+				Toucan::ShowAxis3D("Axis");
+				Toucan::ShowPoints3D("Depth points", depth_points);
 			}
 			Toucan::PopPose3D();
 		}
