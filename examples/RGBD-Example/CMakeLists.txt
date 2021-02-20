@@ -15,14 +15,9 @@ set_target_properties(
 add_library(stb STATIC stb/stb_image.c)
 target_include_directories(rgbd-example PRIVATE stb)
 
-find_package(Eigen3 REQUIRED NO_MODULE)
-
-find_package(Sophus REQUIRED)
-target_include_directories(rgbd-example PRIVATE ${Sophus_INCLUDE_DIRS})
-
 target_link_libraries(
 		rgbd-example
-		PRIVATE Toucan::Toucan stb stdc++fs Eigen3::Eigen
+		PRIVATE Toucan::Toucan stb stdc++fs
 )
 
 file(COPY dataset DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

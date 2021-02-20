@@ -7,13 +7,13 @@
 
 #include <unistd.h>
 
-DataLoader::DataLoader(const std::experimental::filesystem::path& dataset_path, const Sophus::SE3f& transformation) :
-m_dataset_path{dataset_path}, m_transformation{transformation}, m_rgb_index{0}, m_depth_index{0}, m_groundtruth_index{0} {
+DataLoader::DataLoader(const std::filesystem::path& dataset_path) :
+m_dataset_path{dataset_path}, m_rgb_index{0}, m_depth_index{0}, m_groundtruth_index{0} {
 	
-	const std::experimental::filesystem::path rgb_file_path = dataset_path / "rgb.txt";
+	const std::filesystem::path rgb_file_path = dataset_path / "rgb.txt";
 	
 	std::ifstream rgb_file(rgb_file_path.string());
-	if (!rgb_file.is_open()) { throw std::invalid_argument("Unable to open rgb.txt file"); }
+	if (!rgb_file.is_open()) { throw std::invalid_argument("Unable to open rgb.txt file. Did you run download-dataset.sh?"); }
 	
 	std::string line;
 	const std::string decimal = ".";
@@ -32,10 +32,10 @@ m_dataset_path{dataset_path}, m_transformation{transformation}, m_rgb_index{0}, 
 		m_rgb_files.emplace_back(timestamp, file_name);
 	}
 	
-	const std::experimental::filesystem::path depth_file_path = dataset_path / "depth.txt";
+	const std::filesystem::path depth_file_path = dataset_path / "depth.txt";
 	
 	std::ifstream depth_file(depth_file_path.string());
-	if (!depth_file.is_open()) { throw std::invalid_argument("Unable to open depth.txt file"); }
+	if (!depth_file.is_open()) { throw std::invalid_argument("Unable to open depth.txt file. Did you run download-dataset.sh?"); }
 	
 	while (getline(depth_file, line))
 	{
@@ -50,10 +50,10 @@ m_dataset_path{dataset_path}, m_transformation{transformation}, m_rgb_index{0}, 
 		m_depth_files.emplace_back(timestamp, file_name);
 	}
 	
-	const std::experimental::filesystem::path groundtruth_file_path = dataset_path / "groundtruth.txt";
+	const std::filesystem::path groundtruth_file_path = dataset_path / "groundtruth.txt";
 	
 	std::ifstream groudtruth_file(groundtruth_file_path.string());
-	if (!groudtruth_file.is_open()) { throw std::invalid_argument("Unable to open groundtruth.txt file"); }
+	if (!groudtruth_file.is_open()) { throw std::invalid_argument("Unable to open groundtruth.txt file. Did you run download-dataset.sh?"); }
 	
 	while (getline(groudtruth_file, line))
 	{
@@ -89,11 +89,12 @@ m_dataset_path{dataset_path}, m_transformation{transformation}, m_rgb_index{0}, 
 		std::getline(ss, item, ' ');
 		float qw = std::stof(item);
 		
-		const Eigen::Quaternionf orientation(qw, qx, qy, qz);
-		const Eigen::Vector3f position(tx, ty, tz);
-		const Sophus::SE3f transform(orientation, position);
+		const Toucan::RigidTransform3Df pose(
+				Toucan::Quaternionf(qw, qx, qy, qz),
+				Toucan::Vector3f(tx, ty, tz)
+		);
 		
-		m_ground_truths.emplace_back(timestamp, transform);
+		m_ground_truths.emplace_back(timestamp, pose);
 	}
 	
 	this->next();
@@ -127,7 +128,7 @@ int DataLoader::get_current_index() const {
 }
 
 Image DataLoader::get_depth() const {
-	const std::experimental::filesystem::path& depth_image_path = m_dataset_path / m_depth_files[m_depth_index].second;
+	const std::filesystem::path& depth_image_path = m_dataset_path / m_depth_files[m_depth_index].second;
 	
 	Image image;
 	
@@ -141,7 +142,7 @@ Image DataLoader::get_depth() const {
 }
 
 Image DataLoader::get_rgb() const {
-	const std::experimental::filesystem::path& rgb_image_path = m_dataset_path / m_rgb_files[m_rgb_index].second;
+	const std::filesystem::path& rgb_image_path = m_dataset_path / m_rgb_files[m_rgb_index].second;
 	
 	Image image;
 	
@@ -154,8 +155,8 @@ Image DataLoader::get_rgb() const {
 	return image;
 }
 
-Sophus::SE3f DataLoader::get_groundtruth() const {
-	return m_transformation * m_ground_truths[m_groundtruth_index].second;
+Toucan::RigidTransform3Df DataLoader::get_groundtruth() const {
+	return m_ground_truths[m_groundtruth_index].second;
 }
 
 uint64_t DataLoader::get_timestamp() const

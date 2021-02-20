@@ -95,15 +95,13 @@ int main() {
 		project_image(depth_points, image, image_depth);
 		
 		auto gt_pose = data_loader.get_groundtruth();
-		auto gt_t = gt_pose.translation();
-		auto gt_q = gt_pose.unit_quaternion();
 		
-		pose_path.emplace_back(Toucan::LineVertex3D{Toucan::Vector3f(gt_t.x(), gt_t.y(), gt_t.z()), Toucan::Color::Magenta()});
+		pose_path.emplace_back(Toucan::LineVertex3D{gt_pose.translation, Toucan::Color::Magenta()});
 		Toucan::BeginFigure3D("Point Projection");
 		{
 			Toucan::ShowLines3D("Pose path", pose_path);
 			
-			Toucan::PushPose3D(Toucan::RigidTransform3Df(Toucan::Quaternionf(gt_q.w(), gt_q.x(), gt_q.y(), gt_q.z()), Toucan::Vector3f(gt_t.x(), gt_t.y(), gt_t.z())));
+			Toucan::PushPose3D(gt_pose);
 			{ // The coordinate system of the camera
 				Toucan::ShowAxis3D("Axis");
 				Toucan::ShowPoints3D("Depth points", depth_points);
@@ -114,9 +112,9 @@ int main() {
 		
 		depth_points.clear();
 		
-		pos_x_plot.emplace_back(gt_t.x());
-		pos_y_plot.emplace_back(gt_t.y());
-		pos_z_plot.emplace_back(gt_t.z());
+		pos_x_plot.emplace_back(gt_pose.translation.x());
+		pos_y_plot.emplace_back(gt_pose.translation.y());
+		pos_z_plot.emplace_back(gt_pose.translation.z());
 		
 		Toucan::BeginFigure2D("Position");
 		{
