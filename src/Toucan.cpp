@@ -1166,15 +1166,19 @@ void render_loop(Toucan::ToucanSettings settings) {
 				const auto x_axis_from_value = figure_2d.view.min.x();
 				const auto x_axis_to_value = figure_2d.view.max.x();
 				
+				constexpr float min_label_distance = 85.0f; // TODO(Matias): Compute min distance based on text size.
+				
 				assert(x_axis_from_value < x_axis_to_value);
-				const auto [x_tick_values, x_tick_strings] = get_axis_ticks(x_axis_from_value, x_axis_to_value, 10); // TODO(Matias): Compute max number of ticks based on window size
+				const int number_of_x_ticks = std::max(static_cast<int>(std::floor(axis_x_rect.GetWidth()/min_label_distance)), 2);
+				const auto [x_tick_values, x_tick_strings] = get_axis_ticks(x_axis_from_value, x_axis_to_value, number_of_x_ticks);
 				const auto x_ticks_position = Toucan::data_to_pixel(x_tick_values, x_axis_from_value, x_axis_to_value, axis_x_min.x, axis_x_max.x);
 				
 				const auto y_axis_from_value = figure_2d.view.min.y();
 				const auto y_axis_to_value = figure_2d.view.max.y();
 				
 				assert(y_axis_from_value < y_axis_to_value);
-				const auto [y_ticks_values, y_tick_strings] = get_axis_ticks(y_axis_from_value, y_axis_to_value, 10); // TODO(Matias): Compute max number of ticks based on window size
+				const int number_of_y_ticks = std::max(static_cast<int>(std::floor(axis_y_rect.GetHeight()/min_label_distance)), 2);
+				const auto [y_ticks_values, y_tick_strings] = get_axis_ticks(y_axis_from_value, y_axis_to_value, number_of_y_ticks);
 				std::vector<float> y_ticks_positions;
 				if (figure_2d.settings.y_axis_direction == Toucan::YAxisDirection::UP) {
 					y_ticks_positions = Toucan::data_to_pixel(y_ticks_values, y_axis_from_value, y_axis_to_value, axis_y_max.y, axis_y_min.y);
