@@ -26,6 +26,8 @@ set(
 add_library(Toucan STATIC ${Toucan_source})
 add_library(Toucan::Toucan ALIAS Toucan)
 
+# Set this so examples use local Toucan instead of any version installed on system.
+set(Toucan_FOUND 1 PARENT_SCOPE)
 
 set_target_properties(
 		Toucan PROPERTIES

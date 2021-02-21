@@ -12,6 +12,7 @@
 #include "asset.h"
 #include "gl/shader.h"
 #include "gl/geometry.h"
+#include "gl/projection.h"
 
 void recreate_framebuffer(unsigned int* framebuffer, unsigned int* framebuffer_color_texture, unsigned int* framebuffer_depth_texture, Toucan::Vector2i size) {
 	
@@ -291,7 +292,8 @@ bool Toucan::update_framebuffer_3d(Figure3D& figure_3d, Toucan::Vector2i size) {
 }
 
 
-void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& model_to_world_matrix, const Matrix4f& world_to_camera_matrix, const Matrix4f& projection_matrix, Toucan::ToucanContext* context) {
+void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& model_to_world_matrix, const Matrix4f& orientation_and_handedness_matrix, const Matrix4f& world_to_camera_matrix, const Matrix4f& projection_matrix,
+                             Toucan::ToucanContext* context) {
 	switch (element_3d.type) {
 		case Toucan::ElementType3D::Grid3D: {
 			
@@ -315,91 +317,47 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 				line_vertices_minor.reserve(number_of_vertices);
 				
 				// TODO(Matias): Define these colors with a setting
-				const Color line_color_major(0.5, 0.5, 0.5);
-				const Color line_color_minor(0.4, 0.4, 0.4);
-				const Color x_axis_color(1.0, 0.0, 0.0);
-				const Color y_axis_color(0.0, 1.0, 0.0);
-				const Color z_axis_color(0.0, 0.0, 1.0);
+				const Color line_color_origin(0.8, 0.8, 0.8);
+				const Color line_color_major(0.4, 0.4, 0.4);
+				const Color line_color_minor(0.3, 0.3, 0.3);
 				
 				for (int line_index = -line_extent; line_index <= line_extent; ++line_index) {
 					if (line_index == 0) { // Special case for lines crossing the origin
-						constexpr float axis_line_length = 1.0;
 						// X-axis
-						line_vertices_major.emplace_back(Vector3f(-line_extent_position, 0.0f, 0.0f), line_color_major);
-						line_vertices_major.emplace_back(Vector3f(0.0f, 0.0f, 0.0f), line_color_major);
-						
-						line_vertices_major.emplace_back(Vector3f(0.0f, 0.0f, 0.0f), x_axis_color);
-						line_vertices_major.emplace_back(Vector3f(axis_line_length, 0.0f, 0.0f), x_axis_color);
-						
-						line_vertices_major.emplace_back(Vector3f(axis_line_length, 0.0f, 0.0f), line_color_major);
-						line_vertices_major.emplace_back(Vector3f(line_extent_position, 0.0f, 0.0f), line_color_major);
+						line_vertices_major.emplace_back(Vector3f(spacing*line_index, -line_extent_position, 0.0f), line_color_origin);
+						line_vertices_major.emplace_back(Vector3f(spacing*line_index, line_extent_position, 0.0f), line_color_origin);
 						
 						// Y-axis
-						line_vertices_major.emplace_back(Vector3f(0.0f, 0.0f, 0.0f), y_axis_color);
-						line_vertices_major.emplace_back(Vector3f(0.0f, axis_line_length, 0.0f), y_axis_color);
-						
-						// Z-axis
-						line_vertices_major.emplace_back(Vector3f(0.0f, 0.0f, -line_extent_position), line_color_major);
-						line_vertices_major.emplace_back(Vector3f(0.0f, 0.0f, 0.0f), line_color_major);
-						
-						line_vertices_major.emplace_back(Vector3f(0.0f, 0.0f, 0.0f), z_axis_color);
-						line_vertices_major.emplace_back(Vector3f(0.0f, 0.0f, axis_line_length), z_axis_color);
-						
-						line_vertices_major.emplace_back(Vector3f(0.0f, 0.0f, axis_line_length), line_color_major);
-						line_vertices_major.emplace_back(Vector3f(0.0f, 0.0f, line_extent_position), line_color_major);
+						line_vertices_major.emplace_back(Vector3f(-line_extent_position, spacing*line_index, 0.0f), line_color_origin);
+						line_vertices_major.emplace_back(Vector3f(line_extent_position, spacing*line_index, 0.0f), line_color_origin);
 					} else if (line_index % 5 == 0) { // Major lines
 						// X-axis
-						line_vertices_major.emplace_back(
-							Vector3f(spacing*line_index, 0.0f, -line_extent_position),
-							line_color_major
-						);
-						line_vertices_major.emplace_back(
-							Vector3f(spacing*line_index, 0.0f, line_extent_position),
-							line_color_major
-						);
+						line_vertices_major.emplace_back(Vector3f(spacing*line_index, -line_extent_position, 0.0f), line_color_major);
+						line_vertices_major.emplace_back(Vector3f(spacing*line_index, line_extent_position, 0.0f), line_color_major);
 						
-						// Z-axis
-						line_vertices_major.emplace_back(
-								Vector3f(-line_extent_position, 0.0f, spacing*line_index),
-								line_color_major
-						);
-						line_vertices_major.emplace_back(
-								Vector3f(line_extent_position, 0.0f, spacing*line_index),
-								line_color_major
-						);
+						// Y-axis
+						line_vertices_major.emplace_back(Vector3f(-line_extent_position, spacing*line_index, 0.0f), line_color_major);
+						line_vertices_major.emplace_back(Vector3f(line_extent_position, spacing*line_index, 0.0f), line_color_major);
 					} else { // Minor lines
 						// X-axis
-						line_vertices_minor.emplace_back(
-							Vector3f(spacing*line_index, 0.0f, -line_extent_position),
-							line_color_minor
-						);
-						line_vertices_minor.emplace_back(
-							Vector3f(spacing*line_index, 0.0f, line_extent_position),
-							line_color_minor
-						);
+						line_vertices_minor.emplace_back(Vector3f(spacing*line_index, -line_extent_position, 0.0f), line_color_minor);
+						line_vertices_minor.emplace_back(Vector3f(spacing*line_index, line_extent_position, 0.0f), line_color_minor);
 						
-						// Z-axis
-						line_vertices_minor.emplace_back(
-								Vector3f(-line_extent_position, 0.0f, spacing*line_index),
-								line_color_minor
-						);
-						line_vertices_minor.emplace_back(
-								Vector3f(line_extent_position, 0.0f, spacing*line_index),
-								line_color_minor
-						);
+						// Y-axis
+						line_vertices_minor.emplace_back(Vector3f(-line_extent_position, spacing*line_index, 0.0f), line_color_minor);
+						line_vertices_minor.emplace_back(Vector3f(line_extent_position, spacing*line_index, 0.0f), line_color_minor);
 					}
 				}
 				
-				
-				// Major lines
-				glBindVertexArray(element_3d.grid_3d_metadata.vao_major);
-				
-				glBindBuffer(GL_ARRAY_BUFFER, element_3d.grid_3d_metadata.vbo_major);
-				glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(LineVertex3D) * line_vertices_major.size()), line_vertices_major.data(), GL_STATIC_DRAW);
-				element_3d.grid_3d_metadata.number_of_major_vertices = line_vertices_major.size();
-				
 				constexpr auto position_location = 0;
 				constexpr auto color_location = 1;
+				
+				// Minor lines
+				glBindVertexArray(element_3d.grid_3d_metadata.vao_minor);
+				
+				glBindBuffer(GL_ARRAY_BUFFER, element_3d.grid_3d_metadata.vbo_minor);
+				glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(LineVertex3D) * line_vertices_minor.size()), line_vertices_minor.data(), GL_STATIC_DRAW);
+				element_3d.grid_3d_metadata.number_of_minor_vertices = line_vertices_minor.size();
 				
 				// Position
 				glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, sizeof(LineVertex3D), reinterpret_cast<void*>(offset_of(&LineVertex3D::position)));
@@ -411,12 +369,13 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 				
 				glCheckError();
 				
-				// Minor lines
-				glBindVertexArray(element_3d.grid_3d_metadata.vao_minor);
+				// Major lines
+				glBindVertexArray(element_3d.grid_3d_metadata.vao_major);
 				
-				glBindBuffer(GL_ARRAY_BUFFER, element_3d.grid_3d_metadata.vbo_minor);
-				glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(LineVertex3D) * line_vertices_minor.size()), line_vertices_minor.data(), GL_STATIC_DRAW);
-				element_3d.grid_3d_metadata.number_of_minor_vertices = line_vertices_minor.size();
+				glBindBuffer(GL_ARRAY_BUFFER, element_3d.grid_3d_metadata.vbo_major);
+				glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(LineVertex3D) * line_vertices_major.size()), line_vertices_major.data(), GL_STATIC_DRAW);
+				element_3d.grid_3d_metadata.number_of_major_vertices = line_vertices_major.size();
+				
 				
 				// Position
 				glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, sizeof(LineVertex3D), reinterpret_cast<void*>(offset_of(&LineVertex3D::position)));
@@ -440,8 +399,10 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			unsigned int line_3d_shader = get_line_3d_shader(&context->asset_context);
 			glUseProgram(line_3d_shader);
 			
+			const Toucan::Matrix4f model_matrix = model_to_world_matrix;
+			
 			// TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			set_shader_uniform(line_3d_shader, "model", model_to_world_matrix);
+			set_shader_uniform(line_3d_shader, "model", model_matrix);
 			set_shader_uniform(line_3d_shader, "view", world_to_camera_matrix);
 			set_shader_uniform(line_3d_shader, "projection", projection_matrix);
 			
@@ -462,7 +423,7 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			unsigned int line_3d_shader = get_line_3d_shader(&context->asset_context);
 			glUseProgram(line_3d_shader);
 			
-			const Toucan::Matrix4f  model_matrix = model_to_world_matrix * Toucan::ScaledTransform3Df(
+			const Toucan::Matrix4f  model_matrix = model_to_world_matrix * orientation_and_handedness_matrix * Toucan::ScaledTransform3Df(
 					Quaternionf::Identity(), Toucan::Vector3f::Zero(), Toucan::Vector3f::Ones()*element_3d.axis_3d_metadata.settings.size
 			).transformation_matrix();
 			
@@ -516,7 +477,7 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			glUseProgram(point_3d_shader);
 			
 			// TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			const Toucan::Matrix4f model_matrix = model_to_world_matrix * element_3d.point_3d_metadata.settings.scaled_transform.transformation_matrix();
+			const Toucan::Matrix4f model_matrix = model_to_world_matrix * orientation_and_handedness_matrix * element_3d.point_3d_metadata.settings.scaled_transform.transformation_matrix();
 			set_shader_uniform(point_3d_shader, "model", model_matrix);
 			set_shader_uniform(point_3d_shader, "view", world_to_camera_matrix);
 			set_shader_uniform(point_3d_shader, "projection", projection_matrix);
@@ -555,7 +516,7 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			glUseProgram(line_3d_shader);
 			
 			// TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			const Toucan::Matrix4f model_matrix = model_to_world_matrix * element_3d.line_3d_metadata.settings.scaled_transform.transformation_matrix();
+			const Toucan::Matrix4f model_matrix = model_to_world_matrix * orientation_and_handedness_matrix * element_3d.line_3d_metadata.settings.scaled_transform.transformation_matrix();
 			set_shader_uniform(line_3d_shader, "model", model_matrix);
 			set_shader_uniform(line_3d_shader, "view", world_to_camera_matrix);
 			set_shader_uniform(line_3d_shader, "projection", projection_matrix);
@@ -610,7 +571,7 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 					case PrimitiveType::Cylinder: { geometry_handles_ptr = get_cylinder_handles_ptr(&context->asset_context); } break;
 				}
 				
-				const Toucan::Matrix4f model_matrix = model_to_world_matrix * primitive.scaled_transform.transformation_matrix();
+				const Toucan::Matrix4f model_matrix = model_to_world_matrix * orientation_and_handedness_matrix * primitive.scaled_transform.transformation_matrix() * orientation_and_handedness_matrix.transpose();
 				set_shader_uniform(mesh_3d_shader, "model", model_matrix);
 				set_shader_uniform(mesh_3d_shader, "color", primitive.color);
 				
@@ -627,3 +588,86 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 	}
 }
 
+void Toucan::draw_axis_gizmo_3d(const Toucan::RigidTransform3Df& camera_transform, const Toucan::Vector2i& framebuffer_size, const Toucan::Matrix4f& orientation_and_handedness_matrix, Toucan::ToucanContext* context) {
+	// TODO(Matias): Make these user editable
+	constexpr float gizmo_size_fraction = 0.15f;
+	constexpr int gizmo_max_absolute_size = 180;
+	constexpr int gizmo_min_absolute_size = 75;
+	
+	const int width = static_cast<int>(framebuffer_size.x()*gizmo_size_fraction);
+	const int height = static_cast<int>(framebuffer_size.y()*gizmo_size_fraction);
+	
+	int size = std::min(width, height);
+	size = std::min(size, gizmo_max_absolute_size);
+	size = std::max(size, gizmo_min_absolute_size);
+	
+	glClear(GL_DEPTH_BUFFER_BIT);
+	
+	// TODO(Matias): Make gizmo corner user editable
+	glViewport(0, 0, size, size);
+	
+	unsigned int mesh_3d_shader = get_mesh_3d_shader(&context->asset_context);
+	glUseProgram(mesh_3d_shader);
+	
+	const Toucan::Matrix4f world_to_camera_matrix = camera_transform.transformation_matrix();
+	const Toucan::Matrix4f projection_matrix = create_3d_projection_matrix<float>(0.01f, 150.0f, 4.0f*size, Toucan::Vector2i(size, size));
+	
+	set_shader_uniform(mesh_3d_shader, "view", world_to_camera_matrix);
+	set_shader_uniform(mesh_3d_shader, "projection", projection_matrix);
+	set_shader_uniform(mesh_3d_shader, "light_vector", Toucan::Vector3f(1.0f, 1.5f, 1.8f).normalized());
+	
+	{
+		set_shader_uniform(mesh_3d_shader, "color", Toucan::Color(0.8f, 0.8f, 0.8f));
+		const Toucan::Matrix4f model_matrix = Toucan::ScaledTransform3Df(Quaternionf::Identity(), Vector3f::Zero(), Vector3f::Ones()).transformation_matrix() * orientation_and_handedness_matrix;
+		set_shader_uniform(mesh_3d_shader, "model", model_matrix);
+		
+		const IndexedGeometryHandles* geometry_handles_ptr = get_cube_handles_ptr(&context->asset_context);
+		glBindVertexArray(geometry_handles_ptr->vao);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry_handles_ptr->ebo);
+		glDrawElements(GL_TRIANGLES, geometry_handles_ptr->number_of_indices, GL_UNSIGNED_INT, nullptr);
+	}
+	
+	{ // X-axis
+		set_shader_uniform(mesh_3d_shader, "color", Toucan::Color::Red());
+		const Toucan::Matrix4f model_matrix = orientation_and_handedness_matrix * Toucan::ScaledTransform3Df(
+				Quaternionf(Vector3f::UnitY(), M_PI/2),
+				Vector3f(5.5f, 0.0f, 0.0f),
+				Vector3f(0.8f, 0.8f, 10.0f)).transformation_matrix();
+		set_shader_uniform(mesh_3d_shader, "model", model_matrix);
+		
+		const IndexedGeometryHandles* geometry_handles_ptr = get_cylinder_handles_ptr(&context->asset_context);
+		glBindVertexArray(geometry_handles_ptr->vao);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry_handles_ptr->ebo);
+		glDrawElements(GL_TRIANGLES, geometry_handles_ptr->number_of_indices, GL_UNSIGNED_INT, nullptr);
+	}
+	
+	{ // Y-axis
+		set_shader_uniform(mesh_3d_shader, "color", Toucan::Color::Green());
+		const Toucan::Matrix4f model_matrix = orientation_and_handedness_matrix * Toucan::ScaledTransform3Df(
+				Quaternionf(Vector3f::UnitX(), M_PI/2),
+				Vector3f(0.0f, 5.5f, 0.0f),
+				Vector3f(0.8f, 0.8f, 10.0f)).transformation_matrix();
+		set_shader_uniform(mesh_3d_shader, "model", model_matrix);
+		
+		const IndexedGeometryHandles* geometry_handles_ptr = get_cylinder_handles_ptr(&context->asset_context);
+		glBindVertexArray(geometry_handles_ptr->vao);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry_handles_ptr->ebo);
+		glDrawElements(GL_TRIANGLES, geometry_handles_ptr->number_of_indices, GL_UNSIGNED_INT, nullptr);
+	}
+	
+	{ // Z-axis
+		set_shader_uniform(mesh_3d_shader, "color", Toucan::Color::Blue());
+		const Toucan::Matrix4f model_matrix = orientation_and_handedness_matrix * Toucan::ScaledTransform3Df(
+				Quaternionf(Vector3f::UnitZ(), M_PI/2),
+				Vector3f(0.0f, 0.0f, 5.5f),
+				Vector3f(0.8f, 0.8f, 10.0f)).transformation_matrix();
+		set_shader_uniform(mesh_3d_shader, "model", model_matrix);
+		
+		const IndexedGeometryHandles* geometry_handles_ptr = get_cylinder_handles_ptr(&context->asset_context);
+		glBindVertexArray(geometry_handles_ptr->vao);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry_handles_ptr->ebo);
+		glDrawElements(GL_TRIANGLES, geometry_handles_ptr->number_of_indices, GL_UNSIGNED_INT, nullptr);
+	}
+	
+	glViewport(0, 0, framebuffer_size.x(), framebuffer_size.y());
+}

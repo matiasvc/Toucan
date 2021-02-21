@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <vector>
 #include <string>
 #include <optional>
@@ -16,14 +17,13 @@ bool IsWindowOpen();
 void SleepUntilWindowClosed();
 
 // ***** Figure 2D *****
-
 void BeginFigure2D(const std::string& name, const Figure2DSettings& settings = {});
 void EndFigure2D();
 
 // ***** Elements 2D *****
-
 void PushPose2D(const Toucan::RigidTransform2Df& pose);
 void PopPose2D();
+void ClearPose2D();
 
 void ShowLinePlot2D(const std::string& name, const Toucan::Buffer<Toucan::Vector2f>& line_buffer, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {});
 void ShowPoints2D(const std::string& name, const Toucan::Buffer<Toucan::Point2D>& points_buffer, int draw_layer = 0, const ShowPoints2DSettings& settings = {});
@@ -49,11 +49,33 @@ void EndFigure3D();
 // ***** Elements 3D *****
 void PushPose3D(const Toucan::RigidTransform3Df& pose);
 void PopPose3D();
+void ClearPose3D();
 
 void ShowAxis3D(const std::string& name, const ShowAxis3DSettings& settings = {});
 void ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::Point3D>& points_buffer, const ShowPoints3DSettings& settings = {});
 void ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::LineVertex3D>& lines_buffer, const ShowLines3DSettings& settings = {});
 void ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Toucan::Primitive3D>& primitives_buffer, const ShowPrimitives3DSettings& settings = {});
+
+// ***** Input *****
+void BeginInputWindow(const std::string& name, const InputSettings& settings = {});
+void EndInputWindow();
+
+// ***** Elements Input *****
+bool ShowButton(const std::string& name, const ShowButtonSettings& settings = {});
+
+bool ShowCheckbox(const std::string& name, bool& value, const ShowCheckboxSettings& = {});
+
+bool ShowSliderFloat(const std::string& name, float& value, const ShowSliderFloatSettings& settings = {});
+bool ShowSliderFloat2(const std::string& name, Vector2f& value, const ShowSliderFloatSettings& settings = {});
+bool ShowSliderFloat3(const std::string& name, Vector3f& value, const ShowSliderFloatSettings& settings = {});
+bool ShowSliderFloat4(const std::string& name, Vector4f& value, const ShowSliderFloatSettings& settings = {});
+
+bool ShowSliderInt(const std::string& name, int& value, const ShowSliderIntSettings& settings = {});
+bool ShowSliderInt2(const std::string& name, Vector2i& value, const ShowSliderIntSettings& settings = {});
+bool ShowSliderInt3(const std::string& name, Vector3i& value, const ShowSliderIntSettings& settings = {});
+bool ShowSliderInt4(const std::string& name, Vector4i& value, const ShowSliderIntSettings& settings = {});
+
+bool ShowColorPicker(const std::string& name, Color& value, const ShowColorPickerSettings& settings = {});
 
 // Helper functions
 template <size_t N>

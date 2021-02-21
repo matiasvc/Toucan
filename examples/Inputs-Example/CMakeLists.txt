@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
-project(primitives3d-example)
+project(inputs-example)
 
 add_executable(
-		primitives3d-example
+		inputs-example
 		main.cpp
 )
 
 set_target_properties(
-		primitives3d-example PROPERTIES
+		inputs-example PROPERTIES
 		CXX_STANDARD 17
 		CXX_STANDARD_REQUIRED ON
 )
@@ -19,6 +19,6 @@ if (NOT Toucan_FOUND)
 endif (NOT Toucan_FOUND)
 
 target_link_libraries(
-		primitives3d-example
+		inputs-example
 		PRIVATE Toucan::Toucan
 )

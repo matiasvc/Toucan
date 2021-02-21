@@ -4,9 +4,9 @@
 #include <utility>
 #include <string>
 #include <cstdlib>
-#include <experimental/filesystem>
+#include <filesystem>
 
-#include <sophus/se3.hpp>
+#include <Toucan/DataTypes.h>
 
 struct Image {
 	~Image() {
@@ -23,21 +23,20 @@ struct Image {
 
 class DataLoader {
 public:
-	explicit DataLoader(const std::experimental::filesystem::path& dataset_path, const Sophus::SE3f& transformation = Sophus::SE3f());
+	explicit DataLoader(const std::filesystem::path& dataset_path);
 	
 	void next();
 	[[nodiscard]] bool has_next() const;
 	[[nodiscard]] Image get_rgb() const;
 	[[nodiscard]] Image get_depth() const;
-	[[nodiscard]] Sophus::SE3f get_groundtruth() const;
+	[[nodiscard]] Toucan::RigidTransform3Df get_groundtruth() const;
 	[[nodiscard]] uint64_t get_timestamp() const;
 	
 	[[nodiscard]] int get_size() const;
 	[[nodiscard]] int get_current_index() const;
 
 private:
-	const std::experimental::filesystem::path m_dataset_path;
-	const Sophus::SE3f m_transformation;
+	const std::filesystem::path m_dataset_path;
 	
 	int m_rgb_index;
 	int m_depth_index;
@@ -45,5 +44,5 @@ private:
 	
 	std::vector<std::pair<uint64_t, const std::string>> m_rgb_files;
 	std::vector<std::pair<uint64_t, const std::string>> m_depth_files;
-	std::vector<std::pair<uint64_t, const Sophus::SE3f>> m_ground_truths;
+	std::vector<std::pair<uint64_t, const Toucan::RigidTransform3Df>> m_ground_truths;
 };

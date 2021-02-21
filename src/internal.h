@@ -59,7 +59,7 @@ struct Element2D {
 	union {
 		LinePlot2DMetadata line_plot_2d_metadata;
 		Point2DMetadata point_2d_metadata;
-		Image2DMetadata image_2d_metadata ;
+		Image2DMetadata image_2d_metadata;
 	};
 };
 
@@ -157,6 +157,105 @@ struct Figure3D {
 	Vector2i framebuffer_size = Vector2i(128, 128);
 };
 
+enum class ElementInputType {
+	BUTTON, CHECKBOX,
+	SLIDER_FLOAT, SLIDER_FLOAT2, SLIDER_FLOAT3, SLIDER_FLOAT4,
+	SLIDER_INT, SLIDER_INT2, SLIDER_INT3, SLIDER_INT4,
+	COLOR_PICKER
+};
+
+struct ShowButtonMetadata {
+	int number_of_click_events = 0;
+	ShowButtonSettings settings;
+};
+
+struct ShowCheckboxMetadata {
+	bool value;
+	bool value_changed;
+	ShowCheckboxSettings settings;
+};
+
+struct ShowSliderFloatMetadata {
+	float value;
+	bool value_changed;
+	ShowSliderFloatSettings settings;
+};
+
+struct ShowSliderFloat2Metadata {
+	Vector2f value;
+	bool value_changed;
+	ShowSliderFloatSettings settings;
+};
+
+struct ShowSliderFloat3Metadata {
+	Vector3f value;
+	bool value_changed;
+	ShowSliderFloatSettings settings;
+};
+
+struct ShowSliderFloat4Metadata {
+	Vector4f value;
+	bool value_changed;
+	ShowSliderFloatSettings settings;
+};
+
+struct ShowSliderIntMetadata {
+	int value;
+	bool value_changed;
+	ShowSliderIntSettings settings;
+};
+
+struct ShowSliderInt2Metadata {
+	Vector2i value;
+	bool value_changed;
+	ShowSliderIntSettings settings;
+};
+
+struct ShowSliderInt3Metadata {
+	Vector3i value;
+	bool value_changed;
+	ShowSliderIntSettings settings;
+};
+
+struct ShowSliderInt4Metadata {
+	Vector4i value;
+	bool value_changed;
+	ShowSliderIntSettings settings;
+};
+
+struct ShowColorPickerMetadata {
+	Color value;
+	bool value_changed;
+	ShowColorPickerSettings settings;
+};
+
+struct ElementInput {
+	std::string name;
+	ElementInputType type;
+	
+	union {
+		ShowButtonMetadata show_button_metadata;
+		ShowCheckboxMetadata show_checkbox_metadata;
+		ShowSliderFloatMetadata show_slider_float_metadata;
+		ShowSliderFloat2Metadata show_slider_float2_metadata;
+		ShowSliderFloat3Metadata show_slider_float3_metadata;
+		ShowSliderFloat4Metadata show_slider_float4_metadata;
+		ShowSliderIntMetadata show_slider_int_metadata;
+		ShowSliderInt2Metadata show_slider_int2_metadata;
+		ShowSliderInt3Metadata show_slider_int3_metadata;
+		ShowSliderInt4Metadata show_slider_int4_metadata;
+		ShowColorPickerMetadata show_color_picker_metadata;
+	};
+};
+
+struct InputWindow {
+	std::string name;
+	InputSettings settings = {};
+	
+	std::mutex mutex;
+	std::vector<ElementInput> elements;
+};
+
 struct ToucanContext {
 	std::atomic_bool should_render = true;
 	std::atomic_bool window_open = true;
@@ -176,6 +275,9 @@ struct ToucanContext {
 	
 	std::list<Toucan::Figure3D> figures_3d;
 	Toucan::Figure3D* current_figure_3d = nullptr;
+	
+	std::list<Toucan::InputWindow> input_windows;
+	Toucan::InputWindow* current_input_window = nullptr;
 	
 	AssetContext asset_context = {};
 };

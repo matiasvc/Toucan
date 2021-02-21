@@ -144,15 +144,15 @@ IndexedGeometryHandles generate_sphere(int number_of_sectors, int number_of_stac
 	// TODO(Matias): Use a single vertex for top and bottom
 	for (int stack_index = 0; stack_index <= number_of_stacks; ++stack_index) {
 		const float stack_angle = 0.5f*static_cast<float>(M_PI) - static_cast<float>(stack_index)*stack_step;
-		const float xz = radius * std::cos(stack_angle);
-		const float y = radius * std::sin(stack_angle);
+		const float xy = radius * std::cos(stack_angle);
+		const float z = radius * std::sin(stack_angle);
 		
 		for (int sector_index = 0; sector_index <= number_of_sectors; ++sector_index) {
 			
 			const float sector_angle = static_cast<float>(sector_index) * sector_step;
 			
-			const float x = xz * std::cos(sector_angle);
-			const float z = xz * std::sin(sector_angle);
+			const float x = xy * std::cos(sector_angle);
+			const float y = xy * std::sin(sector_angle);
 			
 			const float u = static_cast<float>(sector_index) / static_cast<float>(number_of_sectors);
 			const float v = static_cast<float>(stack_index) / static_cast<float>(number_of_stacks);
@@ -275,20 +275,20 @@ IndexedGeometryHandles generate_cylinder(int number_of_sectors) {
 	int vertex_index = 2;
 	
 	// TODO(Matias): Fix UV coordinates
-	geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(0.0f, -0.5f, 0.0f), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()});
-	geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(0.0f, 0.5f, 0.0f), Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()});
+	geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(0.0f, 0.0f, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()});
+	geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(0.0f, 0.0f, 0.5f), Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()});
 	
 	// Top cap
 	for (int sector_index = 0; sector_index <= number_of_sectors; ++sector_index) {
 		const float angle = sector_angle * sector_index;
 		
 		const float x = std::cos(angle);
-		const float z = std::sin(angle);
+		const float y = std::sin(angle);
 		
-		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, -0.5f, radius*z), -Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()});
-		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, -0.5f, radius*z), Toucan::Vector3f(x, 0.0f, z), Toucan::Vector2f::Zero()});
-		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, 0.5f, radius*z), Toucan::Vector3f(x, 0.0f, z), Toucan::Vector2f::Zero()});
-		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, 0.5f, radius*z), Toucan::Vector3f::UnitY(), Toucan::Vector2f::Zero()});
+		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, radius * y, -0.5f), -Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()});
+		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, radius * y, -0.5f), Toucan::Vector3f(x, y, 0.0f), Toucan::Vector2f::Zero()});
+		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, radius * y,  0.5f), Toucan::Vector3f(x, y, 0.0f), Toucan::Vector2f::Zero()});
+		geometry_data.vertices.emplace_back(TexturedVertex{Toucan::Vector3f(radius*x, radius * y,  0.5f), Toucan::Vector3f::UnitZ(), Toucan::Vector2f::Zero()});
 		vertex_index += 4;
 		
 		if (sector_index != 0) {
