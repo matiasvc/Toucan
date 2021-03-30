@@ -80,10 +80,7 @@ Toucan::Element2D& get_or_create_element_2d(Toucan::Figure2D& figure, const std:
 			}
 		}
 		
-		Toucan::Element2D new_element_2d = {};
-		new_element_2d.name = name;
-		new_element_2d.draw_layer = draw_layer;
-		new_element_2d.type = type;
+		Toucan::Element2D new_element_2d(name, type, draw_layer);
 		
 		auto insertion_iterator = figure.elements.insert(element_iterator, std::move(new_element_2d));
 		current_element_ptr = &(*insertion_iterator);
@@ -106,9 +103,7 @@ Toucan::Element3D& get_or_create_element_3d(Toucan::Figure3D& figure, const std:
 	// If it does not exist, we must create a new one.
 	if (current_element_ptr == nullptr) {
 		
-		Toucan::Element3D new_element_3d = {};
-		new_element_3d.name = name;
-		new_element_3d.type = type;
+		Toucan::Element3D new_element_3d(name, type);
 		
 		auto& inserted_element = figure.elements.emplace_back(new_element_3d);
 		current_element_ptr = &inserted_element;
@@ -174,7 +169,7 @@ void Toucan::SleepUntilWindowClosed() {
 }
 
 
-void Toucan::BeginFigure2D(const std::string& name, const Figure2DSettings& settings) {
+Toucan::Figure2DSettingsBuilder Toucan::BeginFigure2D(const std::string& name) {
 	validate_initialized(BeginFigure2D)
 	auto& toucan_context = *toucan_context_ptr;
 	validate_inactive_figure2d(BeginFigure2D)
@@ -198,8 +193,8 @@ void Toucan::BeginFigure2D(const std::string& name, const Figure2DSettings& sett
 	assert(figure_2d_ptr->pose_stack.empty());
 	figure_2d_ptr->pose_stack.emplace_back();
 	
-	figure_2d_ptr->settings = settings;
 	toucan_context.current_figure_2d = figure_2d_ptr;
+	return Toucan::Figure2DSettingsBuilder(&figure_2d_ptr->settings);
 }
 
 void Toucan::EndFigure2D() {
@@ -247,7 +242,7 @@ void Toucan::ClearPose2D() {
 	current_figure.pose_stack.emplace_back(); // Add identity pose back
 }
 
-void Toucan::ShowLinePlot2D(const std::string& name, const Toucan::Buffer<Toucan::Vector2f>& line_buffer, int draw_layer, const ShowLinePlot2DSettings& settings) {
+Toucan::ShowLinePlot2DSettingsBuilder Toucan::ShowLinePlot2D(const std::string& name, const Toucan::Buffer<Toucan::Vector2f>& line_buffer, int draw_layer) {
 	validate_initialized(PopPose2D)
 	auto& context = *toucan_context_ptr;
 	validate_active_figure2d(PopPose2D)
@@ -269,10 +264,10 @@ void Toucan::ShowLinePlot2D(const std::string& name, const Toucan::Buffer<Toucan
 	std::memcpy(current_element.data_buffer_ptr, line_buffer.data_ptr, data_buffer_size);
 	
 	current_element.line_plot_2d_metadata.number_of_points = line_buffer.number_of_elements;
-	current_element.line_plot_2d_metadata.settings = settings;
+	return Toucan::ShowLinePlot2DSettingsBuilder(&current_element.line_plot_2d_metadata.settings);
 }
 
-void Toucan::ShowPoints2D(const std::string& name, const Buffer <Point2D>& points_buffer, int draw_layer, const ShowPoints2DSettings& settings) {
+Toucan::ShowPoints2DSettingsBuilder Toucan::ShowPoints2D(const std::string& name, const Buffer <Point2D>& points_buffer, int draw_layer) {
 	validate_initialized(ShowPoints2D)
 	auto& context = *toucan_context_ptr;
 	validate_active_figure2d(ShowPoints2D)
@@ -294,11 +289,11 @@ void Toucan::ShowPoints2D(const std::string& name, const Buffer <Point2D>& point
 	std::memcpy(current_element.data_buffer_ptr, points_buffer.data_ptr, data_buffer_size);
 	
 	current_element.point_2d_metadata.number_of_points = points_buffer.number_of_elements;
-	current_element.point_2d_metadata.settings = settings;
+	return Toucan::ShowPoints2DSettingsBuilder(&current_element.point_2d_metadata.settings);
 }
 
 
-void Toucan::ShowImage2D(const std::string& name, const Image2D& image, int draw_layer, const ShowImage2DSettings& settings) {
+Toucan::ShowImage2DSettingsBuilder Toucan::ShowImage2D(const std::string& name, const Image2D& image, int draw_layer) {
 	validate_initialized(ShowImage2D)
 	auto& context = *toucan_context_ptr;
 	validate_active_figure2d(ShowImage2D)
@@ -327,10 +322,10 @@ void Toucan::ShowImage2D(const std::string& name, const Image2D& image, int draw
 	current_element.image_2d_metadata.width = image.width;
 	current_element.image_2d_metadata.height = image.height;
 	current_element.image_2d_metadata.format = image.format;
-	current_element.image_2d_metadata.settings = settings;
+	return Toucan::ShowImage2DSettingsBuilder(&current_element.image_2d_metadata.settings);
 }
 
-void Toucan::BeginFigure3D(const std::string& name, const Toucan::Figure3DSettings& settings) {
+Toucan::Figure3DSettingsBuilder Toucan::BeginFigure3D(const std::string& name) {
 	validate_initialized(BeginFigure3D)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_inactive_figure3d(BeginFigure3D)
@@ -347,9 +342,7 @@ void Toucan::BeginFigure3D(const std::string& name, const Toucan::Figure3DSettin
 		auto& figure_3d = toucan_context.figures_3d.emplace_back();
 		
 		// Add default 3D grid
-		Toucan::Element3D grid_element = {};
-		grid_element.name = "Grid";
-		grid_element.type = ElementType3D::Grid3D;
+		Toucan::Element3D grid_element("Grid", ElementType3D::Grid3D);
 		grid_element.data_buffer_ptr = reinterpret_cast<void*>(1); // Use this to signify new data
 		grid_element.grid_3d_metadata.spacing = 1.0;
 		grid_element.grid_3d_metadata.lines = 20;
@@ -365,8 +358,8 @@ void Toucan::BeginFigure3D(const std::string& name, const Toucan::Figure3DSettin
 	assert(figure_3d_ptr->pose_stack.empty()); // TODO(Matias): Error message
 	figure_3d_ptr->pose_stack.emplace_back();
 	
-	figure_3d_ptr->settings = settings;
 	toucan_context.current_figure_3d = figure_3d_ptr;
+	return Toucan::Figure3DSettingsBuilder(&figure_3d_ptr->settings);
 }
 
 void Toucan::EndFigure3D() {
@@ -414,7 +407,7 @@ void Toucan::ClearPose3D() {
 	current_figure.pose_stack.emplace_back(); // Add identity pose back
 }
 
-void Toucan::ShowAxis3D(const std::string& name, const ShowAxis3DSettings& settings) {
+Toucan::ShowAxis3DSettingsBuilder Toucan::ShowAxis3D(const std::string& name) {
 	validate_initialized(ShowAxis3D)
 	auto& context = *toucan_context_ptr;
 	validate_active_figure3d(ShowAxis3D)
@@ -425,10 +418,10 @@ void Toucan::ShowAxis3D(const std::string& name, const ShowAxis3DSettings& setti
 	current_element.pose = current_figure.pose_stack.back();
 	
 	current_element.data_buffer_ptr = reinterpret_cast<void*>(1);
-	current_element.axis_3d_metadata.settings = settings;
+	return Toucan::ShowAxis3DSettingsBuilder(&current_element.axis_3d_metadata.settings);
 }
 
-void Toucan::ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::Point3D>& points_buffer, const ShowPoints3DSettings& settings) {
+Toucan::ShowPoints3DSettingsBuilder Toucan::ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::Point3D>& points_buffer) {
 	validate_initialized(ShowPoints3D)
 	auto& context = *toucan_context_ptr;
 	validate_active_figure3d(ShowPoints3D)
@@ -450,11 +443,11 @@ void Toucan::ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::
 	std::memcpy(current_element.data_buffer_ptr, points_buffer.data_ptr, data_buffer_size);
 	
 	current_element.point_3d_metadata.number_of_points = points_buffer.number_of_elements;
-	current_element.point_3d_metadata.settings = settings;
+	return Toucan::ShowPoints3DSettingsBuilder(&current_element.point_3d_metadata.settings);
 }
 
 
-void Toucan::ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::LineVertex3D>& lines_buffer, const ShowLines3DSettings& settings) {
+Toucan::ShowLines3DSettingsBuilder Toucan::ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::LineVertex3D>& lines_buffer) {
 	validate_initialized(ShowLines3D)
 	auto& context = *toucan_context_ptr;
 	validate_active_figure3d(ShowLines3D)
@@ -476,10 +469,10 @@ void Toucan::ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::L
 	std::memcpy(current_element.data_buffer_ptr, lines_buffer.data_ptr, data_buffer_size);
 	
 	current_element.line_3d_metadata.number_of_line_vertices = lines_buffer.number_of_elements;
-	current_element.line_3d_metadata.settings = settings;
+	return Toucan::ShowLines3DSettingsBuilder(&current_element.line_3d_metadata.settings);
 }
 
-void Toucan::ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Toucan::Primitive3D>& primitives_buffer, const ShowPrimitives3DSettings& settings) {
+Toucan::ShowPrimitives3DSettingsBuilder Toucan::ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Toucan::Primitive3D>& primitives_buffer) {
 	validate_initialized(ShowPrimitives3D)
 	auto& context = *toucan_context_ptr;
 	validate_active_figure3d(ShowPrimitives3D)
@@ -501,10 +494,10 @@ void Toucan::ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Touc
 	std::memcpy(current_element.data_buffer_ptr, primitives_buffer.data_ptr, data_buffer_size);
 	
 	current_element.primitive_3d_metadata.number_of_primitives = primitives_buffer.number_of_elements;
-	current_element.primitive_3d_metadata.settings = settings;
+	return Toucan::ShowPrimitives3DSettingsBuilder(&current_element.primitive_3d_metadata.settings);
 }
 
-void Toucan::BeginInputWindow(const std::string& name, const InputSettings& settings) {
+Toucan::InputSettingsBuilder Toucan::BeginInputWindow(const std::string& name) {
 	validate_initialized(BeginInputWindow)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_inactive_input_window(BeginFigure3D)
@@ -525,8 +518,8 @@ void Toucan::BeginInputWindow(const std::string& name, const InputSettings& sett
 	
 	input_window_ptr->mutex.lock();
 	
-	input_window_ptr->settings = settings;
 	toucan_context.current_input_window = input_window_ptr;
+	return Toucan::InputSettingsBuilder(&input_window_ptr->settings);
 }
 
 void Toucan::EndInputWindow() {
@@ -538,7 +531,7 @@ void Toucan::EndInputWindow() {
 	toucan_context.current_input_window = nullptr;
 }
 
-bool Toucan::ShowButton(const std::string& name, const ShowButtonSettings& settings) {
+Toucan::ShowButtonsSettingsBuilder Toucan::ShowButton(const std::string& name) {
 	validate_initialized(ShowButton)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_active_input_window(ShowButton)
@@ -546,16 +539,15 @@ bool Toucan::ShowButton(const std::string& name, const ShowButtonSettings& setti
 	
 	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::BUTTON);
 	
-	current_element.show_button_metadata.settings = settings;
 	if (current_element.show_button_metadata.number_of_click_events > 0) {
 		current_element.show_button_metadata.number_of_click_events--;
-		return true;
+		return Toucan::ShowButtonsSettingsBuilder(true, &current_element.show_button_metadata.settings);
 	} else {
-		return false;
+		return Toucan::ShowButtonsSettingsBuilder(false, &current_element.show_button_metadata.settings);
 	}
 }
 
-bool Toucan::ShowCheckbox(const std::string& name, bool& value, const ShowCheckboxSettings& settings) {
+Toucan::ShowCheckboxSettingsBuilder Toucan::ShowCheckbox(const std::string& name, bool& value) {
 	validate_initialized(ShowSliderFloat)
 	auto &toucan_context = *toucan_context_ptr;
 	validate_active_input_window(ShowSliderFloat)
@@ -563,18 +555,17 @@ bool Toucan::ShowCheckbox(const std::string& name, bool& value, const ShowCheckb
 	
 	auto &current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::CHECKBOX);
 	
-	current_element.show_checkbox_metadata.settings = settings;
 	if (current_element.show_checkbox_metadata.value_changed) {
 		value = current_element.show_checkbox_metadata.value;
 		current_element.show_checkbox_metadata.value_changed = false;
-		return true;
+		return Toucan::ShowCheckboxSettingsBuilder(true, &current_element.show_checkbox_metadata.settings);
 	} else {
 		current_element.show_checkbox_metadata.value = value;
-		return false;
+		return Toucan::ShowCheckboxSettingsBuilder(false, &current_element.show_checkbox_metadata.settings);
 	}
 }
 
-bool Toucan::ShowSliderFloat(const std::string& name, float& value, const ShowSliderFloatSettings& settings) {
+Toucan::ShowSliderFloatSettingsBuilder Toucan::ShowSliderFloat(const std::string& name, float& value) {
 	validate_initialized(ShowSliderFloat)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_active_input_window(ShowSliderFloat)
@@ -582,18 +573,17 @@ bool Toucan::ShowSliderFloat(const std::string& name, float& value, const ShowSl
 	
 	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_FLOAT);
 	
-	current_element.show_slider_float_metadata.settings = settings;
 	if (current_element.show_slider_float_metadata.value_changed) {
 		value = current_element.show_slider_float_metadata.value;
 		current_element.show_slider_float_metadata.value_changed = false;
-		return true;
+		return Toucan::ShowSliderFloatSettingsBuilder(true, &current_element.show_slider_float_metadata.settings);
 	} else {
 		current_element.show_slider_float_metadata.value = value;
-		return false;
+		return Toucan::ShowSliderFloatSettingsBuilder(false, &current_element.show_slider_float_metadata.settings);
 	}
 }
 
-bool Toucan::ShowSliderFloat2(const std::string& name, Vector2f& value, const ShowSliderFloatSettings& settings) {
+Toucan::ShowSliderFloatSettingsBuilder Toucan::ShowSliderFloat2(const std::string& name, Vector2f& value) {
 	validate_initialized(ShowSliderFloat)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_active_input_window(ShowSliderFloat)
@@ -601,18 +591,17 @@ bool Toucan::ShowSliderFloat2(const std::string& name, Vector2f& value, const Sh
 	
 	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_FLOAT2);
 	
-	current_element.show_slider_float2_metadata.settings = settings;
 	if (current_element.show_slider_float2_metadata.value_changed) {
 		value = current_element.show_slider_float2_metadata.value;
 		current_element.show_slider_float2_metadata.value_changed = false;
-		return true;
+		return Toucan::ShowSliderFloatSettingsBuilder(true, &current_element.show_slider_float2_metadata.settings);
 	} else {
 		current_element.show_slider_float2_metadata.value = value;
-		return false;
+		return Toucan::ShowSliderFloatSettingsBuilder(false, &current_element.show_slider_float2_metadata.settings);
 	}
 }
 
-bool Toucan::ShowSliderFloat3(const std::string& name, Vector3f& value, const ShowSliderFloatSettings& settings) {
+Toucan::ShowSliderFloatSettingsBuilder Toucan::ShowSliderFloat3(const std::string& name, Vector3f& value) {
 	validate_initialized(ShowSliderFloat)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_active_input_window(ShowSliderFloat)
@@ -620,18 +609,17 @@ bool Toucan::ShowSliderFloat3(const std::string& name, Vector3f& value, const Sh
 	
 	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_FLOAT3);
 	
-	current_element.show_slider_float3_metadata.settings = settings;
 	if (current_element.show_slider_float3_metadata.value_changed) {
 		value = current_element.show_slider_float3_metadata.value;
 		current_element.show_slider_float3_metadata.value_changed = false;
-		return true;
+		return Toucan::ShowSliderFloatSettingsBuilder(true, &current_element.show_slider_float3_metadata.settings);
 	} else {
 		current_element.show_slider_float3_metadata.value = value;
-		return false;
+		return Toucan::ShowSliderFloatSettingsBuilder(false, &current_element.show_slider_float3_metadata.settings);
 	}
 }
 
-bool Toucan::ShowSliderFloat4(const std::string& name, Vector4f& value, const ShowSliderFloatSettings& settings) {
+Toucan::ShowSliderFloatSettingsBuilder Toucan::ShowSliderFloat4(const std::string& name, Vector4f& value) {
 	validate_initialized(ShowSliderFloat)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_active_input_window(ShowSliderFloat)
@@ -639,18 +627,17 @@ bool Toucan::ShowSliderFloat4(const std::string& name, Vector4f& value, const Sh
 	
 	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_FLOAT4);
 	
-	current_element.show_slider_float4_metadata.settings = settings;
 	if (current_element.show_slider_float4_metadata.value_changed) {
 		value = current_element.show_slider_float4_metadata.value;
 		current_element.show_slider_float4_metadata.value_changed = false;
-		return true;
+		return Toucan::ShowSliderFloatSettingsBuilder(true, &current_element.show_slider_float4_metadata.settings);
 	} else {
 		current_element.show_slider_float4_metadata.value = value;
-		return false;
+		return Toucan::ShowSliderFloatSettingsBuilder(false, &current_element.show_slider_float4_metadata.settings);
 	}
 }
 
-bool Toucan::ShowSliderInt(const std::string& name, int& value, const ShowSliderIntSettings& settings) {
+Toucan::ShowSliderIntSettingsBuilder Toucan::ShowSliderInt(const std::string& name, int& value) {
 	validate_initialized(ShowSliderFloat)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_active_input_window(ShowSliderFloat)
@@ -658,18 +645,17 @@ bool Toucan::ShowSliderInt(const std::string& name, int& value, const ShowSlider
 	
 	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_INT);
 	
-	current_element.show_slider_int_metadata.settings = settings;
 	if (current_element.show_slider_int_metadata.value_changed) {
 		value = current_element.show_slider_int_metadata.value;
 		current_element.show_slider_int_metadata.value_changed = false;
-		return true;
+		return Toucan::ShowSliderIntSettingsBuilder(true, &current_element.show_slider_int_metadata.settings);
 	} else {
 		current_element.show_slider_int_metadata.value = value;
-		return false;
+		return Toucan::ShowSliderIntSettingsBuilder(false, &current_element.show_slider_int_metadata.settings);
 	}
 }
 
-bool Toucan::ShowSliderInt2(const std::string& name, Vector2i& value, const ShowSliderIntSettings& settings) {
+Toucan::ShowSliderIntSettingsBuilder Toucan::ShowSliderInt2(const std::string& name, Vector2i& value) {
 	validate_initialized(ShowSliderFloat)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_active_input_window(ShowSliderFloat)
@@ -677,18 +663,17 @@ bool Toucan::ShowSliderInt2(const std::string& name, Vector2i& value, const Show
 	
 	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_INT2);
 	
-	current_element.show_slider_int2_metadata.settings = settings;
 	if (current_element.show_slider_int2_metadata.value_changed) {
 		value = current_element.show_slider_int2_metadata.value;
 		current_element.show_slider_int2_metadata.value_changed = false;
-		return true;
+		return Toucan::ShowSliderIntSettingsBuilder(true, &current_element.show_slider_int2_metadata.settings);
 	} else {
 		current_element.show_slider_int2_metadata.value = value;
-		return false;
+		return Toucan::ShowSliderIntSettingsBuilder(false, &current_element.show_slider_int2_metadata.settings);
 	}
 }
 
-bool Toucan::ShowSliderInt3(const std::string& name, Vector3i& value, const ShowSliderIntSettings& settings) {
+Toucan::ShowSliderIntSettingsBuilder Toucan::ShowSliderInt3(const std::string& name, Vector3i& value) {
 	validate_initialized(ShowSliderFloat)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_active_input_window(ShowSliderFloat)
@@ -696,18 +681,17 @@ bool Toucan::ShowSliderInt3(const std::string& name, Vector3i& value, const Show
 	
 	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_INT3);
 	
-	current_element.show_slider_int3_metadata.settings = settings;
 	if (current_element.show_slider_int3_metadata.value_changed) {
 		value = current_element.show_slider_int3_metadata.value;
 		current_element.show_slider_int3_metadata.value_changed = false;
-		return true;
+		return Toucan::ShowSliderIntSettingsBuilder(true, &current_element.show_slider_int3_metadata.settings);
 	} else {
 		current_element.show_slider_int3_metadata.value = value;
-		return false;
+		return Toucan::ShowSliderIntSettingsBuilder(false, &current_element.show_slider_int3_metadata.settings);
 	}
 }
 
-bool Toucan::ShowSliderInt4(const std::string& name, Vector4i& value, const ShowSliderIntSettings& settings) {
+Toucan::ShowSliderIntSettingsBuilder Toucan::ShowSliderInt4(const std::string& name, Vector4i& value) {
 	validate_initialized(ShowSliderFloat)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_active_input_window(ShowSliderFloat)
@@ -715,18 +699,17 @@ bool Toucan::ShowSliderInt4(const std::string& name, Vector4i& value, const Show
 	
 	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::SLIDER_INT4);
 	
-	current_element.show_slider_int4_metadata.settings = settings;
 	if (current_element.show_slider_int4_metadata.value_changed) {
 		value = current_element.show_slider_int4_metadata.value;
 		current_element.show_slider_int4_metadata.value_changed = false;
-		return true;
+		return Toucan::ShowSliderIntSettingsBuilder(true, &current_element.show_slider_int4_metadata.settings);
 	} else {
 		current_element.show_slider_int4_metadata.value = value;
-		return false;
+		return Toucan::ShowSliderIntSettingsBuilder(false, &current_element.show_slider_int4_metadata.settings);
 	}
 }
 
-bool Toucan::ShowColorPicker(const std::string& name, Color& value, const ShowColorPickerSettings& settings) {
+Toucan::ShowColorPickerSettingsBuilder Toucan::ShowColorPicker(const std::string& name, Color& value) {
 	validate_initialized(ShowSliderFloat)
 	auto& toucan_context = * toucan_context_ptr;
 	validate_active_input_window(ShowSliderFloat)
@@ -734,21 +717,20 @@ bool Toucan::ShowColorPicker(const std::string& name, Color& value, const ShowCo
 	
 	auto& current_element = get_or_create_element_input(current_input_window, name, Toucan::ElementInputType::COLOR_PICKER);
 	
-	current_element.show_color_picker_metadata.settings = settings;
 	if (current_element.show_color_picker_metadata.value_changed) {
 		value = current_element.show_color_picker_metadata.value;
 		current_element.show_color_picker_metadata.value_changed = false;
-		return true;
+		return Toucan::ShowColorPickerSettingsBuilder(true, &current_element.show_color_picker_metadata.settings);
 	} else {
 		current_element.show_color_picker_metadata.value = value;
-		return false;
+		return Toucan::ShowColorPickerSettingsBuilder(false, &current_element.show_color_picker_metadata.settings);
 	}
 }
 
 Toucan::Rectangle get_lineplot_2d_data_bounds(const Toucan::Element2D& element_2d, const Toucan::RigidTransform2Df& local_transform) {
 	assert(element_2d.type == Toucan::ElementType2D::LinePlot2D);
 	
-	const Toucan::ScaledTransform2Df& data_transform = element_2d.line_plot_2d_metadata.settings.scaled_transform;
+	const Toucan::ScaledTransform2Df& data_transform = element_2d.line_plot_2d_metadata.settings.transform;
 	auto* point_2d_data_ptr = reinterpret_cast<Toucan::Vector2f*>(element_2d.data_buffer_ptr);
 	
 	auto min_x =  std::numeric_limits<float>::infinity();
@@ -777,7 +759,7 @@ Toucan::Rectangle get_lineplot_2d_data_bounds(const Toucan::Element2D& element_2
 Toucan::Rectangle get_point_2d_data_bounds(const Toucan::Element2D& element_2d, const Toucan::RigidTransform2Df& local_transform) {
 	assert(element_2d.type == Toucan::ElementType2D::Point2D);
 	
-	const Toucan::ScaledTransform2Df& data_transform = element_2d.point_2d_metadata.settings.scaled_transform;
+	const Toucan::ScaledTransform2Df& data_transform = element_2d.point_2d_metadata.settings.transform;
 	auto* point_2d_data_ptr = reinterpret_cast<Toucan::Point2D*>(element_2d.data_buffer_ptr);
 	
 	auto min_x =  std::numeric_limits<float>::infinity();
@@ -1329,7 +1311,7 @@ void render_loop(Toucan::ToucanSettings settings) {
 						Toucan::draw_element_3d(element, model_to_world_matrix, orientation_and_handedness_matrix, world_to_camera_matrix, projection_matrix, toucan_context_ptr);
 					}
 					glCheckError();
-					if (figure_3d.settings.show_axis_gizmo) {
+					if (figure_3d.settings.gizmo_enabled) {
 						Toucan::draw_axis_gizmo_3d(figure_3d.camera.get_orbit_pose(100.0f).inverse(), figure_draw_size, orientation_and_handedness_matrix, toucan_context_ptr);
 					}
 					glCheckError();

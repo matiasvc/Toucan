@@ -11,7 +11,8 @@
 #include <GLFW/glfw3.h>
 #include <renderdoc/renderdoc.h>
 
-#include "Toucan/DataTypes.h"
+#include <Toucan/DataTypes.h>
+#include <Toucan/Setting.h>
 
 #include "asset.h"
 
@@ -20,34 +21,43 @@ namespace Toucan {
 enum class ElementType2D { LinePlot2D, Point2D, Image2D };
 
 struct LinePlot2DMetadata {
-	unsigned int vao;
-	unsigned int vbo;
+	unsigned int vao = 0;
+	unsigned int vbo = 0;
 	
-	int number_of_points;
+	int number_of_points = 0;
 	
-	ShowLinePlot2DSettings settings;
+	ShowLinePlot2DSettings settings = {};
 };
 
 struct Point2DMetadata{
-	unsigned int vao;
-	unsigned int vbo;
+	unsigned int vao = 0;
+	unsigned int vbo = 0;
 	
-	int number_of_points;
+	int number_of_points = 0;
 	
-	ShowPoints2DSettings settings;
+	ShowPoints2DSettings settings = {};
 };
 
 struct Image2DMetadata {
-	unsigned int texture;
+	unsigned int texture = 0;
 	
-	int width;
-	int height;
-	ImageFormat format;
+	int width = 0;
+	int height = 0;
+	ImageFormat format = ImageFormat::GRAY_U8;
 	
-	ShowImage2DSettings settings;
+	ShowImage2DSettings settings = {};
 };
 
 struct Element2D {
+	Element2D(std::string name, ElementType2D type, int draw_layer)
+	: name{std::move(name)}, pose{}, type{type}, draw_layer{draw_layer}, data_bounds_cache{}, data_buffer_ptr{nullptr} {
+		switch (type) {
+			case ElementType2D::Point2D:    { point_2d_metadata     = {}; } break;
+			case ElementType2D::Image2D:    { image_2d_metadata     = {}; } break;
+			case ElementType2D::LinePlot2D: { line_plot_2d_metadata = {}; } break;
+		}
+	}
+	
 	std::string name;
 	RigidTransform2Df pose;
 	ElementType2D type = {};
@@ -125,6 +135,18 @@ struct Primitive3DMetadata {
 };
 
 struct Element3D {
+	Element3D(std::string name, ElementType3D type)
+	: name{std::move(name)}, pose{}, type{type}, data_buffer_ptr{nullptr} {
+		switch (type) {
+			case ElementType3D::Grid3D:      { grid_3d_metadata      = {}; } break;
+			case ElementType3D::Axis3D:      { axis_3d_metadata      = {}; } break;
+			case ElementType3D::Point3D:     { point_3d_metadata     = {}; } break;
+			case ElementType3D::Line3D:      { line_3d_metadata      = {}; } break;
+			case ElementType3D::Primitive3D: { primitive_3d_metadata = {}; } break;
+			default: { throw std::runtime_error("ERROR! Invalid Element3D type."); }
+		}
+	}
+	
 	std::string name;
 	RigidTransform3Df pose;
 	ElementType3D type = {};

@@ -24,9 +24,9 @@ int main() {
 	
 	Toucan::BeginFigure2D("Simple Line Plot");
 	{
-		Toucan::ShowLinePlot2DSettings line_plot_2d_settings;
-		line_plot_2d_settings.line_color = Toucan::Color::Red();
-		Toucan::ShowLinePlot2D("Plot", data, 0, line_plot_2d_settings);
+		Toucan::ShowLinePlot2D("Plot", data)
+			.SetLineColor(Toucan::Color::Red())
+			.SetLineWidth(2.5f);
 	}
 	Toucan::EndFigure2D();
 	

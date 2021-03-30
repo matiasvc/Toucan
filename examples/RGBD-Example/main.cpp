@@ -65,9 +65,8 @@ int main() {
 		auto image = data_loader.get_rgb();
 		auto image_depth = data_loader.get_depth();
 		
-		Toucan::Figure2DSettings color_image_settings;
-		color_image_settings.y_axis_direction = Toucan::YAxisDirection::DOWN;
-		Toucan::BeginFigure2D("Color Image", color_image_settings);
+		Toucan::BeginFigure2D("Color Image")
+			.SetYAxisDirection(Toucan::YAxisDirection::DOWN);
 		{
 			Toucan::Image2D toucan_image;
 			toucan_image.width = image.m_width;
@@ -78,9 +77,8 @@ int main() {
 		}
 		Toucan::EndFigure2D();
 		
-		Toucan::Figure2DSettings depth_image_settings;
-		depth_image_settings.y_axis_direction = Toucan::YAxisDirection::DOWN;
-		Toucan::BeginFigure2D("Depth Image", depth_image_settings);
+		Toucan::BeginFigure2D("Depth Image")
+			.SetYAxisDirection(Toucan::YAxisDirection::DOWN);
 		{
 			Toucan::Image2D toucan_image;
 			toucan_image.width = image.m_width;
@@ -118,17 +116,14 @@ int main() {
 		
 		Toucan::BeginFigure2D("Position");
 		{
-			Toucan::ShowLinePlot2DSettings pos_x_setting;
-			pos_x_setting.line_color = Toucan::Color::Red();
-			Toucan::ShowLinePlot2D("X Position", pos_x_plot, 0, pos_x_setting);
+			Toucan::ShowLinePlot2D("X Position", pos_x_plot, 0)
+				.SetLineColor(Toucan::Color::Red());
 			
-			Toucan::ShowLinePlot2DSettings pos_y_setting;
-			pos_y_setting.line_color = Toucan::Color::Green();
-			Toucan::ShowLinePlot2D("Y Position", pos_y_plot, 0, pos_y_setting);
+			Toucan::ShowLinePlot2D("Y Position", pos_y_plot, 0)
+				.SetLineColor(Toucan::Color::Green());
 			
-			Toucan::ShowLinePlot2DSettings pos_z_setting;
-			pos_z_setting.line_color = Toucan::Color::Blue();
-			Toucan::ShowLinePlot2D("Z Position", pos_z_plot, 0, pos_z_setting);
+			Toucan::ShowLinePlot2D("Z Position", pos_z_plot, 0)
+				.SetLineColor(Toucan::Color::Blue());
 		}
 		
 		Toucan::EndFigure2D();

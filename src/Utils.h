@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include <Toucan/LinAlg.h>
+#include <Toucan/Setting.h>
 
 namespace Toucan {
 
