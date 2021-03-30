@@ -58,6 +58,7 @@ target_include_directories(
 target_compile_options(
 		Toucan PRIVATE
 			-Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wcast-align -Wunused -Woverloaded-virtual
+			-Wswitch-enum
 			-Wpedantic -Wnull-dereference -Wdouble-promotion -Wformat=2 #-Werror
 			#-Wold-style-cast -Wconversion -Wsign-conversion
 )
