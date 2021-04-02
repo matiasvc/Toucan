@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdint>
 #include <fstream>
+#include <sstream>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

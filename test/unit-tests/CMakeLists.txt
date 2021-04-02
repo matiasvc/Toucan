@@ -10,7 +10,7 @@ add_executable(Toucan_test ${Toucan_test_source})
 
 target_include_directories(
 		Toucan_test PRIVATE
-		../src ../include)
+		${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/include)
 
 target_compile_features(
 		Toucan_test PRIVATE
