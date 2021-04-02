@@ -2,7 +2,7 @@
 
 #include <Toucan/Toucan.h>
 
-void draw_figure3d(const std::string& figure_name, const Toucan::Figure3DSettings& settings) {
+void draw_figure3d(const std::string& figure_name, Toucan::Orientation orientation, Toucan::Handedness handedness) {
 	std::array<Toucan::Primitive3D, 3> primitive_array = {
 		Toucan::Primitive3D(
 				Toucan::PrimitiveType::Cylinder,
@@ -21,7 +21,9 @@ void draw_figure3d(const std::string& figure_name, const Toucan::Figure3DSetting
 		),
 	};
 	
-	Toucan::BeginFigure3D(figure_name, settings);
+	Toucan::BeginFigure3D(figure_name)
+		.SetOrientation(orientation)
+		.SetHandedness(handedness);
 	{
 		Toucan::ShowPrimitives3D("Primitives", primitive_array);
 	}
@@ -33,91 +35,22 @@ int main() {
 	Toucan::Initialize();
 	
 	// X
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::X_UP;
-		settings.handedness = Toucan::Handedness::RIGHT_HANDED;
-		draw_figure3d("X up:R", settings);
-	}
-	
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::X_UP;
-		settings.handedness = Toucan::Handedness::LEFT_HANDED;
-		draw_figure3d("X up:L", settings);
-	}
-	
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::X_DOWN;
-		settings.handedness = Toucan::Handedness::RIGHT_HANDED;
-		draw_figure3d("X down:R", settings);
-	}
-	
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::X_DOWN;
-		settings.handedness = Toucan::Handedness::LEFT_HANDED;
-		draw_figure3d("X down:L", settings);
-	}
+	draw_figure3d("X up:R", Toucan::Orientation::X_UP, Toucan::Handedness::RIGHT_HANDED);
+	draw_figure3d("X up:L", Toucan::Orientation::X_UP, Toucan::Handedness::LEFT_HANDED);
+	draw_figure3d("X down:R", Toucan::Orientation::X_DOWN, Toucan::Handedness::RIGHT_HANDED);
+	draw_figure3d("X down:L", Toucan::Orientation::X_DOWN, Toucan::Handedness::LEFT_HANDED);
 	
 	// Y
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::Y_UP;
-		settings.handedness = Toucan::Handedness::RIGHT_HANDED;
-		draw_figure3d("Y up:R", settings);
-	}
-	
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::Y_UP;
-		settings.handedness = Toucan::Handedness::LEFT_HANDED;
-		draw_figure3d("Y up:L", settings);
-	}
-	
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::Y_DOWN;
-		settings.handedness = Toucan::Handedness::RIGHT_HANDED;
-		draw_figure3d("Y down:R", settings);
-	}
-	
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::Y_DOWN;
-		settings.handedness = Toucan::Handedness::LEFT_HANDED;
-		draw_figure3d("Y down:L", settings);
-	}
+	draw_figure3d("Y up:R", Toucan::Orientation::Y_UP, Toucan::Handedness::RIGHT_HANDED);
+	draw_figure3d("Y up:L", Toucan::Orientation::Y_UP, Toucan::Handedness::LEFT_HANDED);
+	draw_figure3d("Y down:R", Toucan::Orientation::Y_DOWN, Toucan::Handedness::RIGHT_HANDED);
+	draw_figure3d("Y down:L", Toucan::Orientation::Y_DOWN, Toucan::Handedness::LEFT_HANDED);
 	
 	// Z
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::Z_UP;
-		settings.handedness = Toucan::Handedness::RIGHT_HANDED;
-		draw_figure3d("Z up:R", settings);
-	}
-	
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::Z_UP;
-		settings.handedness = Toucan::Handedness::LEFT_HANDED;
-		draw_figure3d("Z up:L", settings);
-	}
-	
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::Z_DOWN;
-		settings.handedness = Toucan::Handedness::RIGHT_HANDED;
-		draw_figure3d("Z down:R", settings);
-	}
-	
-	{
-		Toucan::Figure3DSettings settings;
-		settings.orientation = Toucan::Orientation::Z_DOWN;
-		settings.handedness = Toucan::Handedness::LEFT_HANDED;
-		draw_figure3d("Z down:L", settings);
-	}
+	draw_figure3d("Z up:R", Toucan::Orientation::Z_UP, Toucan::Handedness::RIGHT_HANDED);
+	draw_figure3d("Z up:L", Toucan::Orientation::Z_UP, Toucan::Handedness::LEFT_HANDED);
+	draw_figure3d("Z down:R", Toucan::Orientation::Z_DOWN, Toucan::Handedness::RIGHT_HANDED);
+	draw_figure3d("Z down:L", Toucan::Orientation::Z_DOWN, Toucan::Handedness::LEFT_HANDED);
 	
 	Toucan::SleepUntilWindowClosed();
 	

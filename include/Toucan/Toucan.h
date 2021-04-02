@@ -5,8 +5,8 @@
 #include <string>
 #include <optional>
 
-
-#include "Toucan/DataTypes.h"
+#include <Toucan/Setting.h>
+#include <Toucan/DataTypes.h>
 
 namespace Toucan {
 
@@ -17,7 +17,7 @@ bool IsWindowOpen();
 void SleepUntilWindowClosed();
 
 // ***** Figure 2D *****
-void BeginFigure2D(const std::string& name, const Figure2DSettings& settings = {});
+Figure2DSettingsBuilder BeginFigure2D(const std::string& name);
 void EndFigure2D();
 
 // ***** Elements 2D *****
@@ -25,25 +25,25 @@ void PushPose2D(const Toucan::RigidTransform2Df& pose);
 void PopPose2D();
 void ClearPose2D();
 
-void ShowLinePlot2D(const std::string& name, const Toucan::Buffer<Toucan::Vector2f>& line_buffer, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {});
-void ShowPoints2D(const std::string& name, const Toucan::Buffer<Toucan::Point2D>& points_buffer, int draw_layer = 0, const ShowPoints2DSettings& settings = {});
-void ShowImage2D(const std::string& name, const Image2D& image, int draw_layer, const ShowImage2DSettings& settings = {});
+ShowLinePlot2DSettingsBuilder ShowLinePlot2D(const std::string& name, const Toucan::Buffer<Toucan::Vector2f>& line_buffer, int draw_layer = 0);
+ShowPoints2DSettingsBuilder   ShowPoints2D(const std::string& name, const Toucan::Buffer<Toucan::Point2D>& points_buffer, int draw_layer = 0);
+ShowImage2DSettingsBuilder    ShowImage2D(const std::string& name, const Image2D& image, int draw_layer = 0);
 
 // Helper functions
 template <size_t N>
-inline void ShowPoints2D(const std::string& name, const std::array<Toucan::Point2D, N>& points, int draw_layer = 0, const ShowPoints2DSettings& settings = {}) {
+inline ShowPoints2DSettingsBuilder ShowPoints2D(const std::string& name, const std::array<Toucan::Point2D, N>& points, int draw_layer = 0) {
 	Toucan::Buffer<Toucan::Point2D> buffer = {points.data(), points.size()};
-	ShowPoints2D(name, buffer, draw_layer, settings);
+	return ShowPoints2D(name, buffer, draw_layer);
 }
 
 template <typename Allocator>
-inline void ShowPoints2D(const std::string& name, const std::vector<Toucan::Point2D, Allocator>& points, int draw_layer = 0, const ShowPoints2DSettings& settings = {}) {
+inline ShowPoints2DSettingsBuilder ShowPoints2D(const std::string& name, const std::vector<Toucan::Point2D, Allocator>& points, int draw_layer = 0) {
 	Toucan::Buffer<Toucan::Point2D> buffer = {points.data(), points.size()};
-	ShowPoints2D(name, buffer, draw_layer, settings);
+	return ShowPoints2D(name, buffer, draw_layer);
 }
 
 // ***** Figure 3D *****
-void BeginFigure3D(const std::string& name, const Figure3DSettings& settings = {});
+Figure3DSettingsBuilder BeginFigure3D(const std::string& name);
 void EndFigure3D();
 
 // ***** Elements 3D *****
@@ -51,47 +51,47 @@ void PushPose3D(const Toucan::RigidTransform3Df& pose);
 void PopPose3D();
 void ClearPose3D();
 
-void ShowAxis3D(const std::string& name, const ShowAxis3DSettings& settings = {});
-void ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::Point3D>& points_buffer, const ShowPoints3DSettings& settings = {});
-void ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::LineVertex3D>& lines_buffer, const ShowLines3DSettings& settings = {});
-void ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Toucan::Primitive3D>& primitives_buffer, const ShowPrimitives3DSettings& settings = {});
+ShowAxis3DSettingsBuilder       ShowAxis3D(const std::string& name); // TODO(Matias): Replace with setting in PushPose3D
+ShowPoints3DSettingsBuilder     ShowPoints3D(const std::string& name, const Toucan::Buffer<Toucan::Point3D>& points_buffer);
+ShowLines3DSettingsBuilder      ShowLines3D(const std::string& name, const Toucan::Buffer<Toucan::LineVertex3D>& lines_buffer);
+ShowPrimitives3DSettingsBuilder ShowPrimitives3D(const std::string& name, const Toucan::Buffer<Toucan::Primitive3D>& primitives_buffer);
 
 // ***** Input *****
-void BeginInputWindow(const std::string& name, const InputSettings& settings = {});
+InputSettingsBuilder BeginInputWindow(const std::string& name);
 void EndInputWindow();
 
 // ***** Elements Input *****
-bool ShowButton(const std::string& name, const ShowButtonSettings& settings = {});
+ShowButtonsSettingsBuilder ShowButton(const std::string& name);
 
-bool ShowCheckbox(const std::string& name, bool& value, const ShowCheckboxSettings& = {});
+ShowCheckboxSettingsBuilder ShowCheckbox(const std::string& name, bool& value);
 
-bool ShowSliderFloat(const std::string& name, float& value, const ShowSliderFloatSettings& settings = {});
-bool ShowSliderFloat2(const std::string& name, Vector2f& value, const ShowSliderFloatSettings& settings = {});
-bool ShowSliderFloat3(const std::string& name, Vector3f& value, const ShowSliderFloatSettings& settings = {});
-bool ShowSliderFloat4(const std::string& name, Vector4f& value, const ShowSliderFloatSettings& settings = {});
+ShowSliderFloatSettingsBuilder ShowSliderFloat(const std::string& name, float& value);
+ShowSliderFloatSettingsBuilder ShowSliderFloat2(const std::string& name, Vector2f& value);
+ShowSliderFloatSettingsBuilder ShowSliderFloat3(const std::string& name, Vector3f& value);
+ShowSliderFloatSettingsBuilder ShowSliderFloat4(const std::string& name, Vector4f& value);
 
-bool ShowSliderInt(const std::string& name, int& value, const ShowSliderIntSettings& settings = {});
-bool ShowSliderInt2(const std::string& name, Vector2i& value, const ShowSliderIntSettings& settings = {});
-bool ShowSliderInt3(const std::string& name, Vector3i& value, const ShowSliderIntSettings& settings = {});
-bool ShowSliderInt4(const std::string& name, Vector4i& value, const ShowSliderIntSettings& settings = {});
+ShowSliderIntSettingsBuilder ShowSliderInt(const std::string& name, int& value);
+ShowSliderIntSettingsBuilder ShowSliderInt2(const std::string& name, Vector2i& value);
+ShowSliderIntSettingsBuilder ShowSliderInt3(const std::string& name, Vector3i& value);
+ShowSliderIntSettingsBuilder ShowSliderInt4(const std::string& name, Vector4i& value);
 
-bool ShowColorPicker(const std::string& name, Color& value, const ShowColorPickerSettings& settings = {});
+ShowColorPickerSettingsBuilder ShowColorPicker(const std::string& name, Color& value);
 
 // Helper functions
 template <size_t N>
-inline void ShowLinePlot2D(const std::string& name, const std::array<Toucan::Vector2f, N>& points, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
+inline ShowLinePlot2DSettingsBuilder ShowLinePlot2D(const std::string& name, const std::array<Toucan::Vector2f, N>& points, int draw_layer = 0) {
 	Toucan::Buffer<Toucan::Vector2f> buffer = {points.data(), points.size()};
-	ShowLinePlot2D(name, buffer, draw_layer, settings);
+	return ShowLinePlot2D(name, buffer, draw_layer);
 }
 
 template <typename Allocator>
-inline void ShowLinePlot2D(const std::string& name, const std::vector<Toucan::Vector2f, Allocator>& points, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
+inline ShowLinePlot2DSettingsBuilder ShowLinePlot2D(const std::string& name, const std::vector<Toucan::Vector2f, Allocator>& points, int draw_layer = 0) {
 	Toucan::Buffer<Toucan::Vector2f> buffer = {points.data(), points.size()};
-	ShowLinePlot2D(name, buffer, draw_layer, settings);
+	return ShowLinePlot2D(name, buffer, draw_layer);
 }
 
 template <size_t N>
-inline void ShowLinePlot2D(const std::string& name, const std::array<float, N>& values, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
+inline ShowLinePlot2DSettingsBuilder ShowLinePlot2D(const std::string& name, const std::array<float, N>& values, int draw_layer = 0) {
 	std::array<Toucan::Vector2f, N> points;
 	
 	for (int point_index = 0; point_index < N; ++point_index) {
@@ -99,11 +99,11 @@ inline void ShowLinePlot2D(const std::string& name, const std::array<float, N>& 
 	}
 	
 	Toucan::Buffer<Toucan::Vector2f> buffer = {points.data(), points.size()};
-	ShowLinePlot2D(name, buffer, draw_layer, settings);
+	return ShowLinePlot2D(name, buffer, draw_layer);
 }
 
 template <typename Allocator>
-inline void ShowLinePlot2D(const std::string& name, const std::vector<float, Allocator>& values, int draw_layer = 0, const ShowLinePlot2DSettings& settings = {}) {
+inline ShowLinePlot2DSettingsBuilder ShowLinePlot2D(const std::string& name, const std::vector<float, Allocator>& values, int draw_layer = 0) {
 	const auto number_of_points = values.size();
 	std::vector<Toucan::Vector2f> points;
 	points.reserve(number_of_points);
@@ -113,47 +113,47 @@ inline void ShowLinePlot2D(const std::string& name, const std::vector<float, All
 	}
 	
 	Toucan::Buffer<Toucan::Vector2f> buffer = {points.data(), points.size()};
-	ShowLinePlot2D(name, buffer, draw_layer, settings);
+	return ShowLinePlot2D(name, buffer, draw_layer);
 }
 
 template <size_t N>
-inline void ShowPoints3D(const std::string& name, const std::array<Toucan::Point3D, N>& points, const ShowPoints3DSettings& settings = {}) {
+inline ShowPoints3DSettingsBuilder ShowPoints3D(const std::string& name, const std::array<Toucan::Point3D, N>& points) {
 	Toucan::Buffer<Toucan::Point3D> buffer = {points.data(), points.size()};
-	ShowPoints3D(name, buffer, settings);
+	return ShowPoints3D(name, buffer);
 }
 
 template <typename Allocator>
-inline void ShowPoints3D(const std::string& name, const std::vector<Toucan::Point3D, Allocator>& points, const ShowPoints3DSettings& settings = {}) {
+inline ShowPoints3DSettingsBuilder ShowPoints3D(const std::string& name, const std::vector<Toucan::Point3D, Allocator>& points) {
 	Toucan::Buffer<Toucan::Point3D> buffer = {points.data(), points.size()};
-	ShowPoints3D(name, buffer, settings);
+	return ShowPoints3D(name, buffer);
 }
 
 template <size_t N>
-inline void ShowLines3D(const std::string& name, const std::array<Toucan::LineVertex3D, N>& points, const ShowLines3DSettings& settings = {}) {
+inline ShowLines3DSettingsBuilder ShowLines3D(const std::string& name, const std::array<Toucan::LineVertex3D, N>& points) {
 	Toucan::Buffer<Toucan::LineVertex3D> buffer = {points.data(), points.size()};
-	ShowLines3D(name, buffer, settings);
+	return ShowLines3D(name, buffer);
 }
 
 template <typename Allocator>
-inline void ShowLines3D(const std::string& name, const std::vector<Toucan::LineVertex3D, Allocator>& points, const ShowLines3DSettings& settings = {}) {
+inline ShowLines3DSettingsBuilder ShowLines3D(const std::string& name, const std::vector<Toucan::LineVertex3D, Allocator>& points) {
 	Toucan::Buffer<Toucan::LineVertex3D> buffer = {points.data(), points.size()};
-	ShowLines3D(name, buffer, settings);
+	return ShowLines3D(name, buffer);
 }
 
-inline void ShowPrimitives3D(const std::string& name, const Toucan::Primitive3D& primitive, const ShowPrimitives3DSettings& settings = {}) {
+inline ShowPrimitives3DSettingsBuilder ShowPrimitives3D(const std::string& name, const Toucan::Primitive3D& primitive) {
 	Toucan::Buffer<Toucan::Primitive3D> buffer = {&primitive, 1};
-	ShowPrimitives3D(name, buffer, settings);
+	return ShowPrimitives3D(name, buffer);
 }
 
 template <size_t N>
-inline void ShowPrimitives3D(const std::string& name, const std::array<Toucan::Primitive3D, N>& primitives, const ShowPrimitives3DSettings& settings = {}) {
+inline ShowPrimitives3DSettingsBuilder ShowPrimitives3D(const std::string& name, const std::array<Toucan::Primitive3D, N>& primitives) {
 	Toucan::Buffer<Toucan::Primitive3D> buffer = {primitives.data(), primitives.size()};
-	ShowPrimitives3D(name, buffer, settings);
+	return ShowPrimitives3D(name, buffer);
 }
 
 template <typename Allocator>
-inline void ShowPrimitives3D(const std::string& name, const std::vector<Toucan::Primitive3D, Allocator>& primitives, const ShowPrimitives3DSettings& settings = {}) {
+inline ShowPrimitives3DSettingsBuilder ShowPrimitives3D(const std::string& name, const std::vector<Toucan::Primitive3D, Allocator>& primitives) {
 	Toucan::Buffer<Toucan::Primitive3D> buffer = {primitives.data(), primitives.size()};
-	ShowPrimitives3D(name, buffer, settings);
+	return ShowPrimitives3D(name, buffer);
 }
 } // namespace Toucan

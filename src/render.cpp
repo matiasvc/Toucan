@@ -98,7 +98,7 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 			glUseProgram(lineplot_2d_shader);
 			set_shader_uniform(lineplot_2d_shader, "line_color", element_2d.line_plot_2d_metadata.settings.line_color);
 			
-			const Toucan::Matrix4f model_matrix = model_to_world_matrix * element_2d.line_plot_2d_metadata.settings.scaled_transform.transformation_matrix_3d();
+			const Toucan::Matrix4f model_matrix = model_to_world_matrix * element_2d.line_plot_2d_metadata.settings.transform.transformation_matrix_3d();
 			set_shader_uniform(lineplot_2d_shader, "model", model_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
 			set_shader_uniform(lineplot_2d_shader, "view", world_to_camera_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
 			
@@ -160,7 +160,7 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 			unsigned int point_2d_shader = get_point_2d_shader(&context->asset_context);
 			glUseProgram(point_2d_shader);
 			
-			const Toucan::Matrix4f model_matrix = model_to_world_matrix * element_2d.point_2d_metadata.settings.scaled_transform.transformation_matrix_3d();
+			const Toucan::Matrix4f model_matrix = model_to_world_matrix * element_2d.point_2d_metadata.settings.transform.transformation_matrix_3d();
 			set_shader_uniform(point_2d_shader, "model", model_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
 			set_shader_uniform(point_2d_shader, "view", world_to_camera_matrix); // TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
 			
@@ -258,7 +258,7 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 			
 			const Matrix4f image_size_matrix = ScaledTransform2Df(0.0f, Vector2f::Zero(), Vector2f(static_cast<float>(image_draw_width), static_cast<float>(image_draw_height))).transformation_matrix_3d();
 			
-			const Matrix4f model_matrix = model_to_world_matrix * element_2d.image_2d_metadata.settings.scaled_transform.transformation_matrix_3d() * image_size_matrix;
+			const Matrix4f model_matrix = model_to_world_matrix * element_2d.image_2d_metadata.settings.transform.transformation_matrix_3d() * image_size_matrix;
 			set_shader_uniform(image_2d_shader, "model", model_matrix);
 			set_shader_uniform(image_2d_shader, "view", world_to_camera_matrix);
 			
@@ -477,7 +477,7 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			glUseProgram(point_3d_shader);
 			
 			// TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			const Toucan::Matrix4f model_matrix = model_to_world_matrix * orientation_and_handedness_matrix * element_3d.point_3d_metadata.settings.scaled_transform.transformation_matrix();
+			const Toucan::Matrix4f model_matrix = model_to_world_matrix * orientation_and_handedness_matrix * element_3d.point_3d_metadata.settings.transform.transformation_matrix();
 			set_shader_uniform(point_3d_shader, "model", model_matrix);
 			set_shader_uniform(point_3d_shader, "view", world_to_camera_matrix);
 			set_shader_uniform(point_3d_shader, "projection", projection_matrix);
@@ -516,7 +516,7 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			glUseProgram(line_3d_shader);
 			
 			// TODO(Matias): Use uniform buffer object to set the matrix once for all objects that are rendered
-			const Toucan::Matrix4f model_matrix = model_to_world_matrix * orientation_and_handedness_matrix * element_3d.line_3d_metadata.settings.scaled_transform.transformation_matrix();
+			const Toucan::Matrix4f model_matrix = model_to_world_matrix * orientation_and_handedness_matrix * element_3d.line_3d_metadata.settings.transform.transformation_matrix();
 			set_shader_uniform(line_3d_shader, "model", model_matrix);
 			set_shader_uniform(line_3d_shader, "view", world_to_camera_matrix);
 			set_shader_uniform(line_3d_shader, "projection", projection_matrix);
