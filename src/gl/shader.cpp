@@ -1,5 +1,7 @@
 #include "shader.h"
 
+#include <sstream>
+
 #include <glad/glad.h>
 
 unsigned int compile_shader(const char* shader_source, uint32_t type) {

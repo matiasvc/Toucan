@@ -22,7 +22,7 @@ endif (NOT Toucan_FOUND)
 
 target_link_libraries(
 		rgbd-example
-		PRIVATE Toucan::Toucan stdc++fs
+		PRIVATE Toucan::Toucan
 )
 
 file(COPY dataset DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
