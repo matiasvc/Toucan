@@ -4,7 +4,6 @@ set(
 		Toucan_source
 		Toucan.cpp
 		render.cpp
-		asset.cpp
 		util/tick_number.cpp
 		
 		extern/glad/src/glad.c
@@ -21,6 +20,7 @@ set(
 		
 		gl/geometry.cpp
 		gl/shader.cpp
+		gl/draw.cpp
 )
 
 add_library(Toucan STATIC ${Toucan_source})

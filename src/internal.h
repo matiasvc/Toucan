@@ -14,9 +14,20 @@
 #include <Toucan/DataTypes.h>
 #include <Toucan/Setting.h>
 
-#include "asset.h"
+#include "gl/geometry.h"
+#include "gl/shader.h"
+
+#include "shaders/shader_lineplot2d.h"
+#include "shaders/shader_point2d.h"
+#include "shaders/shader_image2d.h"
+
+#include "shaders/shader_line3d.h"
+#include "shaders/shader_point3d.h"
+#include "shaders/shader_mesh3d.h"
 
 namespace Toucan {
+
+/***** 2D Figure & Elements *****/
 
 enum class ElementType2D { LinePlot2D, Point2D, Image2D };
 
@@ -89,6 +100,8 @@ struct Figure2D {
 	unsigned int framebuffer_color_texture = 0;
 	Vector2i framebuffer_size = Vector2i(128, 128);
 };
+
+/***** 3D Figure & Elements *****/
 
 enum class ElementType3D { Grid3D, Axis3D, Point3D, Line3D, Primitive3D };
 
@@ -277,6 +290,111 @@ struct InputWindow {
 	std::mutex mutex;
 	std::vector<ElementInput> elements;
 };
+
+/***** Assets *****/
+
+struct AssetContext {
+	unsigned int lineplot_2d_shader = 0;
+	unsigned int point_2d_shader = 0;
+	unsigned int image_2d_shader = 0;
+	
+	unsigned int point_3d_shader = 0;
+	unsigned int line_3d_shader = 0;
+	unsigned int mesh_3d_shader = 0;
+	
+	GeometryHandles origin_axis_handles = {};
+	IndexedGeometryHandles quad_geometry_handles = {};
+	IndexedGeometryHandles sphere_geometry_handles = {};
+	IndexedGeometryHandles cube_geometry_handles = {};
+	IndexedGeometryHandles cylinder_geometry_handles = {};
+};
+
+
+inline unsigned int get_lineplot_2d_shader(AssetContext& context) {
+	if (context.lineplot_2d_shader != 0) { return context.lineplot_2d_shader; }
+	context.lineplot_2d_shader = create_shader_program(lineplot_2d_vs, lineplot_2d_fs);
+	
+	assert(context.lineplot_2d_shader != 0);
+	return context.lineplot_2d_shader;
+}
+
+inline unsigned int get_point_2d_shader(AssetContext& context) {
+	if (context.point_2d_shader != 0) { return context.point_2d_shader; }
+	context.point_2d_shader = create_shader_program(point_2d_vs, point_2d_fs);
+	
+	assert(context.point_2d_shader != 0);
+	return context.point_2d_shader;
+}
+
+inline unsigned int get_image_2d_shader(AssetContext& context) {
+	if (context.image_2d_shader != 0) { return context.image_2d_shader; }
+	context.image_2d_shader = create_shader_program(image_2d_vs, image_2d_rgb_fs);
+	
+	assert(context.image_2d_shader != 0);
+	return context.image_2d_shader;
+}
+
+
+inline unsigned int get_point_3d_shader(AssetContext& context) {
+	if (context.point_3d_shader != 0) { return context.point_3d_shader; }
+	context.point_3d_shader = create_shader_program(point_3d_vs, point_3d_fs);
+	
+	assert(context.point_3d_shader != 0);
+	return context.point_3d_shader;
+}
+
+inline unsigned int get_line_3d_shader(AssetContext& context) {
+	if (context.line_3d_shader != 0) { return context.line_3d_shader; }
+	context.line_3d_shader = create_shader_program(line_3d_vs, line_3d_fs);
+	
+	assert(context.line_3d_shader != 0);
+	return context.line_3d_shader;
+}
+
+inline unsigned int get_mesh_3d_shader(AssetContext& context) {
+	if (context.mesh_3d_shader != 0) { return context.mesh_3d_shader; }
+	context.mesh_3d_shader = create_shader_program(mesh_3d_vs, mesh_3d_fs);
+	
+	assert(context.mesh_3d_shader != 0);
+	return context.mesh_3d_shader;
+}
+
+inline GeometryHandles get_axis_handles(AssetContext& context) {
+	if (context.origin_axis_handles.vao != 0) { return context.origin_axis_handles; }
+	
+	context.origin_axis_handles = generate_axis();
+	return context.origin_axis_handles;
+}
+
+inline IndexedGeometryHandles get_quad_handles(AssetContext& context) {
+	if (context.quad_geometry_handles.vao != 0) { return context.quad_geometry_handles; }
+	
+	context.quad_geometry_handles = generate_quad();
+	return context.quad_geometry_handles;
+}
+
+inline IndexedGeometryHandles get_sphere_handles(AssetContext& context) {
+	if (context.sphere_geometry_handles.vao != 0) { return context.sphere_geometry_handles; }
+	
+	context.sphere_geometry_handles = generate_sphere();
+	return context.sphere_geometry_handles;
+}
+
+inline IndexedGeometryHandles get_cube_handles(AssetContext& context) {
+	if (context.cube_geometry_handles.vao != 0) { return context.cube_geometry_handles; }
+	
+	context.cube_geometry_handles = generate_cube();
+	return context.cube_geometry_handles;
+}
+
+inline IndexedGeometryHandles get_cylinder_handles(AssetContext& context) {
+	if (context.cylinder_geometry_handles.vao != 0) { return context.cylinder_geometry_handles; }
+	
+	context.cylinder_geometry_handles = generate_cylinder();
+	return context.cylinder_geometry_handles;
+}
+
+/***** Context *****/
 
 struct ToucanContext {
 	std::atomic_bool should_render = true;

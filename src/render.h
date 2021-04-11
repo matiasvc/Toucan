@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+
 #include "internal.h"
 
 namespace Toucan {
@@ -12,5 +14,7 @@ void draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& model_to_wor
                      Toucan::ToucanContext* context);
 
 void draw_axis_gizmo_3d(const Toucan::RigidTransform3Df& camera_transform, const Toucan::Vector2i& framebuffer_size, const Toucan::Matrix4f& orientation_and_handedness_matrix, Toucan::ToucanContext* context);
+
+void draw_figure_2d_list(std::list<Figure2D>& figures, ToucanContext& context);
 
 } // namespace Toucan

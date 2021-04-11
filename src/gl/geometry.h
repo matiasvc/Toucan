@@ -3,19 +3,18 @@
 #include <vector>
 
 #include "Toucan/LinAlg.h"
-#include "Toucan/DataTypes.h"
 
 struct GeometryHandles {
 	unsigned int vao = 0;
 	unsigned int vbo = 0;
-	unsigned int number_of_vertices = 0;
+	int number_of_vertices = 0;
 };
 
 struct IndexedGeometryHandles {
 	unsigned int vao = 0;
 	unsigned int vbo = 0;
 	unsigned int ebo = 0;
-	unsigned int number_of_indices = 0;
+	int number_of_indices = 0;
 };
 
 GeometryHandles generate_axis();
