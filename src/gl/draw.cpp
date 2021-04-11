@@ -1,7 +1,6 @@
 #include "draw.h"
 
 #include <glad/glad.h>
-#include "util/GLDebug.h"
 
 void create_or_resize_framebuffer(unsigned int* framebuffer, unsigned int* framebuffer_color_texture, unsigned int* framebuffer_depth_texture, Toucan::Vector2i size) {
 	
@@ -35,7 +34,6 @@ void create_or_resize_framebuffer(unsigned int* framebuffer, unsigned int* frame
 		throw std::runtime_error("ERROR! Unable to create framebuffer.");
 	}
 	
-	glCheckError();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

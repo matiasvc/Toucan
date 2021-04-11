@@ -1,7 +1,6 @@
 #include "geometry.h"
 
 #include <glad/glad.h>
-#include "util/GLDebug.h"
 #include "Utils.h"
 
 struct TexturedVertex {

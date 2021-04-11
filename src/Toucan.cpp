@@ -16,12 +16,12 @@
 
 #include <Toucan/DataTypes.h>
 
-#include "util/GLDebug.h"
 #include "internal.h"
 #include "render.h"
 #include "Utils.h"
 #include "util/tick_number.h"
 #include "gl/projection.h"
+#include "gl/error.h"
 
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
@@ -759,6 +759,9 @@ void render_loop(Toucan::ToucanSettings settings) {
 		throw std::runtime_error("Toucan error! Unable to load OpenGL.\n");
 	}
 	
+#if !NDEBUG
+	glad_set_post_callback(post_call_callback);
+#endif
 	
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -882,11 +885,10 @@ void render_loop(Toucan::ToucanSettings settings) {
 						const auto model_to_world_matrix = element.pose.transformation_matrix();
 						Toucan::draw_element_3d(element, model_to_world_matrix, orientation_and_handedness_matrix, world_to_camera_matrix, projection_matrix, toucan_context_ptr);
 					}
-					glCheckError();
+					
 					if (figure_3d.settings.gizmo_enabled) {
 						Toucan::draw_axis_gizmo_3d(figure_3d.camera.get_orbit_pose(100.0f).inverse(), figure_draw_size, orientation_and_handedness_matrix, toucan_context_ptr);
 					}
-					glCheckError();
 					
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 					if(toucan_context_ptr->rdoc_api) toucan_context_ptr->rdoc_api->EndFrameCapture(nullptr, nullptr);

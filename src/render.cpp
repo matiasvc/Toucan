@@ -8,7 +8,6 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-#include "util/GLDebug.h"
 #include "Utils.h"
 
 #include "gl/draw.h"
@@ -40,14 +39,8 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 		case ElementType2D::LinePlot2D: {
 			
 			//Create the buffers if they doesnt already exists
-			if (element_2d.line_plot_2d_metadata.vao == 0) {
-				glGenVertexArrays(1, &element_2d.line_plot_2d_metadata.vao);
-				glCheckError();
-			}
-			if (element_2d.line_plot_2d_metadata.vbo == 0) {
-				glGenBuffers(1, &element_2d.line_plot_2d_metadata.vbo);
-				glCheckError();
-			}
+			if (element_2d.line_plot_2d_metadata.vao == 0) { glGenVertexArrays(1, &element_2d.line_plot_2d_metadata.vao); }
+			if (element_2d.line_plot_2d_metadata.vbo == 0) { glGenBuffers(1, &element_2d.line_plot_2d_metadata.vbo); }
 			
 			if (element_2d.data_buffer_ptr != nullptr) {
 				glBindVertexArray(element_2d.line_plot_2d_metadata.vao);
@@ -65,7 +58,6 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 				std::free(element_2d.data_buffer_ptr);
 				element_2d.data_buffer_ptr = nullptr;
 				
-				glCheckError();
 			}
 			
 			if (element_2d.line_plot_2d_metadata.number_of_points == 0) { return; }
@@ -89,21 +81,13 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 			glDisable(GL_BLEND);
 			glDisable(GL_LINE_SMOOTH);
 			glBindVertexArray(0);
-			
-			glCheckError();
 		}
 			break;
 		case Toucan::ElementType2D::Point2D: {
 			
 			//Create the buffers if they doesnt already exists
-			if (element_2d.point_2d_metadata.vao == 0) {
-				glGenVertexArrays(1, &element_2d.point_2d_metadata.vao);
-				glCheckError();
-			}
-			if (element_2d.point_2d_metadata.vbo == 0) {
-				glGenBuffers(1, &element_2d.point_2d_metadata.vbo);
-				glCheckError();
-			}
+			if (element_2d.point_2d_metadata.vao == 0) { glGenVertexArrays(1, &element_2d.point_2d_metadata.vao); }
+			if (element_2d.point_2d_metadata.vbo == 0) { glGenBuffers(1, &element_2d.point_2d_metadata.vbo); }
 			
 			if (element_2d.data_buffer_ptr != nullptr) { // Is there new data we need to upload
 				glBindVertexArray(element_2d.point_2d_metadata.vao);
@@ -136,8 +120,6 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 				
 				std::free(element_2d.data_buffer_ptr);
 				element_2d.data_buffer_ptr = nullptr;
-				
-				glCheckError();
 			}
 			
 			unsigned int point_2d_shader = get_point_2d_shader(context->asset_context);
@@ -151,8 +133,6 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 			glEnable(GL_PROGRAM_POINT_SIZE);
 			glDrawArrays(GL_POINTS, 0, element_2d.point_2d_metadata.number_of_points);
 			glBindVertexArray(0);
-			
-			glCheckError();
 		}
 			break;
 		case Toucan::ElementType2D::Image2D: {
@@ -170,8 +150,6 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 					glBindTexture(GL_TEXTURE_2D, 0);
-					
-					glCheckError();
 				}
 				
 				// Upload Texture
@@ -225,8 +203,6 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 				
 				glBindTexture(GL_TEXTURE_2D, 0);
 				
-				glCheckError();
-				
 				std::free(element_2d.data_buffer_ptr);
 				element_2d.data_buffer_ptr = nullptr;
 			}
@@ -256,8 +232,6 @@ void Toucan::draw_element_2d(Element2D& element_2d, const Matrix4f& model_to_wor
 			
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			glBindVertexArray(0);
-			
-			glCheckError();
 		}
 			break;
 	}
@@ -283,22 +257,10 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 		case Toucan::ElementType3D::Grid3D: {
 			
 			//Create the buffers if they doesnt already exists
-			if (element_3d.grid_3d_metadata.vao_major == 0) {
-				glGenVertexArrays(1, &element_3d.grid_3d_metadata.vao_major);
-				glCheckError();
-			}
-			if (element_3d.grid_3d_metadata.vao_minor == 0) {
-				glGenVertexArrays(1, &element_3d.grid_3d_metadata.vao_minor);
-				glCheckError();
-			}
-			if (element_3d.grid_3d_metadata.vbo_major == 0) {
-				glGenBuffers(1, &element_3d.grid_3d_metadata.vbo_major);
-				glCheckError();
-			}
-			if (element_3d.grid_3d_metadata.vbo_minor == 0) {
-				glGenBuffers(1, &element_3d.grid_3d_metadata.vbo_minor);
-				glCheckError();
-			}
+			if (element_3d.grid_3d_metadata.vao_major == 0) { glGenVertexArrays(1, &element_3d.grid_3d_metadata.vao_major); }
+			if (element_3d.grid_3d_metadata.vao_minor == 0) { glGenVertexArrays(1, &element_3d.grid_3d_metadata.vao_minor); }
+			if (element_3d.grid_3d_metadata.vbo_major == 0) { glGenBuffers(1, &element_3d.grid_3d_metadata.vbo_major); }
+			if (element_3d.grid_3d_metadata.vbo_minor == 0) { glGenBuffers(1, &element_3d.grid_3d_metadata.vbo_minor); }
 			
 			if (element_3d.data_buffer_ptr != nullptr) { // Do we need to create the grid points again
 				const auto line_extent = element_3d.grid_3d_metadata.lines;
@@ -364,8 +326,6 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 				glVertexAttribPointer(color_location, 3, GL_FLOAT, GL_FALSE, sizeof(LineVertex3D), reinterpret_cast<void*>(offset_of(&LineVertex3D::color)));
 				glEnableVertexAttribArray(color_location);
 				
-				glCheckError();
-				
 				// Major lines
 				glBindVertexArray(element_3d.grid_3d_metadata.vao_major);
 				
@@ -381,8 +341,6 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 				// Color
 				glVertexAttribPointer(color_location, 3, GL_FLOAT, GL_FALSE, sizeof(LineVertex3D), reinterpret_cast<void*>(offset_of(&LineVertex3D::color)));
 				glEnableVertexAttribArray(color_location);
-				
-				glCheckError();
 				
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				glBindVertexArray(0);
@@ -414,7 +372,6 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			glLineWidth(1.0);
 			glBindVertexArray(0);
 			
-			glCheckError();
 		}
 			break;
 		case Toucan::ElementType3D::Axis3D: {
@@ -435,19 +392,12 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			glBindVertexArray(geometry_handles.vao);
 			glDrawArrays(GL_LINES, 0, geometry_handles.number_of_vertices);
 			glBindVertexArray(0);
-			glCheckError();
 		}
 			break;
 		case Toucan::ElementType3D::Point3D: {
 			// Create buffers if they doesnt already exists
-			if (element_3d.point_3d_metadata.vao == 0) {
-				glGenVertexArrays(1, &element_3d.point_3d_metadata.vao);
-				glCheckError();
-			}
-			if (element_3d.point_3d_metadata.vbo == 0) {
-				glGenBuffers(1, &element_3d.point_3d_metadata.vbo);
-				glCheckError();
-			}
+			if (element_3d.point_3d_metadata.vao == 0) { glGenVertexArrays(1, &element_3d.point_3d_metadata.vao); }
+			if (element_3d.point_3d_metadata.vbo == 0) { glGenBuffers(1, &element_3d.point_3d_metadata.vbo); }
 			
 			if (element_3d.data_buffer_ptr != nullptr) {
 				glBindVertexArray(element_3d.point_3d_metadata.vao);
@@ -491,19 +441,11 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			glEnable(GL_PROGRAM_POINT_SIZE);
 			glDrawArrays(GL_POINTS, 0, element_3d.point_3d_metadata.number_of_points);
 			glBindVertexArray(0);
-			
-			glCheckError();
 		}
 			break;
 		case Toucan::ElementType3D::Line3D: {
-			if (element_3d.line_3d_metadata.vao == 0) {
-				glGenVertexArrays(1, &element_3d.line_3d_metadata.vao);
-				glCheckError();
-			}
-			if (element_3d.line_3d_metadata.vbo == 0) {
-				glGenBuffers(1, &element_3d.line_3d_metadata.vbo);
-				glCheckError();
-			}
+			if (element_3d.line_3d_metadata.vao == 0) { glGenVertexArrays(1, &element_3d.line_3d_metadata.vao); }
+			if (element_3d.line_3d_metadata.vbo == 0) { glGenBuffers(1, &element_3d.line_3d_metadata.vbo); }
 			
 			if (element_3d.data_buffer_ptr != nullptr) {
 				glBindVertexArray(element_3d.line_3d_metadata.vao);
@@ -549,7 +491,6 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			}
 			
 			glBindVertexArray(0);
-			glCheckError();
 		}
 			break;
 		case Toucan::ElementType3D::Primitive3D: {
@@ -604,7 +545,6 @@ void Toucan::draw_element_3d(Toucan::Element3D& element_3d, const Matrix4f& mode
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			glBindVertexArray(0);
 			
-			glCheckError();
 		}
 			break;
 	}
@@ -1018,7 +958,9 @@ void draw_figure_2d_list(std::list<Figure2D>& figures, ToucanContext& context) {
 			
 			// Draw figure
 			if (view_changed_this_frame or framebuffer_was_updated or elements_has_new_data) {
-				if(context.rdoc_api) context.rdoc_api->StartFrameCapture(nullptr, nullptr); // TODO(Matias): Only include in debug build
+#if !NDEBUG
+				if(context.rdoc_api) context.rdoc_api->StartFrameCapture(nullptr, nullptr);
+#endif
 				glBindFramebuffer(GL_FRAMEBUFFER, figure_2d.framebuffer);
 				glViewport(0, 0, figure_2d.framebuffer_size.x(), figure_2d.framebuffer_size.y());
 				
@@ -1036,9 +978,10 @@ void draw_figure_2d_list(std::list<Figure2D>& figures, ToucanContext& context) {
 					Toucan::draw_element_2d(element, model_to_world, view_matrix, &context);
 				}
 				
-				glCheckError();
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
-				if(context.rdoc_api) context.rdoc_api->EndFrameCapture(nullptr, nullptr); // TODO(Matias): Only include in debug build
+#if !NDEBUG
+				if(context.rdoc_api) context.rdoc_api->EndFrameCapture(nullptr, nullptr);
+#endif
 			}
 			
 			// Axis ticks

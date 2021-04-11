@@ -6,9 +6,13 @@ set(
 		render.cpp
 		util/tick_number.cpp
 		
-		extern/glad/src/glad.c
-		extern/glad/include/glad/glad.h
-		extern/glad/include/KHR/khrplatform.h
+		$<$<CONFIG:Release>:extern/glad/glad/src/glad.c>
+		$<$<CONFIG:Release>:extern/glad/glad/include/glad/glad.h>
+		$<$<CONFIG:Release>:extern/glad/glad/include/KHR/khrplatform.h>
+		
+		$<$<CONFIG:Debug>:extern/glad-debug/glad/src/glad.c>
+		$<$<CONFIG:Debug>:extern/glad-debug/glad/include/glad/glad.h>
+		$<$<CONFIG:Debug>:extern/glad-debug/glad/include/KHR/khrplatform.h>
 		
 		extern/imgui/imgui.cpp
 		extern/imgui/imgui_draw.cpp
@@ -22,6 +26,8 @@ set(
 		gl/shader.cpp
 		gl/draw.cpp
 )
+
+message(WARNING ${CMAKE_BUILD_TYPE})
 
 add_library(Toucan STATIC ${Toucan_source})
 add_library(Toucan::Toucan ALIAS Toucan)
@@ -49,7 +55,8 @@ target_include_directories(
 				$<INSTALL_INTERFACE:include>
 			PRIVATE
 				${CMAKE_CURRENT_SOURCE_DIR}
-				${CMAKE_CURRENT_SOURCE_DIR}/extern/glad/include
+				$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/extern/glad/glad/include>
+				$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/extern/glad-debug/glad/include>
 				${CMAKE_CURRENT_SOURCE_DIR}/extern/renderdoc/include
 				${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui
 				${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/backends
