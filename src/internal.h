@@ -93,7 +93,6 @@ struct Figure2D {
 	
 	Rectangle view;
 	bool user_changed_view = false;
-	bool user_dragging = false;
 	std::vector<RigidTransform2Df> pose_stack;
 	
 	unsigned int framebuffer = 0;
@@ -183,8 +182,6 @@ struct Figure3D {
 	
 	OrbitCamera camera;
 	std::vector<RigidTransform3Df> pose_stack;
-	
-	bool dragging = false;
 	
 	unsigned int framebuffer = 0;
 	unsigned int framebuffer_color_texture = 0;
@@ -283,7 +280,7 @@ struct ElementInput {
 	};
 };
 
-struct InputWindow {
+struct FigureInput {
 	std::string name;
 	InputSettings settings = {};
 	
@@ -410,14 +407,14 @@ struct ToucanContext {
 	GLFWwindow* window_ptr = nullptr;
 	RENDERDOC_API_1_4_1* rdoc_api = nullptr;
 	
-	std::list<Toucan::Figure2D> figures_2d;
-	Toucan::Figure2D* current_figure_2d = nullptr;
+	std::list<Figure2D> figures_2d;
+	Figure2D* current_figure_2d = nullptr;
 	
-	std::list<Toucan::Figure3D> figures_3d;
-	Toucan::Figure3D* current_figure_3d = nullptr;
+	std::list<Figure3D> figures_3d;
+	Figure3D* current_figure_3d = nullptr;
 	
-	std::list<Toucan::InputWindow> input_windows;
-	Toucan::InputWindow* current_input_window = nullptr;
+	std::list<FigureInput> input_windows;
+	FigureInput* current_input_window = nullptr;
 	
 	AssetContext asset_context = {};
 };

@@ -3,6 +3,9 @@
 set(
 		Toucan_source
 		Toucan.cpp
+		figure_2d.cpp
+		figure_3d.cpp
+		figure_input.cpp
 		render.cpp
 		util/tick_number.cpp
 		

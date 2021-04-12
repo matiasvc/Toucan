@@ -389,4 +389,4 @@ private:
 	ShowColorPickerSettings* m_settings_ptr;
 };
 
-}
+} // namespace Toucan

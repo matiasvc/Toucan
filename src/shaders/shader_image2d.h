@@ -45,4 +45,3 @@ void main() {
 	fragment_color = vec4(texture(image, uv_coordinate).rrr, 1.0);
 }
 )GLSL";
-

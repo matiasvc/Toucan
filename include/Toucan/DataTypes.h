@@ -95,39 +95,39 @@ enum class ImageFormat : uint8_t {
 
 inline constexpr size_t get_bytes_per_pixel(ImageFormat format) {
 	switch (format) {
-		case Toucan::ImageFormat::GRAY_U8: {
+		case ImageFormat::GRAY_U8: {
 			return 1*sizeof(uint8_t);
 		}
-		case Toucan::ImageFormat::GRAY_U16:
-		case Toucan::ImageFormat::GRAY_S16: {
+		case ImageFormat::GRAY_U16:
+		case ImageFormat::GRAY_S16: {
 			return 1*sizeof(uint16_t);
 		}
-		case Toucan::ImageFormat::RG_U8: {
+		case ImageFormat::RG_U8: {
 			return 2*sizeof(uint8_t);
 		}
-		case Toucan::ImageFormat::RG_U16: {
+		case ImageFormat::RG_U16: {
 			return 2*sizeof(uint16_t);
 		}
-		case Toucan::ImageFormat::RG_U32: {
+		case ImageFormat::RG_U32: {
 			return 2*sizeof(uint32_t);
 		}
-		case Toucan::ImageFormat::RG_F32: {
+		case ImageFormat::RG_F32: {
 			return 2*sizeof(float);
 		}
-		case Toucan::ImageFormat::RGB_U8:
-		case Toucan::ImageFormat::BGR_U8: {
+		case ImageFormat::RGB_U8:
+		case ImageFormat::BGR_U8: {
 			return 3*sizeof(uint8_t);
 		}
-		case Toucan::ImageFormat::RGB_U16:
-		case Toucan::ImageFormat::BGR_U16: {
+		case ImageFormat::RGB_U16:
+		case ImageFormat::BGR_U16: {
 			return 3*sizeof(uint16_t);
 		}
-		case Toucan::ImageFormat::RGB_U32:
-		case Toucan::ImageFormat::BGR_U32: {
+		case ImageFormat::RGB_U32:
+		case ImageFormat::BGR_U32: {
 			return 3*sizeof(uint32_t);
 		}
-		case Toucan::ImageFormat::RGB_F32:
-		case Toucan::ImageFormat::BGR_F32: {
+		case ImageFormat::RGB_F32:
+		case ImageFormat::BGR_F32: {
 			return 3*sizeof(float);
 		}
 		default: {
