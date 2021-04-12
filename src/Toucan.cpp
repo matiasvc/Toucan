@@ -773,11 +773,12 @@ void render_loop(Toucan::ToucanSettings settings) {
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	
 	// Load renderdoc
+#if !NDEBUG
 	if (void* mod = dlopen("librenderdoc.so", RTLD_NOW | RTLD_NOLOAD )) {
 		pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)dlsym(mod, "RENDERDOC_GetAPI");
-		int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_4_1, (void**)&toucan_context_ptr->rdoc_api);
-		assert(ret == 1);
+		RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_4_1, (void**)&toucan_context_ptr->rdoc_api);
 	}
+#endif
 	
 	toucan_context_ptr->initialized_cv.notify_all();
 	
